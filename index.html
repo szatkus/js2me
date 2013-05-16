@@ -1,0 +1,32 @@
+<!doctype html>
+<title>JS2ME</title>
+<script type="text/javascript" src="zip/zip.js"></script>
+<script type="text/javascript" src="zip/zip-ext.js"></script>
+<script type="text/javascript" src="jquery-2.0.0.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function () {
+		document.body.innerHTML = 'dad';
+		
+		var reader = new zip.HttpReader('test.jar');
+		
+		zip.createReader(reader, function(zipReader) {
+			reader.size = 980;
+			zipReader.getEntries(function (entries) {
+				entries[2].getData(new zip.ArrayBufferWriter(), function (b) {
+					dupa = new js2me.BufferStream(b);
+					js2me.convertClass(dupa);
+				});
+			});
+		}); 
+			
+			
+		
+	});
+	var js2me = {
+		JAVA_ROOT: 'javaRoot'
+	};
+</script>
+<script type="text/javascript" src="buffer_stream.js"></script>
+<script type="text/javascript" src="convert.js"></script>
+<script type="text/javascript" src="compile.js"></script>
+aaaaaa
