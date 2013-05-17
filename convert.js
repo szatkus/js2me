@@ -99,10 +99,34 @@ js2me.convertClass = function (stream) {
 				var typeName = resolveConstant(constant.descriptorIndex);
 				name += typeName.replace(new RegExp('[\\(\\);/]', 'g'), '_');
 				var args = typeName.slice(typeName.indexOf('(') + 1, typeName.indexOf(')'));
-				//TODO: arguments
+				var FIELD_TYPE = 0;
+				var OBJECT_TYPE = 1;
+				var ARRAY_TYPE = 2;
+				var state = FIELD_TYPE;
+				var argumentsTypes = [];
+				for (var i = 0; i < args.length; i++) {
+					if (state == FIELD_TYPE) {
+						if (args[i] == 'L') {
+							state = OBJECT_TYPE;
+						} else if (args[i] == '[') {
+							state = ARRAY_TYPE;
+						} else {
+							argumentsTypes.push(args[i]);
+						}
+					} else if (state == OBJECT_TYPE) {
+						if (args[i] == ';') {
+							state = FIELD_TYPE;
+							argumentsTypes.push('L');
+						}
+					} else if (state == ARRAY_TYPE) {
+						throw new Error('Arrays are not supported');
+					}
+					
+				}
 				constantPool[index] = {
 					name: name,
 					type: {
+						argumentsTypes: argumentsTypes,
 						returnType: typeName.slice(typeName.indexOf(')') + 1)
 					}
 				};
