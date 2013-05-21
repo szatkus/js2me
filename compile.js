@@ -80,7 +80,10 @@ js2me.compileBytecode = function (stream, constantPool, length) {
 		var count = method.type.argumentsTypes.length;
 		code += 'var tmp = ' + STACK_VAR + '.slice(' + STACK_VAR + '.length - ' + count + ');\n';
 		code += STACK_VAR + ' = ' + STACK_VAR + '.slice(0, ' + STACK_VAR + '.length - ' + count + ');\n';
-		code += method.className + '.prototype.' + method.name + '.apply(' + STACK_VAR + '.pop(), tmp);\n';
+		if (method.type.returnType != 'V') {
+			code += STACK_VAR + '.push';
+		}
+		code += '(' + method.className + '.prototype.' + method.name + '.apply(' + STACK_VAR + '.pop(), tmp));\n';
 	}
 	// invokestatic
 	translator[0xb8] = function () {
@@ -88,7 +91,10 @@ js2me.compileBytecode = function (stream, constantPool, length) {
 		var count = method.type.argumentsTypes.length;
 		code += 'var tmp = ' + STACK_VAR + '.slice(' + STACK_VAR + '.length - ' + count + ');\n';
 		code += STACK_VAR + ' = ' + STACK_VAR + '.slice(0, ' + STACK_VAR + '.length - ' + count + ');\n';
-		code += method.className + '.prototype.' + method.name + '.apply(' + method.className + ', tmp);\n';
+		if (method.type.returnType != 'V') {
+			code += STACK_VAR + '.push';
+		}
+		code += '(' + method.className + '.prototype.' + method.name + '.apply(' + method.className + ', tmp));\n';
 	}
 	// invokevirtual
 	translator[0xb6] = function () {
@@ -96,18 +102,21 @@ js2me.compileBytecode = function (stream, constantPool, length) {
 		var count = method.type.argumentsTypes.length;
 		code += 'var tmp = ' + STACK_VAR + '.slice(' + STACK_VAR + '.length - ' + count + ');\n';
 		code += STACK_VAR + ' = ' + STACK_VAR + '.slice(0, ' + STACK_VAR + '.length - ' + count + ');\n';
-		code += method.className + '.prototype.' + method.name + '.apply(' + STACK_VAR + '.pop(), tmp);\n';
+		if (method.type.returnType != 'V') {
+			code += STACK_VAR + '.push';
+		}
+		code += '(' + method.className + '.prototype.' + method.name + '.apply(' + STACK_VAR + '.pop(), tmp));\n';
 	}
 	// ldc
 	translator[0x12] = function () {
 		var index = stream.nextByte();
-		code += STACK_VAR + '.push(pool[' + index + ']);\n';
+		code += STACK_VAR + '.push(this.pool[' + index + ']);\n';
 	}
 	// new
 	translator[0xbb] = function () {
 		var classInfo = constantPool[stream.nextWord()];
 		//TODO: arguments
-		code += STACK_VAR + '.pop(new ' + classInfo.className + '());\n';
+		code += STACK_VAR + '.push(new ' + classInfo.className + '());\n';
 	}
 	// noop
 	translator[0x00] = function () {};

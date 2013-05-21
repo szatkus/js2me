@@ -13,6 +13,7 @@ js2me.convertClass = function (stream) {
 	}
 	var TAG_UTF8 = 1;
 	var TAG_CLASS_INFO = 7;
+	var TAG_STRING = 8;
 	var TAG_FIELDREF = 9;
 	var TAG_METHODREF = 10;
 	var TAG_INTERFACEREF = 11;
@@ -41,7 +42,7 @@ js2me.convertClass = function (stream) {
 				constant.nameIndex = stream.nextWord();
 			}
 			// String
-			if (tag == 8) {
+			if (tag == TAG_STRING) {
 				constant.implemented = true;
 				constant.stringIndex = stream.nextWord();
 			}
@@ -63,6 +64,16 @@ js2me.convertClass = function (stream) {
 			constantPool[i] = constant;
 		}
 	}
+	function escapeName(name) {
+		if (name == '$<init>') {
+			name = '_init';
+		}
+		return name;
+	}
+	function escapeType(typeName) {
+		typeName = typeName.replace(new RegExp('[\\(\\);/]', 'g'), '_');
+		return typeName;
+	}
 	function resolveConstants() {
 		function resolveConstant(index) {
 			var constant = constantPool[index];
@@ -81,8 +92,12 @@ js2me.convertClass = function (stream) {
 					className += '$' + nameElements[i];
 				}
 				constantPool[index] = {
-					className: className
+					className: js2me.JAVA_ROOT + '.' + className
 				};
+			}
+			if (tag == TAG_STRING) {
+				var text = resolveConstant(constant.stringIndex);
+				constantPool[index] = new window[js2me.JAVA_ROOT].$java.$lang.$String(text);
 			}
 			if (tag == TAG_FIELDREF || tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 				constantPool[index] = {
@@ -93,11 +108,9 @@ js2me.convertClass = function (stream) {
 			}
 			if (tag == TAG_NAME_AND_TYPE) {
 				var name = '$' + resolveConstant(constant.nameIndex);
-				if (name == '$<init>') {
-					name = '_init';
-				}
+				name = escapeName(name);
 				var typeName = resolveConstant(constant.descriptorIndex);
-				name += typeName.replace(new RegExp('[\\(\\);/]', 'g'), '_');
+				name += escapeType(typeName);
 				var args = typeName.slice(typeName.indexOf('(') + 1, typeName.indexOf(')'));
 				var FIELD_TYPE = 0;
 				var OBJECT_TYPE = 1;
@@ -138,10 +151,6 @@ js2me.convertClass = function (stream) {
 		}
 	}
 	function readAccessFlags() {
-		//TODO
-		stream.nextWord();
-	}
-	function readThisClass() {
 		//TODO
 		stream.nextWord();
 	}
@@ -192,8 +201,9 @@ js2me.convertClass = function (stream) {
 		for (var i = 0; i < count; i++) {
 			var accessFlags = stream.nextWord();
 			var name = constantPool[stream.nextWord()];
-			var descriptorIndex = stream.nextWord();
+			var type = constantPool[stream.nextWord()];
 			var attributes = readAttributes();
+			newClass.prototype[escapeName(name) + escapeType(type)] = attributes['Code'];
 		}
 	}
 	
@@ -202,10 +212,29 @@ js2me.convertClass = function (stream) {
 	readConstantPool();
 	resolveConstants();
 	readAccessFlags();
-	readThisClass();
+	var thisClass = constantPool[stream.nextWord()];
 	readSuperClass();
 	readInterfaces();
 	readFields();
 	readMethods();
 	// TODO: class attributes
+	var package = js2me.touchPackage(thisClass.className.substr(0, thisClass.className.lastIndexOf('.')));
+	package[thisClass.className.substr(thisClass.className.lastIndexOf('.') + 1)] = newClass;
+}
+js2me.touchPackage = function (path, current) {
+	if (!current) {
+		current = window;
+	}
+	if (!path) {
+		return current;
+	}
+	var name = path.substr(0, path.indexOf('.')) || path;
+	if (!current[name]) {
+		current[name] = {};
+	}
+	if (path.indexOf('.') > 0) {
+		return js2me.touchPackage(path.substr(path.indexOf('.') + 1), current[name]);
+	} else {
+		return current[name];
+	}
 }
