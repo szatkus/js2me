@@ -1,0 +1,50 @@
+<!doctype html>
+<title>JS2ME</title>
+<script type="text/javascript" src="zip.js"></script>
+<script type="text/javascript" src="zip-ext.js"></script>
+<script type="text/javascript">
+	window.onload = function () {
+		
+		var reader = new zip.HttpReader('picross.jar');
+		
+		zip.createReader(reader, function(zipReader) {
+			reader.size = 3321;
+			zipReader.getEntries(function (entries) {
+				js2me.loadEntries(entries, function () {
+					var mainMidlet = js2me.manifest['midlet-1'];
+					var mainClass = js2me.findClass(js2me.JAVA_ROOT + '.$' + mainMidlet.split(',')[2].trim());
+					var midlet = new mainClass();
+					midlet.$startApp__V();
+				});
+			});
+		}); 
+			
+			
+		
+	};
+	var js2me = {
+		JAVA_ROOT: 'javaRoot'
+	};
+</script>
+<script type="text/javascript" src="buffer_stream.js"></script>
+<script type="text/javascript" src="convert.js"></script>
+<script type="text/javascript" src="execute.js"></script>
+<script type="text/javascript" src="manifest.js"></script>
+<script type="text/javascript" src="loader.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Canvas.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Command.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Display.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Font.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Form.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Graphics.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Image.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/List.js"></script>
+<script type="text/javascript" src="me/java/lang/Integer.js"></script>
+<script type="text/javascript" src="me/java/lang/String.js"></script>
+<script type="text/javascript" src="me/java/util/Random.js"></script>
+<style>
+	.form .title {
+		border: 1px solid black;
+		text-align: center;
+	}
+</style>

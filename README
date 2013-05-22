@@ -6,4 +6,5 @@ It's implementation of Java ME in JavaScript. I'm planning to use this as a part
 Milestone 1 - Hello world (test.jar) works (done)
 Milestone 2 - Picross (picross.jar) works
 Milestone 3 - Make all my old J2ME projects working
-Milestone 4 - ...
+Milestone 4 - Refactoring and Firefox OS application
+Milestone 5 - ...

@@ -3,13 +3,13 @@ js2me.convertClass = function (stream) {
 	var constantPool = [];
 	newClass.prototype.pool = constantPool;
 	function checkHeader() {
-		if (stream.nextInt() != 0xCAFEBABE) {
+		if (stream.readUint32() != 0xCAFEBABE) {
 			throw new Error('Incorrect header');
 		}
 	}
 	function checkVersion() {
 		// Who cares...
-		stream.nextInt();
+		stream.readUint32();
 	}
 	var TAG_UTF8 = 1;
 	var TAG_CLASS_INFO = 7;
@@ -19,9 +19,9 @@ js2me.convertClass = function (stream) {
 	var TAG_INTERFACEREF = 11;
 	var TAG_NAME_AND_TYPE = 12;
 	function readConstantPool() {
-		var count = stream.nextWord() - 1;
+		var count = stream.readUint16() - 1;
 		for (var i = 1; i <= count; i++) {
-			var tag = stream.nextByte();
+			var tag = stream.readUint8();
 			var constant = {
 				tag: tag,
 				implemented: false
@@ -29,34 +29,34 @@ js2me.convertClass = function (stream) {
 			if (tag == TAG_UTF8) {
 				//TODO: only ASCII :/
 				constant.implemented = true;
-				var length = stream.nextWord();
+				var length = stream.readUint16();
 				var value = '';
 				for (var j = 0; j < length; j++) {
-					value += String.fromCharCode(stream.nextByte());
+					value += String.fromCharCode(stream.readUint8());
 				}
 				constant.value = value;
 			}
 			// ClassInfo
 			if (tag == TAG_CLASS_INFO) {
 				constant.implemented = true;
-				constant.nameIndex = stream.nextWord();
+				constant.nameIndex = stream.readUint16();
 			}
 			// String
 			if (tag == TAG_STRING) {
 				constant.implemented = true;
-				constant.stringIndex = stream.nextWord();
+				constant.stringIndex = stream.readUint16();
 			}
 			// Fieldref || Methodref || Interfaceref
 			if (tag == TAG_FIELDREF || tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 				constant.implemented = true;
-				constant.classIndex = stream.nextWord();
-				constant.nameAndTypeIndex = stream.nextWord();
+				constant.classIndex = stream.readUint16();
+				constant.nameAndTypeIndex = stream.readUint16();
 			}
 			// NameAndType
 			if (tag == TAG_NAME_AND_TYPE) {
 				constant.implemented = true;
-				constant.nameIndex = stream.nextWord();
-				constant.descriptorIndex = stream.nextWord();
+				constant.nameIndex = stream.readUint16();
+				constant.descriptorIndex = stream.readUint16();
 			}
 			if (!constant.implemented) {
 				throw new Error('Unimplemented tag ' + tag + ' at position ' + i);
@@ -65,6 +65,7 @@ js2me.convertClass = function (stream) {
 		}
 	}
 	function escapeName(name) {
+		name = '$' + name;
 		if (name == '$<init>') {
 			name = '_init';
 		}
@@ -107,7 +108,7 @@ js2me.convertClass = function (stream) {
 				};
 			}
 			if (tag == TAG_NAME_AND_TYPE) {
-				var name = '$' + resolveConstant(constant.nameIndex);
+				var name = resolveConstant(constant.nameIndex);
 				name = escapeName(name);
 				var typeName = resolveConstant(constant.descriptorIndex);
 				name += escapeType(typeName);
@@ -152,56 +153,74 @@ js2me.convertClass = function (stream) {
 	}
 	function readAccessFlags() {
 		//TODO
-		stream.nextWord();
+		stream.readUint16();
 	}
 	function readSuperClass() {
-		//TODO
-		stream.nextWord();
+		newClass.prototype.superClass = constantPool[stream.readUint16()];
 	}
 	function readInterfaces() {
-		var count = stream.nextWord();
+		var count = stream.readUint16();
 		for (var i = 0; i < count; i++) {
 			//TODO
-			stream.nextWord();
+			stream.readUint16();
 		}
 	}
 	function readFields() {
 		//TODO
-		var count = stream.nextWord();
+		var count = stream.readUint16();
 		for (var i = 0; i < count; i++) {
-			var accessFlags = stream.nextWord();
-			var nameIndex = stream.nextWord();
-			var descriptorIndex = stream.nextWord();
-			var attributesCount = stream.nextWord();
-			if (attributesCount > 0) {
-				throw new Error('Oh no! There are field attributes :(');
-			}
+			var accessFlags = stream.readUint16();
+			var nameIndex = stream.readUint16();
+			var descriptorIndex = stream.readUint16();
+			readAttributes();
 		}
 	}
 	function readAttributes() {
-		var count = stream.nextWord();
+		var count = stream.readUint16();
 		var attributes = {};
 		for (var i = 0; i < count; i++) {
-			var attributeName = constantPool[stream.nextWord()];
-			var attributeLength = stream.nextInt();
+			var attributeName = constantPool[stream.readUint16()];
+			var attributeLength = stream.readUint32();
 			var value = null;
 			if (attributeName == 'Code') {
-				var maxStack = stream.nextWord();
-				var maxLocals = stream.nextWord();
-				var codeLength = stream.nextInt();
+				var maxStack = stream.readUint16();
+				var maxLocals = stream.readUint16();
+				var codeLength = stream.readUint32();
 				var codeStream = stream.getSubstream(codeLength);
 				stream.skip(codeLength);
 				value = function () {
-					return js2me.execute(codeStream, [this]);
+					var locals = [this];
+					for (var i = 0; i < arguments.length; i++) {
+						locals.push(arguments[i]);
+					}
+					return js2me.execute(codeStream, locals);
 				};
-				var exceptionTableLength = stream.nextWord();
+				var exceptionTableLength = stream.readUint16();
 				if (exceptionTableLength > 0) {
 					throw new Error('Exceptions not supported!');
 				}
-				var attributesCount = stream.nextWord();
-				if (attributesCount > 0) {
-					throw new Error('Code attributes not supported!');
+				readAttributes();
+			}
+			if (attributeName == 'Synthetic') {
+				value = true;
+			}
+			if (attributeName == 'InnerClasses') {
+				var count = stream.readUint16();
+				value = [];
+				for (var j = 0; j < count; j++) {
+					var classInfo = {
+						innerClass: constantPool[stream.readUint16()],
+						outerClass: constantPool[stream.readUint16()],
+						innerName: constantPool[stream.readUint16()],
+						accessFlags: stream.readUint16()
+					};
+					value.push(classInfo);
 				}
+			}
+			if (attributeName == 'StackMap') {
+				//TODO: maybe it's needed by something?
+				stream.skip(attributeLength);
+				value = true;
 			}
 			if (value == null) {
 				throw new Error('Unimplemented attribute ' + attributeName);
@@ -212,11 +231,11 @@ js2me.convertClass = function (stream) {
 	}
 	function readMethods() {
 		//TODO
-		var count = stream.nextWord();
+		var count = stream.readUint16();
 		for (var i = 0; i < count; i++) {
-			var accessFlags = stream.nextWord();
-			var name = constantPool[stream.nextWord()];
-			var type = constantPool[stream.nextWord()];
+			var accessFlags = stream.readUint16();
+			var name = constantPool[stream.readUint16()];
+			var type = constantPool[stream.readUint16()];
 			var attributes = readAttributes();
 			newClass.prototype[escapeName(name) + escapeType(type)] = attributes['Code'];
 		}
@@ -227,12 +246,12 @@ js2me.convertClass = function (stream) {
 	readConstantPool();
 	resolveConstants();
 	readAccessFlags();
-	var thisClass = constantPool[stream.nextWord()];
+	var thisClass = constantPool[stream.readUint16()];
 	readSuperClass();
 	readInterfaces();
 	readFields();
 	readMethods();
-	// TODO: class attributes
+	readAttributes();
 	var package = js2me.findPackage(thisClass.className.substr(0, thisClass.className.lastIndexOf('.')));
 	package[thisClass.className.substr(thisClass.className.lastIndexOf('.') + 1)] = newClass;
 }
