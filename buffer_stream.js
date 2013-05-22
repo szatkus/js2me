@@ -14,5 +14,14 @@ js2me.BufferStream.prototype = {
 	},
 	nextInt: function () {
 		return this.nextWord() * 256 * 256 + this.nextWord();
+	},
+	getSubstream: function (length) {
+		return new js2me.BufferStream(this.array.subarray(this.index, this.index + length));
+	},
+	skip: function (length) {
+		this.index += length;
+	},
+	isEnd: function () {
+		return this.index < this.array.length;
 	}
 };

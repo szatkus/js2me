@@ -186,7 +186,22 @@ js2me.convertClass = function (stream) {
 			var attributeLength = stream.nextInt();
 			var value = null;
 			if (attributeName == 'Code') {
-				value = js2me.compileBytecode(stream, constantPool, attributeLength);
+				var maxStack = stream.nextWord();
+				var maxLocals = stream.nextWord();
+				var codeLength = stream.nextInt();
+				var codeStream = stream.getSubstream(codeLength);
+				stream.skip(codeLength);
+				value = function () {
+					return js2me.execute(codeStream, [this]);
+				};
+				var exceptionTableLength = stream.nextWord();
+				if (exceptionTableLength > 0) {
+					throw new Error('Exceptions not supported!');
+				}
+				var attributesCount = stream.nextWord();
+				if (attributesCount > 0) {
+					throw new Error('Code attributes not supported!');
+				}
 			}
 			if (value == null) {
 				throw new Error('Unimplemented attribute ' + attributeName);
@@ -218,10 +233,10 @@ js2me.convertClass = function (stream) {
 	readFields();
 	readMethods();
 	// TODO: class attributes
-	var package = js2me.touchPackage(thisClass.className.substr(0, thisClass.className.lastIndexOf('.')));
+	var package = js2me.findPackage(thisClass.className.substr(0, thisClass.className.lastIndexOf('.')));
 	package[thisClass.className.substr(thisClass.className.lastIndexOf('.') + 1)] = newClass;
 }
-js2me.touchPackage = function (path, current) {
+js2me.findPackage = function (path, current) {
 	if (!current) {
 		current = window;
 	}
@@ -233,8 +248,12 @@ js2me.touchPackage = function (path, current) {
 		current[name] = {};
 	}
 	if (path.indexOf('.') > 0) {
-		return js2me.touchPackage(path.substr(path.indexOf('.') + 1), current[name]);
+		return js2me.findPackage(path.substr(path.indexOf('.') + 1), current[name]);
 	} else {
 		return current[name];
 	}
+}
+js2me.findClass = function (path) {
+	var package = this.findPackage(path.substr(0, path.lastIndexOf('.')));
+	return package[path.substr(path.lastIndexOf('.') + 1)];
 }

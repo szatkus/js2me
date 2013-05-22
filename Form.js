@@ -16,5 +16,5 @@
 			this.element.appendChild(node);
 		}
 	};
-	js2me.touchPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Form'] = Form;
+	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Form'] = Form;
 })();

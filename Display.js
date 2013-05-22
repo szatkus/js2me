@@ -15,5 +15,5 @@
 			this.element.appendChild(displayable.element);
 		}
 	};
-	js2me.touchPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Display'] = Display;
+	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Display'] = Display;
 })();

@@ -2,6 +2,6 @@
 	function tmp(text) {
 		this.text = text
 	}
-	js2me.touchPackage(js2me.JAVA_ROOT + '.$java.$lang')['$String'] = tmp;
+	js2me.findPackage(js2me.JAVA_ROOT + '.$java.$lang')['$String'] = tmp;
 })();
 
