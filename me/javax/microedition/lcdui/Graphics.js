@@ -2,7 +2,8 @@
 	function Graphics(canvas) {
 		this.element = canvas;
 		this.context = canvas.getContext('2d');
-		this.color = '#000';
+		this.context.textBaseline = 'top';
+		this.$setColor_III_V(0, 0, 0);
 	}
 	Graphics.prototype = {
 		$setColor_III_V: function (r, g, b) {
@@ -12,6 +13,9 @@
 		},
 		$fillRect_IIII_V: function (x, y, width, height) {
 			this.context.fillRect(x, y, width, height);
+		},
+		$drawRect_IIII_V: function (x, y, width, height) {
+			this.context.strokeRect(x, y, width, height);
 		},
 		$drawLine_IIII_V: function (x1, y1, x2, y2) {
 			this.context.beginPath();
@@ -25,7 +29,11 @@
 		},
 		$drawString_Ljava_lang_String_III_V: function (str, x, y, anchor) {
 			//TODO: anchor
-			this.context.fillText(str, x, y);
+			this.context.fillText(str.text, x, y);
+		},
+		$drawImage_Ljavax_microedition_lcdui_Image_III_V: function (img, x, y, anchor) {
+			//TODO: anchor
+			this.context.drawImage(img.element, x, y);
 		}
 			
 	};

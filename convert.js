@@ -1,5 +1,10 @@
 js2me.convertClass = function (stream) {
-	var newClass = function () {};
+	var newClass = function () {
+		if (this.superClass) {
+			var superClass = js2me.findClass(this.superClass.className);
+			this.__proto__.__proto__ = new superClass();
+		}
+	};
 	var constantPool = [];
 	newClass.prototype.pool = constantPool;
 	function checkHeader() {

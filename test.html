@@ -9,6 +9,7 @@
 		
 		zip.createReader(reader, function(zipReader) {
 			reader.size = 3321;
+			//reader.size = 980;
 			zipReader.getEntries(function (entries) {
 				js2me.loadEntries(entries, function () {
 					var mainMidlet = js2me.manifest['midlet-1'];
@@ -18,19 +19,98 @@
 				});
 			});
 		}); 
-			
+		//document.getElementById('keypad').style.width = js2me.width + 'px';
+		document.getElementById('screen').style.width = js2me.width + 'px';
+		document.getElementById('screen').style.height = js2me.height + 'px';
 			
 		
 	};
 	var js2me = {
-		JAVA_ROOT: 'javaRoot'
+		JAVA_ROOT: 'javaRoot',
+		width: 240,
+		height: 266
 	};
 </script>
+
+<style>
+	#title {
+		border: 1px solid black;
+		text-align: center;
+		height: 14px;
+	}
+	#keypad {
+		text-align: center;
+	}
+	.key, .softkey {
+		display: inline-block;
+		border: 1px solid black;
+	}
+	.key:hover, .softkey:hover {
+		background: #aaf
+	}
+	#up.key, #down.key {
+		width: 80px;
+		height: 13px;
+		
+	}
+	#left.key, #right.key, #ok.key {
+		width: 38px;
+		height: 13px;
+		
+	}
+	#choice.softkey, #back.softkey {
+		width: 48px;
+		height: 13px;
+	}
+	.num {
+		width: 38px;
+		height: 13px;
+	}
+	#frame {
+		display: inline-block;
+		border: 1px solid black;
+		overflow: hidden;
+		width: 320px;
+		height: 480px;
+		text-align: center;
+	}
+	#screen {
+		border: 1px solid black;
+		display: inline-block;
+	}
+</style>
+<div id="frame">
+	<div id="title"></div>
+	<div id="screen"></div>
+	<div id="keypad">
+		<a id="up" class="key"></a><br>
+		<a id="choice" class="softkey"></a>
+		<a id="left" class="key"></a>
+		<a id="ok" class="key"></a>
+		<a id="right" class="key"></a>
+		<a id="back" class="softkey"></a><br>
+		<a id="down" class="key"></a><br>
+		<a id="num1" class="key num"></a>
+		<a id="num2" class="key num"></a>
+		<a id="num3" class="key num"></a><br>
+		<a id="num4" class="key num"></a>
+		<a id="num5" class="key num"></a>
+		<a id="num6" class="key num"></a><br>
+		<a id="num7" class="key num"></a>
+		<a id="num8" class="key num"></a>
+		<a id="num9" class="key num"></a><br>
+		<a id="star" class="key num"></a>
+		<a id="num0" class="key num"></a>
+		<a id="pound" class="key num"></a><br>
+	</div>
+</div>
+
 <script type="text/javascript" src="buffer_stream.js"></script>
 <script type="text/javascript" src="convert.js"></script>
 <script type="text/javascript" src="execute.js"></script>
 <script type="text/javascript" src="manifest.js"></script>
 <script type="text/javascript" src="loader.js"></script>
+<script type="text/javascript" src="me/javax/microedition/lcdui/Displayable.js"></script>
 <script type="text/javascript" src="me/javax/microedition/lcdui/Canvas.js"></script>
 <script type="text/javascript" src="me/javax/microedition/lcdui/Command.js"></script>
 <script type="text/javascript" src="me/javax/microedition/lcdui/Display.js"></script>
@@ -39,12 +119,7 @@
 <script type="text/javascript" src="me/javax/microedition/lcdui/Graphics.js"></script>
 <script type="text/javascript" src="me/javax/microedition/lcdui/Image.js"></script>
 <script type="text/javascript" src="me/javax/microedition/lcdui/List.js"></script>
+<script type="text/javascript" src="me/javax/microedition/midlet/MIDlet.js"></script>
 <script type="text/javascript" src="me/java/lang/Integer.js"></script>
 <script type="text/javascript" src="me/java/lang/String.js"></script>
 <script type="text/javascript" src="me/java/util/Random.js"></script>
-<style>
-	.form .title {
-		border: 1px solid black;
-		text-align: center;
-	}
-</style>

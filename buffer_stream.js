@@ -40,5 +40,8 @@ js2me.BufferStream.prototype = {
 			value = value - 256;
 		}
 		return value;
+	},
+	reset: function () {
+		this.index = 0;
 	}
 };

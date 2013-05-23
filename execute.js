@@ -56,7 +56,7 @@ js2me.execute = function (stream, locals) {
 	}
 	// bipush
 	executors[0x10] = function () {
-		var value = stream.readUint8();
+		var value = stream.readInt8();
 		stack.push(value);
 	}
 	// dup
@@ -147,6 +147,24 @@ js2me.execute = function (stream, locals) {
 		var a = stack.pop();
 		stack.push(Math.floor(a / b));
 	};
+	// if_acmpeq
+	executors[0xa5] = function () {
+		var index = stream.readInt16();
+		var b = stack.pop();
+		var a = stack.pop();
+		if (a === b) {
+			stream.skip(index - 3);
+		}
+	};
+	// if_acmpne
+	executors[0xa6] = function () {
+		var index = stream.readInt16();
+		var b = stack.pop();
+		var a = stack.pop();
+		if (a !== b) {
+			stream.skip(index - 3);
+		}
+	};
 	// if_icmpeq
 	executors[0x9f] = function () {
 		var index = stream.readInt16();
@@ -156,6 +174,7 @@ js2me.execute = function (stream, locals) {
 			stream.skip(index - 3);
 		}
 	};
+	
 	// if_icmpne
 	executors[0xa0] = function () {
 		var index = stream.readInt16();
@@ -165,12 +184,63 @@ js2me.execute = function (stream, locals) {
 			stream.skip(index - 3);
 		}
 	};
+	// if_icmplt
+	executors[0xa1] = function () {
+		var index = stream.readInt16();
+		var b = stack.pop();
+		var a = stack.pop();
+		if (a < b) {
+			stream.skip(index - 3);
+		}
+	};
 	// if_icmpge
 	executors[0xa2] = function () {
 		var index = stream.readInt16();
 		var b = stack.pop();
 		var a = stack.pop();
+		if (a >= b) {
+			stream.skip(index - 3);
+		}
+	};
+	// if_icmpgt
+	executors[0xa3] = function () {
+		var index = stream.readInt16();
+		var b = stack.pop();
+		var a = stack.pop();
 		if (a > b) {
+			stream.skip(index - 3);
+		}
+	};
+	// if_icmple
+	executors[0xa4] = function () {
+		var index = stream.readInt16();
+		var b = stack.pop();
+		var a = stack.pop();
+		if (a <= b) {
+			stream.skip(index - 3);
+		}
+	};
+	// ifeq
+	executors[0x99] = function () {
+		var index = stream.readInt16();
+		var value = stack.pop();
+		if (value == 0) {
+			stream.skip(index - 3);
+		}
+	};
+	// ifne
+	executors[0x9a] = function () {
+		var index = stream.readInt16();
+		var value = stack.pop();
+		if (value != 0) {
+			stream.skip(index - 3);
+		}
+	};
+	// iflt
+	executors[0x9b] = function () {
+		var index = stream.readInt16();
+		var value = stack.pop();
+		if (value < 0) {
 			stream.skip(index - 3);
 		}
 	};
@@ -195,6 +265,22 @@ js2me.execute = function (stream, locals) {
 		var index = stream.readInt16();
 		var value = stack.pop();
 		if (value <= 0) {
+			stream.skip(index - 3);
+		}
+	};
+	// ifnonnull
+	executors[0xc7] = function () {
+		var index = stream.readInt16();
+		var value = stack.pop();
+		if (value != null) {
+			stream.skip(index - 3);
+		}
+	};
+	// ifnull
+	executors[0xc6] = function () {
+		var index = stream.readInt16();
+		var value = stack.pop();
+		if (value == null) {
 			stream.skip(index - 3);
 		}
 	};
@@ -243,19 +329,23 @@ js2me.execute = function (stream, locals) {
 	}
 	function invoke(static) {
 		//TODO: I think that there's some differences...
-		var method = constantPool[stream.readUint16()];
-		var count = method.type.argumentsTypes.length;
+		var methodInfo = constantPool[stream.readUint16()];
+		var count = methodInfo.type.argumentsTypes.length;
 		var args = [];
 		for (var i = 0; i < count; i++) {
 			args.push(stack.pop());
 		}
 		args.reverse();
-		var classObj = js2me.findClass(method.className);
+		var classObj = js2me.findClass(methodInfo.className);
 		var obj = static ? classObj : stack.pop();
 		//console.log('START: ' + method.className + '->' + method.name);
-		var result = findMethod(method.className, method.name).apply(obj, args);
+		var method = findMethod(methodInfo.className, methodInfo.name)
+		if (!method) {
+			throw new Error('Not implemented ' + methodInfo.className + '->' + methodInfo.name);
+		}
+		var result = method.apply(obj, args);
 		//console.log('END: ' + method.className + '->' + method.name);
-		if (method.type.returnType != 'V') {
+		if (methodInfo.type.returnType != 'V') {
 			stack.push(result);
 		}
 	}
@@ -381,6 +471,7 @@ js2me.execute = function (stream, locals) {
 		var value = stream.readUint16();
 		stack.push(value);
 	}
+	stream.reset();
 	while (stream.isEnd()) {
 		//console.log(stream.index);
 		var op = stream.readUint8();
