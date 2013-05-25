@@ -13,8 +13,18 @@
 		$setCurrent_Ljavax_microedition_lcdui_Displayable__V: function (displayable) {
 			clearTimeout(this.timeout);
 			var screen = this.element;
+			if (this.current) {
+				this.current.active = false;
+			}
+			this.current = displayable;
 			this.timeout = setTimeout(function () {
+				if (displayable.title) {
+					document.getElementById('title').innerHTML = displayable.title.text;
+				}
+				screen.innerHTML = '';
 				screen.appendChild(displayable.element);
+				displayable.active = true;
+				displayable.refreshCommands();
 			}, 1);
 		}
 	};

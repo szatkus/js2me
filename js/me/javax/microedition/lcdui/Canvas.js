@@ -33,7 +33,7 @@
 			this.element.addEventListener('DOMNodeInserted', function () {
 				canvas.$showNotify__V();
 			});
-			this.element.addEventListener('DOMRemoveInserted', function () {
+			this.element.addEventListener('DOMNodeRemoved', function () {
 				canvas.$showNotify__V();
 			});
 			this.keys = document.getElementsByClassName('key');

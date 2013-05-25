@@ -10,19 +10,18 @@
 			this.commandListener = null;
 			var displayable = this;
 			this.choiceButton.addEventListener('mousedown', function () {
-				if (displayable.choiceCommand) {
+				if (displayable.choiceCommand && displayable.commandListener) {
 					displayable.commandListener.$commandAction_Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable__V(displayable.choiceCommand, displayable);
 				}
 			});
 			this.backButton.addEventListener('mousedown', function () {
-				if (displayable.backCommand) {
+				if (displayable.backCommand && displayable.commandListener) {
 					displayable.commandListener.$commandAction_Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable__V(displayable.backCommand, displayable);
 				}
 			});
 		},
 		$setTitle_Ljava_lang_String__I: function (s) {
 			this.title = s;
-			document.getElementById('title').innerHTML = s.text;
 		},
 		$getWidth__I: function () {
 			return js2me.width;
@@ -41,7 +40,9 @@
 		},
 		refreshCommands: function () {
 			//TODO: no multicommands
-			
+			if (!this.active) {
+				return;
+			}
 			this.choiceCommand = null;
 			this.backCommand = null;
 			this.choiceButton.innerHTML = '';
