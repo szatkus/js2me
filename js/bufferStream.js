@@ -13,7 +13,10 @@ js2me.BufferStream.prototype = {
 		return this.readUint8() * 256 + this.readUint8();
 	},
 	readUint32: function () {
-		return this.readUint16() * 256 * 256 + this.readUint16();
+		return this.readUint16() * 65536 + this.readUint16();
+	},
+	readUint64: function () {
+		return this.readUint32() * 65536 * 65536 + this.readUint32();
 	},
 	getSubstream: function (length) {
 		return new js2me.BufferStream(this.array.subarray(this.index, this.index + length));
@@ -38,6 +41,20 @@ js2me.BufferStream.prototype = {
 		var value = this.readUint8();
 		if (value > 127) {
 			value = value - 256;
+		}
+		return value;
+	},
+	readInt32: function () {
+		var value = this.readUint32();
+		if (value > 2147483647) {
+			value = value - 4294967296;
+		}
+		return value;
+	},
+	readInt64: function () {
+		var value = this.readUint64();
+		if (value > 9223372036854775807) {
+			value = value - 18446744073709551616;
 		}
 		return value;
 	},

@@ -5,18 +5,34 @@
 <script type="text/javascript">
 	window.onload = function () {
 		zip.workerScriptsPath = 'js/zip/';
-		var reader = new zip.HttpReader('jars/picross.jar');
+		//var reader = new zip.HttpReader('../Downloads/rubik39scu_9b9p7i2m.jar');
+		var reader = new zip.HttpReader('jars/test.jar');
+		
+		function initClasses(obj) {
+			if (obj.prototype && obj.prototype._clinit__V) {
+				obj.prototype._clinit__V.apply(obj);
+			}
+			for (var i in obj) {
+				if (i[0] == '$') {
+					initClasses(obj[i]);
+				}
+			}
+		}
+		
+		var start = function () {
+			initClasses(javaRoot);
+			var mainMidlet = js2me.manifest['midlet-1'];
+			var mainClass = js2me.findClass(js2me.JAVA_ROOT + '.$' + mainMidlet.split(',')[2].trim().replace(/\./g, '.$'));
+			var midlet = new mainClass();
+			midlet._init__V();
+			midlet.$startApp__V();
+		}
 		
 		zip.createReader(reader, function(zipReader) {
-			reader.size = 3321;
-			//reader.size = 980;
+			//reader.size = 92065;
+			reader.size = 1360;
 			zipReader.getEntries(function (entries) {
-				js2me.loadEntries(entries, function () {
-					var mainMidlet = js2me.manifest['midlet-1'];
-					var mainClass = js2me.findClass(js2me.JAVA_ROOT + '.$' + mainMidlet.split(',')[2].trim());
-					var midlet = new mainClass();
-					midlet.$startApp__V();
-				});
+				js2me.loadEntries(entries, start);
 			});
 		}); 
 		//document.getElementById('keypad').style.width = js2me.width + 'px';
@@ -105,7 +121,7 @@
 	</div>
 </div>
 
-<script type="text/javascript" src="js/buffer_stream.js"></script>
+<script type="text/javascript" src="js/bufferStream.js"></script>
 <script type="text/javascript" src="js/convert.js"></script>
 <script type="text/javascript" src="js/execute.js"></script>
 <script type="text/javascript" src="js/manifest.js"></script>
@@ -120,6 +136,12 @@
 <script type="text/javascript" src="js/me/javax/microedition/lcdui/Image.js"></script>
 <script type="text/javascript" src="js/me/javax/microedition/lcdui/List.js"></script>
 <script type="text/javascript" src="js/me/javax/microedition/midlet/MIDlet.js"></script>
+<script type="text/javascript" src="js/me/javax/microedition/rms/RecordStore.js"></script>
+<script type="text/javascript" src="js/me/java/io/PrintStream.js"></script>
 <script type="text/javascript" src="js/me/java/lang/Integer.js"></script>
 <script type="text/javascript" src="js/me/java/lang/String.js"></script>
+<script type="text/javascript" src="js/me/java/lang/StringBuffer.js"></script>
+<script type="text/javascript" src="js/me/java/lang/System.js"></script>
+<script type="text/javascript" src="js/me/java/lang/Thread.js"></script>
 <script type="text/javascript" src="js/me/java/util/Random.js"></script>
+

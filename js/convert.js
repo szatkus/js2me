@@ -17,6 +17,10 @@ js2me.convertClass = function (stream) {
 		stream.readUint32();
 	}
 	var TAG_UTF8 = 1;
+	var TAG_INTEGER = 3;
+	var TAG_FLOAT = 4;
+	var TAG_LONG = 5;
+	var TAG_DOUBLE = 6;
 	var TAG_CLASS_INFO = 7;
 	var TAG_STRING = 8;
 	var TAG_FIELDREF = 9;
@@ -41,23 +45,79 @@ js2me.convertClass = function (stream) {
 				}
 				constant.value = value;
 			}
-			// ClassInfo
+			if (tag == TAG_INTEGER) {
+				constant.implemented = true;
+				constant.value = stream.readInt32();
+			}
+			if (tag == TAG_FLOAT) {
+				constant.implemented = true;
+				var value = stream.readUint32();
+				var sign = (value & 0x80000000) != 0;
+				var exponent = ((value & 0x7f800000) >> 23) - 127;
+				var fraction = (value & 0x007fffff);
+				for (var j = 0; j < 23; j++) {
+					fraction /= 2;
+				}
+				fraction += 1;
+				while (exponent != 0) {
+					if (exponent > 0) {
+						fraction *= 2;
+						exponent--;
+					} else {
+						fraction /= 2;
+						exponent++;
+					}
+				}
+				if (sign) {
+					fraction *= -1;
+				}
+				constant.value = fraction;
+			}
+			if (tag == TAG_LONG) {
+				constant.implemented = true;
+				constant.value = new js2me.Long(stream.readUint32(), stream.readUint32());
+			}
+			if (tag == TAG_DOUBLE) {
+				constant.implemented = true;
+				var hiData = stream.readUint32();
+				var loData = stream.readUint32();
+				var sign = (hiData & 0x80000000) != 0;
+				var exponent = ((hiData & 0x7ff00000) >> 20) - 1023;
+				hiData = (hiData & 0x000fffff) * 0x100000000;
+				var fraction = 1;
+				for (var j = 0; j < 52; j++) {
+					hiData /= 2;
+					loData /= 2;
+				}
+				fraction += hiData;
+				fraction += loData;
+				while (exponent != 0) {
+					if (exponent > 0) {
+						fraction *= 2;
+						exponent--;
+					} else {
+						fraction /= 2;
+						exponent++;
+					}
+				}
+				if (sign) {
+					fraction *= -1;
+				}
+				constant.value = new js2me.Double(fraction);
+			}
 			if (tag == TAG_CLASS_INFO) {
 				constant.implemented = true;
 				constant.nameIndex = stream.readUint16();
 			}
-			// String
 			if (tag == TAG_STRING) {
 				constant.implemented = true;
 				constant.stringIndex = stream.readUint16();
 			}
-			// Fieldref || Methodref || Interfaceref
 			if (tag == TAG_FIELDREF || tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 				constant.implemented = true;
 				constant.classIndex = stream.readUint16();
 				constant.nameAndTypeIndex = stream.readUint16();
 			}
-			// NameAndType
 			if (tag == TAG_NAME_AND_TYPE) {
 				constant.implemented = true;
 				constant.nameIndex = stream.readUint16();
@@ -67,6 +127,9 @@ js2me.convertClass = function (stream) {
 				throw new Error('Unimplemented tag ' + tag + ' at position ' + i);
 			}
 			constantPool[i] = constant;
+			if (tag == TAG_LONG || tag == TAG_DOUBLE) {
+				i++;
+			}
 		}
 	}
 	function escapeName(name) {
@@ -74,17 +137,20 @@ js2me.convertClass = function (stream) {
 		if (name == '$<init>') {
 			name = '_init';
 		}
+		if (name == '$<clinit>') {
+			name = '_clinit';
+		}
 		return name;
 	}
 	function escapeType(typeName) {
-		typeName = typeName.replace(new RegExp('[\\(\\);/]', 'g'), '_');
+		typeName = typeName.replace(new RegExp('[\\[\\(\\);/]', 'g'), '_');
 		return typeName;
 	}
 	function resolveConstants() {
 		function resolveConstant(index) {
 			var constant = constantPool[index];
 			var tag = constant.tag;
-			if (tag == TAG_UTF8) {
+			if (tag == TAG_UTF8 || tag == TAG_INTEGER || tag == TAG_LONG || tag == TAG_FLOAT || tag == TAG_DOUBLE) {
 				constantPool[index] = constant.value;
 			}
 			if (tag == TAG_CLASS_INFO) {
@@ -123,22 +189,24 @@ js2me.convertClass = function (stream) {
 				var ARRAY_TYPE = 2;
 				var state = FIELD_TYPE;
 				var argumentsTypes = [];
+				var part = '';
 				for (var i = 0; i < args.length; i++) {
-					if (state == FIELD_TYPE) {
+					part += args[i];
+					if (state == FIELD_TYPE || state == ARRAY_TYPE) {
 						if (args[i] == 'L') {
 							state = OBJECT_TYPE;
 						} else if (args[i] == '[') {
 							state = ARRAY_TYPE;
 						} else {
-							argumentsTypes.push(args[i]);
+							argumentsTypes.push(part);
+							part = '';
 						}
 					} else if (state == OBJECT_TYPE) {
 						if (args[i] == ';') {
 							state = FIELD_TYPE;
-							argumentsTypes.push('L');
+							argumentsTypes.push(part);
+							part = '';
 						}
-					} else if (state == ARRAY_TYPE) {
-						throw new Error('Arrays are not supported');
 					}
 					
 				}
@@ -175,9 +243,10 @@ js2me.convertClass = function (stream) {
 		var count = stream.readUint16();
 		for (var i = 0; i < count; i++) {
 			var accessFlags = stream.readUint16();
-			var nameIndex = stream.readUint16();
-			var descriptorIndex = stream.readUint16();
-			readAttributes();
+			var name = constantPool[stream.readUint16()];
+			var type = constantPool[stream.readUint16()];
+			var attributes = readAttributes();
+			newClass.prototype[escapeName(name) + escapeType(type)] = attributes['ConstantValue'];
 		}
 	}
 	function readAttributes() {
@@ -193,6 +262,17 @@ js2me.convertClass = function (stream) {
 				var codeLength = stream.readUint32();
 				var codeStream = stream.getSubstream(codeLength);
 				stream.skip(codeLength);
+				var exceptions = [];
+				var exceptionTableLength = stream.readUint16();
+				for (var j = 0; j < exceptionTableLength; j++) {
+					exceptions[j] = {
+						startPc: stream.readUint16(),
+						endPc: stream.readUint16(),
+						handler: stream.readUint16(),
+						catchType: stream.readUint16()
+					};
+				}
+				readAttributes();
 				value = function () {
 					var locals = [this];
 					for (var i = 0; i < arguments.length; i++) {
@@ -200,14 +280,12 @@ js2me.convertClass = function (stream) {
 					}
 					return js2me.execute(codeStream, locals);
 				};
-				var exceptionTableLength = stream.readUint16();
-				if (exceptionTableLength > 0) {
-					throw new Error('Exceptions not supported!');
-				}
-				readAttributes();
 			}
 			if (attributeName == 'Synthetic') {
 				value = true;
+			}
+			if (attributeName == 'ConstantValue') {
+				value = constantPool[stream.readUint16()];
 			}
 			if (attributeName == 'InnerClasses') {
 				var count = stream.readUint16();
@@ -222,7 +300,17 @@ js2me.convertClass = function (stream) {
 					value.push(classInfo);
 				}
 			}
-			if (attributeName == 'StackMap') {
+			if (attributeName == 'Exceptions') {
+				var count = stream.readUint16();
+				value = [];
+				for (var j = 0; j < count; j++) {
+					
+					
+					value.push(constantPool[stream.readUint16()]);
+				}
+			}
+			if (attributeName == 'StackMap' || attributeName == 'LineNumberTable' || attributeName == 'SourceFile' ||
+				attributeName == 'LocalVariableTable') {
 				//TODO: maybe it's needed by something?
 				stream.skip(attributeLength);
 				value = true;
@@ -279,5 +367,38 @@ js2me.findPackage = function (path, current) {
 }
 js2me.findClass = function (path) {
 	var package = this.findPackage(path.substr(0, path.lastIndexOf('.')));
-	return package[path.substr(path.lastIndexOf('.') + 1)];
-}
+	var classObj = package[path.substr(path.lastIndexOf('.') + 1)];
+	if (!classObj) {
+		throw new Error('Uninmplemented class ' + path);
+	}
+	return classObj;
+};
+js2me.Long = function (hi, lo) {
+	this.hi = hi;
+	if (lo < 0) {
+		lo += 4294967296;
+	}
+	this.lo = lo;
+	this.shl = function (shift) {
+		var lo = this.lo << shift;
+		var rest = Math.floor(lo / 0xffffffff);
+		lo = lo % 0xffffffff;
+		var hi = this.hi << shift;
+		hi = hi % 0xffffffff + rest;
+		return new js2me.Long(hi, lo);
+	};
+	this.shr = function (shift) {
+		var lo = this.lo >> shift;
+		lo += (this.hi % (0xffffffff >> (32 - shift))) << (32 - shift);
+		var hi = this.hi >> shift;
+		return new js2me.Long(hi, lo);
+	};
+	this.div = function (b) {
+		throw new Error('ldviv sucks');
+		var v = (this.hi * 0xffffffff + this.lo) / (b.hi * 0xffffffff + b.lo);
+		return new js2me.Long(Math.floor(v / 0xffffffff), v % 0xffffffff);
+	};
+};
+js2me.Double = function (double) {
+	this.double = double;
+};

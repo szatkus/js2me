@@ -3,8 +3,21 @@ js2me.execute = function (stream, locals) {
 	var stack = [];
 	var result = null;
 	var self = locals[0];
-	var constantPool = self.pool;
+	var constantPool = self.pool || self.prototype.pool;
 	
+	// aaload
+	executors[0x32] = function () {
+		var index = stack.pop();
+		var array = stack.pop();
+		stack.push(array[index]);
+	}
+	// aastore
+	executors[0x53] = function () {
+		var value = stack.pop();
+		var index = stack.pop();
+		var array = stack.pop();
+		array[index] = value;
+	}
 	// aconst_null
 	executors[0x01] = function () {
 		stack.push(null);
@@ -29,16 +42,27 @@ js2me.execute = function (stream, locals) {
 	// aload_3
 	executors[0x2d] = function () {
 		stack.push(locals[3]);
-	}
+	};
+	// anewarray
+	executors[0xbd] = function () {
+		stream.readUint16();
+		var length = stack.pop();
+		stack.push(new Array(length));
+	};
 	// areturn
 	executors[0xb0] = function () {
 		result = stack.pop();
-	}
+	};
+	// arraylength
+	executors[0xbe] = function () {
+		var array = stack.pop();
+		stack.push(array.length);
+	};
 	// astore
 	executors[0x3a] = function () {
 		var index = stream.readUint8();
 		locals[index] = stack.pop();
-	}
+	};
 	// astore_0
 	executors[0x4b] = function () {
 		locals[0] = stack.pop();
@@ -54,17 +78,30 @@ js2me.execute = function (stream, locals) {
 	executors[0x4e] = function () {
 		locals[3] = stack.pop();
 	}
+	// baload
+	executors[0x33] = function () {
+		var index = stack.pop();
+		var array = stack.pop();
+		stack.push(array[index]);
+	};
+	// bastore
+	executors[0x54] = function () {
+		var value = stack.pop();
+		var index = stack.pop();
+		var array = stack.pop();
+		array[index] = value;
+	};
 	// bipush
 	executors[0x10] = function () {
 		var value = stream.readInt8();
 		stack.push(value);
-	}
+	};
 	// dup
 	executors[0x59] = function () {
 		var tmp = stack.pop();
 		stack.push(tmp);
 		stack.push(tmp);
-	}
+	};
 	// dup_x1
 	executors[0x5a] = function () {
 		var a = stack.pop();
@@ -72,9 +109,9 @@ js2me.execute = function (stream, locals) {
 		stack.push(a);
 		stack.push(b);
 		stack.push(a);
-	}
+	};
 	// dup_x2
-	executors[0x5b] = function () {
+	/*executors[0x5b] = function () {
 		var a = stack.pop();
 		var b = stack.pop();
 		var c = stack.pop();
@@ -82,11 +119,27 @@ js2me.execute = function (stream, locals) {
 		stack.push(c);
 		stack.push(b);
 		stack.push(a);
-	}
+	};
+	// dup2
+	executors[0x5c] = function () {
+		var a = stack.pop();
+		var b = stack.pop();
+		stack.push(b);
+		stack.push(a);
+		stack.push(b);
+		stack.push(a);
+		
+	};*/
 	// getfield
 	executors[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
 		var obj = stack.pop();
+		stack.push(obj[field.name]);
+	};
+	// getstatic
+	executors[0xb2] = function () {
+		var field = constantPool[stream.readUint16()];
+		var obj = js2me.findClass(field.className).prototype;
 		stack.push(obj[field.name]);
 	};
 	// goto
@@ -94,11 +147,51 @@ js2me.execute = function (stream, locals) {
 		var index = stream.readInt16();
 		stream.skip(index - 3);
 	};
+	// i2l
+	executors[0x85] = function () {
+		var value = stack.pop();
+		if (value >= 0) {
+			stack.push(new js2me.Long(0, value));
+		} else {
+			stack.push(new js2me.Long(0xffffffff, value + 4294967296));
+		}
+	};
+	// i2b
+	executors[0x91] = function () {
+		var value = stack.pop();
+		value = (value + 2147483648) % 256;
+		if (value > 127) {
+			stack.push(value - 256);
+		} else {
+			stack.push(value);
+		}
+	};
+	// i2c
+	executors[0x92] = function () {
+		var value = stack.pop();
+		stack.push(String.fromCharCode(value));
+	};
+	// i2s
+	executors[0x93] = function () {
+		var value = stack.pop();
+		value = (value + 2147483648) % 65536;
+		if (value > 32767) {
+			stack.push(value - 65536);
+		} else {
+			stack.push(value);
+		}
+	};
 	// iadd
 	executors[0x60] = function () {
 		var b = stack.pop();
 		var a = stack.pop();
 		stack.push(a + b);
+	};
+	// iand
+	executors[0x7e] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a & b);
 	};
 	// iaload
 	executors[0x2e] = function () {
@@ -361,6 +454,18 @@ js2me.execute = function (stream, locals) {
 	executors[0xb6] = function () {
 		invoke(false);
 	}
+	// ishl
+	executors[0x78] = function () {
+		var shift = stack.pop() % 32;
+		var value = stack.pop();
+		stack.push(value << shift);
+	}
+	// ishr
+	executors[0x7a] = function () {
+		var shift = stack.pop() % 32;
+		var value = stack.pop();
+		stack.push(value >> shift);
+	}
 	// istore
 	executors[0x36] = function () {
 		var index = stream.readUint8();
@@ -388,24 +493,60 @@ js2me.execute = function (stream, locals) {
 		var a = stack.pop();
 		stack.push(a - b);
 	};
+	// laload
+	executors[0x2f] = function () {
+		var index = stack.pop();
+		var array = stack.pop();
+		stack.push(array[index]);
+	};
 	// land
 	executors[0x7f] = function () {
 		var b = stack.pop();
 		var a = stack.pop();
-		stack.push(a & b);
+		stack.push(new js2me.Long(a.hi & b.hi, a.lo & b.lo));
+	};
+	// lastore
+	executors[0x50] = function () {
+		var value = stack.pop();
+		var index = stack.pop();
+		var array = stack.pop();
+		array[index] = value;
 	};
 	// lconst_0
 	executors[0x09] = function () {
-		stack.push(0);
+		stack.push({
+			hi: 0,
+			lo: 0
+		});
 	};
 	// lconst_1
 	executors[0x0a] = function () {
-		stack.push(1);
+		stack.push({
+			hi: 0,
+			lo: 1
+		});
 	};
 	// ldc
 	executors[0x12] = function () {
 		var value = constantPool[stream.readUint8()];
 		stack.push(value);
+	};
+	// ldc_w
+	executors[0x13] = function () {
+		var value = constantPool[stream.readUint16()];
+		stack.push(value);
+	};
+	// ldc2_w
+	executors[0x14] = function () {
+		var index = stream.readUint16();
+		var value = constantPool[index];
+		stack.push(value);
+	};
+	// ldiv
+	executors[0x6d] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a.div(b));
 	};
 	// lload
 	executors[0x16] = function () {
@@ -428,6 +569,18 @@ js2me.execute = function (stream, locals) {
 	executors[0x21] = function () {
 		stack.push(locals[3]);
 	};
+	// lshl
+	executors[0x79] = function () {
+		var shift = stack.pop() % 64;
+		var value = stack.pop();
+		stack.push(value.shl(shift));
+	}
+	// lshr
+	executors[0x7b] = function () {
+		var shift = stack.pop() % 64;
+		var value = stack.pop();
+		stack.push(value.shr(shift));
+	}
 	// new
 	executors[0xbb] = function () {
 		var classInfo = constantPool[stream.readUint16()];
@@ -464,8 +617,28 @@ js2me.execute = function (stream, locals) {
 		var obj = stack.pop();
 		obj[field.name] = value;
 	}
+	// putstatic
+	executors[0xb3] = function () {
+		var field = constantPool[stream.readUint16()];
+		var value = stack.pop();
+		var obj = js2me.findClass(field.className).prototype;
+		obj[field.name] = value;
+	}
 	// return
 	executors[0xb1] = function () {};
+	// saload
+	executors[0x35] = function () {
+		var index = stack.pop();
+		var array = stack.pop();
+		stack.push(array[index]);
+	}
+	// sastore
+	executors[0x56] = function () {
+		var value = stack.pop();
+		var index = stack.pop();
+		var array = stack.pop();
+		array[index] = value;
+	}
 	// sipush
 	executors[0x11] = function () {
 		var value = stream.readUint16();
