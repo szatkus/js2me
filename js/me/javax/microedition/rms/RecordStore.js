@@ -14,7 +14,7 @@
 					localStorage.setItem(storageName, 0)
 					return new RecordStore(storageName);
 				} else {
-					throw new Error('TODO... RecordStore');
+					throw new javaRoot.$javax.$microedition.$rms.$RecordStoreNotFoundException();
 				}
 			}
 			

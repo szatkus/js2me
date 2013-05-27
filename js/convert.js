@@ -1,5 +1,6 @@
 js2me.convertClass = function (stream) {
 	var newClass = function () {
+		//TODO: not good...
 		if (this.superClass) {
 			var superClass = js2me.findClass(this.superClass.className);
 			this.__proto__.__proto__ = new superClass();
@@ -269,7 +270,7 @@ js2me.convertClass = function (stream) {
 						startPc: stream.readUint16(),
 						endPc: stream.readUint16(),
 						handler: stream.readUint16(),
-						catchType: stream.readUint16()
+						catchType: constantPool[stream.readUint16()]
 					};
 				}
 				readAttributes();
@@ -278,7 +279,7 @@ js2me.convertClass = function (stream) {
 					for (var i = 0; i < arguments.length; i++) {
 						locals.push(arguments[i]);
 					}
-					return js2me.execute(codeStream, locals);
+					return js2me.execute(new js2me.BufferStream(codeStream), locals, constantPool, exceptions);
 				};
 			}
 			if (attributeName == 'Synthetic') {
@@ -366,7 +367,11 @@ js2me.findPackage = function (path, current) {
 	}
 }
 js2me.findClass = function (path) {
+	try {
 	var package = this.findPackage(path.substr(0, path.lastIndexOf('.')));
+} catch (e) {
+	a = 0;
+}
 	var classObj = package[path.substr(path.lastIndexOf('.') + 1)];
 	if (!classObj) {
 		throw new Error('Uninmplemented class ' + path);
@@ -397,6 +402,76 @@ js2me.Long = function (hi, lo) {
 		throw new Error('ldviv sucks');
 		var v = (this.hi * 0xffffffff + this.lo) / (b.hi * 0xffffffff + b.lo);
 		return new js2me.Long(Math.floor(v / 0xffffffff), v % 0xffffffff);
+	};
+	this.toString = function () {
+		var digits = [];
+		for (var i = 0; i < 22; i++) {
+			digits[i] = 0;
+		}
+		if (this.hi < 2147483648) {
+
+			var hi = this.hi;
+			var i = 0;
+			while (hi > 0) {
+				digits[i] = hi % 10;
+				hi = Math.floor(hi / 10);
+				i++;
+			}
+			for (var i = 0; i < 32; i++) {
+				var rest = 0;
+				for (var j = 0; j < digits.length; j++) {
+					digits[j] *= 2;
+					digits[j] += rest;
+					rest = Math.floor(digits[j] / 10);
+					digits[j] = digits[j] % 10;
+				}
+			}
+			var lo = this.lo;
+			var rest = 0;
+			for (var i = 0; i < digits.length; i++) {
+				digits[i] += lo % 10 + rest;
+				rest = Math.floor(digits[i] / 10);
+				digits[i] = digits[i] % 10;
+				lo = Math.floor(lo / 10);
+			}
+		} else {
+			this.output.$write_B_V('-');
+			var hi = -(this.hi - 4294967296);
+			var i = 0;
+			while (hi > 0) {
+				digits[i] = hi % 10;
+				hi = Math.floor(hi / 10);
+				i++;
+			}
+			for (var i = 0; i < 32; i++) {
+				var rest = 0;
+				for (var j = 0; j < digits.length; j++) {
+					digits[j] *= 2;
+					digits[j] += rest;
+					rest = Math.floor(digits[j] / 10);
+					digits[j] = digits[j] % 10;
+				}
+			}
+			var lo = this.lo;
+			var rest = 0;
+			for (var i = 0; i < digits.length; i++) {
+				digits[i] -= lo % 10 + rest;
+				rest = 0
+				while (digits[i] < 0) {
+					digits[i] += 10;
+					rest++;
+				}
+				lo = Math.floor(lo / 10);
+			}
+		}
+		var last = 0;
+		for (var i = 0; i < digits.length; i++) {
+			if (digits[i] > 0) {
+				last = i;
+			}
+			digits[i] += 48;
+		}
+		return digits.slice(0, last + 1).reverse()
 	};
 };
 js2me.Double = function (double) {

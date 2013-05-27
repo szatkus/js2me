@@ -1,9 +1,9 @@
-js2me.execute = function (stream, locals) {
+js2me.execute = function (stream, locals, constantPool, exceptions) {
 	var executors = [];
 	var stack = [];
 	var result = null;
 	var self = locals[0];
-	var constantPool = self.pool || self.prototype.pool;
+	var position = stream.index;
 	
 	// aaload
 	executors[0x32] = function () {
@@ -436,7 +436,27 @@ js2me.execute = function (stream, locals) {
 		if (!method) {
 			throw new Error('Not implemented ' + methodInfo.className + '->' + methodInfo.name);
 		}
-		var result = method.apply(obj, args);
+		try {
+			var result = method.apply(obj, args);
+		} catch (exception) {
+			var handler = -1;
+			for (var i = 0; i < exceptions.length && handler == -1; i++) {
+				if (exceptions[i].startPc <= position && exceptions[i].endPc >= position) {
+					var obj = {__proto__: exception};
+					while (obj.__proto__.className) {
+						obj = obj.__proto__;
+						if (exceptions[i].catchType.className == obj.className) {
+							handler = exceptions[i].handler;
+						}
+					}
+				}
+			}
+			if (handler >= 0) {
+				stream.index = handler;
+			} else {
+				throw exception;
+			}
+		}
 		//console.log('END: ' + method.className + '->' + method.name);
 		if (methodInfo.type.returnType != 'V') {
 			stack.push(result);
@@ -445,27 +465,44 @@ js2me.execute = function (stream, locals) {
 	// invokespecial
 	executors[0xb7] = function () {
 		invoke(false);
-	}
+	};
 	// invokestatic
 	executors[0xb8] = function () {
 		invoke(true);
-	}
+	};
 	// invokevirtual
 	executors[0xb6] = function () {
 		invoke(false);
-	}
+	};
+	// ior
+	executors[0x80] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a & b);
+	};
+	// irem
+	executors[0x70] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a % b);
+	};
+	// ireturn
+	executors[0xac] = function () {
+		var value = stack.pop();
+		result = value;
+	};
 	// ishl
 	executors[0x78] = function () {
 		var shift = stack.pop() % 32;
 		var value = stack.pop();
 		stack.push(value << shift);
-	}
+	};
 	// ishr
 	executors[0x7a] = function () {
 		var shift = stack.pop() % 32;
 		var value = stack.pop();
 		stack.push(value >> shift);
-	}
+	};
 	// istore
 	executors[0x36] = function () {
 		var index = stream.readUint8();
@@ -647,6 +684,7 @@ js2me.execute = function (stream, locals) {
 	stream.reset();
 	while (stream.isEnd()) {
 		//console.log(stream.index);
+		position = stream.index;
 		var op = stream.readUint8();
 		if (executors[op]) {
 			executors[op]();

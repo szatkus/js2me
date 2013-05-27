@@ -1,5 +1,9 @@
 js2me.BufferStream = function (buffer) {
-	this.array = new Uint8Array(buffer);
+	if (buffer.array) {
+		this.array = buffer.array;
+	} else {
+		this.array = new Uint8Array(buffer);
+	}
 	this.index = 0;
 };
 

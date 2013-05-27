@@ -7,7 +7,8 @@ js2me.loadEntries = function (entries, callback) {
 		}
 	}
 	for (var i in entries) {
-		if (entries[i].filename.lastIndexOf('class') == entries[i].filename.length - 5) {
+		if (entries[i].filename.lastIndexOf('class') >= 0 &&
+			entries[i].filename.lastIndexOf('class') == entries[i].filename.length - 5) {
 			console.log(entries[i].filename);
 			entries[i].getData(new zip.ArrayBufferWriter(), function (b) {
 				js2me.convertClass(new js2me.BufferStream(b));

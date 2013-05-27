@@ -21,7 +21,11 @@
 					}
 				}
 			}
-		})
+			
+		}),
+		$currentTimeMillis__J: function () {
+			return new js2me.Long(0, (new Date()).getTime());
+		}
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$java.$lang')['$System'] = System;
 })();
