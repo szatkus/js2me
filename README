@@ -1,7 +1,7 @@
 JS2ME
 =============
 
-It's implementation of Java ME in JavaScript. I'm planning to use this as a part of J2ME for Firefox OS. Currently it only works under Chrome (it's easier to debug). Just launch Chrome with --allow-file-access-from-files option and open test.html.
+It's implementation of Java ME in JavaScript. I'm planning to use this as a part of J2ME for Firefox OS. To use it in browser you must host it on some HTTP server and open test.html
 
 Milestone 1 - Hello world (test.jar) works (done)
 Milestone 2 - Picross (picross.jar) works (done)

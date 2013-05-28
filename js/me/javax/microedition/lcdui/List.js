@@ -35,7 +35,7 @@
 		$getSelectedIndex__I : function () {
 			return this.selectedItem;
 		},
-		__proto__: new javaRoot.$javax.$microedition.$lcdui.$Displayable()
+		superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$List'] = List;
 })();

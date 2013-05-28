@@ -5,8 +5,7 @@
 		_init__V: function () {
 			
 		},
-		superClass: javaRoot.$java.$lang.$Throwable,
-		__proto__: javaRoot.$java.$lang.$Throwable.prototype
+		superClass: 'javaRoot.$java.$lang.$Throwable'
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$java.$lang')['$Exception'] = Exception ;
 })();

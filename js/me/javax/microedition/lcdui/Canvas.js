@@ -85,7 +85,7 @@
 		$setFullScreenMode_Z_V: function () {
 			//TODO
 		},
-		__proto__: new javaRoot.$javax.$microedition.$lcdui.$Displayable()
+		superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Canvas'] = Canvas;
 })();

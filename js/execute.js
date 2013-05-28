@@ -420,7 +420,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		}
 		return method
 	}
-	function invoke(static) {
+	function invoke(static, virtual) {
 		//TODO: I think that there's some differences...
 		var methodInfo = constantPool[stream.readUint16()];
 		var count = methodInfo.type.argumentsTypes.length;
@@ -429,10 +429,9 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 			args.push(stack.pop());
 		}
 		args.reverse();
-		var classObj = js2me.findClass(methodInfo.className);
-		var obj = static ? classObj : stack.pop();
-		//console.log('START: ' + method.className + '->' + method.name);
-		var method = findMethod(methodInfo.className, methodInfo.name)
+		var obj = static ? window : stack.pop();
+		//console.log('START: ' + methodInfo.className + '->' + methodInfo.name);
+		var method = findMethod(virtual ? obj.className : methodInfo.className, methodInfo.name)
 		if (!method) {
 			throw new Error('Not implemented ' + methodInfo.className + '->' + methodInfo.name);
 		}
@@ -464,15 +463,15 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	}
 	// invokespecial
 	executors[0xb7] = function () {
-		invoke(false);
+		invoke(false, false);
 	};
 	// invokestatic
 	executors[0xb8] = function () {
-		invoke(true);
+		invoke(true, false);
 	};
 	// invokevirtual
 	executors[0xb6] = function () {
-		invoke(false);
+		invoke(false, true);
 	};
 	// ior
 	executors[0x80] = function () {

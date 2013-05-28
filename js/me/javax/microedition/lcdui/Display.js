@@ -26,6 +26,12 @@
 				displayable.active = true;
 				displayable.refreshCommands();
 			}, 1);
+		},
+		$callSerially_Ljava_lang_Runnable__V: function (r) {
+			a = 1;
+			setTimeout(function () {
+				r.$run__V();
+			}, 1);
 		}
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Display'] = Display;

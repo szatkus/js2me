@@ -1,43 +1,118 @@
 <!doctype html>
 <title>JS2ME</title>
 <script type="text/javascript" src="js/zip/zip.js"></script>
+<script type="text/javascript" src="js/zip/inflate.js"></script>
 <script type="text/javascript" src="js/zip/zip-ext.js"></script>
 <script type="text/javascript">
 	window.onload = function () {
 		zip.workerScriptsPath = 'js/zip/';
-		var reader = new zip.HttpReader('../Downloads/stuntcarra_z3medv4l.jar');
-		//var reader = new zip.HttpReader('jars/test.jar');
+		//var reader = new zip.HttpReader('Dragon_Island.jar');
+		var reader = new zip.HttpReader('jars/picross.jar');
 		
-		function initClasses(obj, name) {
-			if (obj.prototype) {
-				obj.prototype.className = name;
-				if (obj.prototype._clinit__V) {
-					obj.prototype._clinit__V.apply(obj);
+		function loadClasses(classes, callback) {
+			var remain = 0;
+			for (var className in classes) {
+				try {
+					js2me.findClass(className);
+				} catch (e) {
+					remain++;
+					var classPath = className.replace(js2me.JAVA_ROOT, 'js/me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
+					var element = document.createElement('script');
+					element.src = classPath;
+					element.onload = function () {
+						remain--;
+						if (remain == 0) {
+							callback(true);
+						}
+					};
+					document.head.appendChild(element);
 				}
 			}
+			if (remain == 0) {
+				callback(false);
+			}
+		}
+		function iterateClasses(obj, name, action) {
+			action(obj, name);
 			for (var i in obj) {
 				if (i[0] == '$') {
-					initClasses(obj[i], name + '.' + i);
+					iterateClasses(obj[i], name + '.' + i, action);
 				}
 			}
 		}
+		function setClassesNames() {
+			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
+				if (obj.prototype) {
+					obj.prototype.className = name;
+				}
+			});
+		}
+		function setClassesPrototypes() {
+			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
+				if (obj.prototype) {
+					if (!obj.prototype.superClass && obj != javaRoot.$java.$lang.$Object) {
+						obj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
+					}
+					if (obj.prototype.superClass) {
+						var superClass = js2me.findClass(obj.prototype.superClass);
+						obj.prototype.__proto__ = new superClass();
+					}
+				}
+			});
+		}
+		function initClasses() {
+			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
+				if (obj.prototype && obj.prototype._clinit__V) {
+					
+						try {
+						obj.prototype._clinit__V.apply(obj);
+						}catch (e){
+							console.log(e);
+						}
+					
+				}
+			});
+		}
+		function checkClasses(callback) {
+			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj) {
+				if (obj.prototype) {
+					try {
+						if (obj.prototype.superClass) {
+							js2me.findClass(obj.prototype.superClass);
+						}
+					} catch (e) {
+						js2me.classes[obj.prototype.superClass] = true;
+					}
+					if (obj.prototype.require) {
+						for (var i = 0; i < obj.prototype.require.length; i++) {
+							js2me.classes[obj.prototype.require[i]] = true;
+						}
+					}
+				}
+			});
+			loadClasses(js2me.classes, function (isNewClasses) {
+				if (isNewClasses) {
+					checkClasses(callback);
+				} else {
+					callback();
+				}
+			});
+		}
 		
 		var start = function () {
-			//try {
-				initClasses(javaRoot, js2me.JAVA_ROOT);
+			checkClasses(function () {
+				setClassesNames();
+				setClassesPrototypes();
+				initClasses();
 				var mainMidlet = js2me.manifest['midlet-1'];
 				var mainClass = js2me.findClass(js2me.JAVA_ROOT + '.$' + mainMidlet.split(',')[2].trim().replace(/\./g, '.$'));
 				var midlet = new mainClass();
 				midlet._init__V();
 				midlet.$startApp__V();
-			//} catch(e) {
-			//	console.log(e);
-			//}
+			});
+			
 		}
-		
 		zip.createReader(reader, function(zipReader) {
-			reader.size = 571377;
-			//reader.size = 1360;
 			zipReader.getEntries(function (entries) {
 				js2me.loadEntries(entries, start);
 			});
@@ -51,7 +126,9 @@
 	var js2me = {
 		JAVA_ROOT: 'javaRoot',
 		width: 240,
-		height: 266
+		height: 266,
+		resources: {},
+		classes: {}
 	};
 </script>
 
@@ -134,34 +211,6 @@
 <script type="text/javascript" src="js/manifest.js"></script>
 <script type="text/javascript" src="js/loader.js"></script>
 <script type="text/javascript" src="js/me/java/lang/Object.js"></script>
-<script type="text/javascript" src="js/me/java/io/ByteArrayOutputStream.js"></script>
-<script type="text/javascript" src="js/me/java/io/DataOutputStream.js"></script>
-<script type="text/javascript" src="js/me/java/io/PrintStream.js"></script>
-<script type="text/javascript" src="js/me/java/lang/Integer.js"></script>
-<script type="text/javascript" src="js/me/java/lang/Math.js"></script>
 <script type="text/javascript" src="js/me/java/lang/String.js"></script>
-<script type="text/javascript" src="js/me/java/lang/StringBuffer.js"></script>
-<script type="text/javascript" src="js/me/java/lang/System.js"></script>
-<script type="text/javascript" src="js/me/java/lang/Thread.js"></script>
-<script type="text/javascript" src="js/me/java/lang/Throwable.js"></script>
-<script type="text/javascript" src="js/me/java/lang/Exception.js"></script>
-<script type="text/javascript" src="js/me/java/util/Hashtable.js"></script>
-<script type="text/javascript" src="js/me/java/util/Random.js"></script>
-<script type="text/javascript" src="js/me/java/util/Timer.js"></script>
-<script type="text/javascript" src="js/me/java/util/Vector.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Displayable.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Canvas.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Command.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Display.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Font.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Form.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Graphics.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/Image.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/List.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/lcdui/game/GameCanvas.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/midlet/MIDlet.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/rms/RecordStore.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/rms/RecordStoreException.js"></script>
-<script type="text/javascript" src="js/me/javax/microedition/rms/RecordStoreNotFoundException.js"></script>
 
 

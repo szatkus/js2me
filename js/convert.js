@@ -1,10 +1,6 @@
 js2me.convertClass = function (stream) {
 	var newClass = function () {
-		//TODO: not good...
-		if (this.superClass) {
-			var superClass = js2me.findClass(this.superClass.className);
-			this.__proto__.__proto__ = new superClass();
-		}
+		
 	};
 	var constantPool = [];
 	newClass.prototype.pool = constantPool;
@@ -164,8 +160,13 @@ js2me.convertClass = function (stream) {
 					}
 					className += '$' + nameElements[i];
 				}
+				className = js2me.JAVA_ROOT + '.' + className;
+				
+				if (className.indexOf('[') == -1 ) {
+					js2me.classes[className] = true;
+				}
 				constantPool[index] = {
-					className: js2me.JAVA_ROOT + '.' + className
+					className: className
 				};
 			}
 			if (tag == TAG_STRING) {
@@ -230,7 +231,7 @@ js2me.convertClass = function (stream) {
 		stream.readUint16();
 	}
 	function readSuperClass() {
-		newClass.prototype.superClass = constantPool[stream.readUint16()];
+		newClass.prototype.superClass = constantPool[stream.readUint16()].className;
 	}
 	function readInterfaces() {
 		var count = stream.readUint16();
@@ -275,7 +276,10 @@ js2me.convertClass = function (stream) {
 				}
 				readAttributes();
 				value = function () {
-					var locals = [this];
+					var locals = [];
+					if (this != window) {
+						locals.push(this);
+					}
 					for (var i = 0; i < arguments.length; i++) {
 						locals.push(arguments[i]);
 					}
@@ -476,4 +480,14 @@ js2me.Long = function (hi, lo) {
 };
 js2me.Double = function (double) {
 	this.double = double;
+};
+js2me.createClass = function (proto) {
+	var package = js2me.findPackage(proto.package, window);
+	var classObj = function () {
+		if (proto.construct) {
+			proto.construct.apply(this, arguments);
+		}
+	};
+	classObj.prototype = proto;
+	package[proto.name] = classObj;
 };

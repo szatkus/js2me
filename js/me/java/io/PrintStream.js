@@ -18,8 +18,7 @@
 			this.output.$write__B_V(x.toString());
 		},
 		$println_J_V: function (x) {
-			
-			this.output.$write__B_V();
+			this.output.$write__B_V(x.toString());
 			this.output.$write_B_V(10);
 		}
 	};

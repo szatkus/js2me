@@ -12,8 +12,7 @@
 				this.out.$write_I_V(0);
 			}
 		},
-		superClass: javaRoot.$java.$io.$OutputStream,
-		//__proto__: javaRoot.$java.$io.$OutputStream.prototype
+		superClass: 'javaRoot.$java.$io.$OutputStream'
 	};
 	js2me.findPackage('javaRoot.$java.$io')['$DataOutputStream'] = DataOutputStream ;
 })();

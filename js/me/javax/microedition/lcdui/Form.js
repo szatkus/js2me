@@ -13,7 +13,7 @@
 			var node = document.createTextNode(str.text);
 			this.element.appendChild(node);
 		},
-		__proto__: new javaRoot.$javax.$microedition.$lcdui.$Displayable()
+		superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Form'] = Form;
 })();
