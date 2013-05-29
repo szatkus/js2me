@@ -13,6 +13,9 @@
 			var node = document.createTextNode(str.text);
 			this.element.appendChild(node);
 		},
+		$append_Ljavax_microedition_lcdui_Item__I: function (item) {
+			//TODO: later...
+		},
 		superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Form'] = Form;

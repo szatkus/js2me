@@ -5,8 +5,17 @@
 	ByteArrayOutputStream.prototype = {
 		_init__V: function () {
 		},
+		_init_I_V: function (size) {
+		},
 		$write_I_V: function (b) {
-			this.buffer.push(b & 0xff);
+			b = b & 0xff;
+			if (b > 127) {
+				b -= 255;
+			}
+			this.buffer.push(b);
+		},
+		$toByteArray___B: function () {
+			return this.buffer.slice(0);
 		},
 		superClass: 'javaRoot.$java.$io.$OutputStream'
 	};

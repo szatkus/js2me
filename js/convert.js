@@ -227,8 +227,7 @@ js2me.convertClass = function (stream) {
 		}
 	}
 	function readAccessFlags() {
-		//TODO
-		stream.readUint16();
+		return stream.readUint16();
 	}
 	function readSuperClass() {
 		newClass.prototype.superClass = constantPool[stream.readUint16()].className;
@@ -248,7 +247,25 @@ js2me.convertClass = function (stream) {
 			var name = constantPool[stream.readUint16()];
 			var type = constantPool[stream.readUint16()];
 			var attributes = readAttributes();
-			newClass.prototype[escapeName(name) + escapeType(type)] = attributes['ConstantValue'];
+			var fieldName = escapeName(name) + escapeType(type);
+			if (type == 'B' || type == 'S' || type == 'F' || type == 'I') {
+				newClass.prototype[fieldName] = 0;
+			}
+			if (type == 'D') {
+				newClass.prototype[fieldName] = new js2me.Double(0);
+			}
+			if (type == 'L') {
+				newClass.prototype[fieldName] = new js2me.Long(0);
+			}
+			if (type == 'C') {
+				newClass.prototype[fieldName] = String.fromCharCode(0);
+			}
+			if (type == 'Z') {
+				newClass.prototype[fieldName] = false;
+			}
+			if (attributes['ConstantValue']) {
+				newClass.prototype[fieldName] = attributes['ConstantValue'];
+			}
 		}
 	}
 	function readAttributes() {
@@ -343,7 +360,12 @@ js2me.convertClass = function (stream) {
 	checkVersion();
 	readConstantPool();
 	resolveConstants();
-	readAccessFlags();
+	var accessFlags = readAccessFlags();
+	if ((accessFlags & 0x0200) == 0) {
+		newClass.prototype.type = 'class';
+	} else {
+		newClass.prototype.type = 'interface';
+	}
 	var thisClass = constantPool[stream.readUint16()];
 	readSuperClass();
 	readInterfaces();
@@ -497,6 +519,9 @@ js2me.Long = function (hi, lo) {
 		}
 		return digits.slice(0, last + 1).reverse()
 	};
+	this.toInt = function () {
+		return this.hi * 0x100000000 + this.lo;
+	};
 };
 js2me.Double = function (double) {
 	this.double = double;
@@ -509,7 +534,12 @@ js2me.createClass = function (proto) {
 		}
 	};
 	classObj.prototype = proto;
+	proto.type = 'class';
 	package[proto.name] = classObj;
+};
+js2me.createInterface = function (proto) {
+	js2me.createClass(proto);
+	proto.type = 'interface';
 };
 js2me.UTF8ToString = function (array) {
 	var i = 0

@@ -40,6 +40,7 @@
 				image.element.width = imageElement.width;
 				image.element.height = imageElement.height;
 				image.element.getContext('2d').drawImage(imageElement, 0, 0);
+				js2me.restoreThread(threadId);
 			};
 			var dataURI = 'data:' + mime + ',';
 			for (var j = offset; j < offset + length; j++) {
@@ -51,6 +52,12 @@
 				dataURI += code;
 			}
 			imageElement.src = dataURI;
+			console.log(dataURI);
+			js2me.suspendThread = true;
+			var threadId = js2me.currentThread;
+			js2me.restoreStack[threadId] = [function () {
+				return image;
+			}];
 			return image;
 		},
 		$getGraphics__Ljavax_microedition_lcdui_Graphics_: function () {

@@ -7,7 +7,8 @@
 	window.onload = function () {
 		zip.workerScriptsPath = 'js/zip/';
 		//var reader = new zip.HttpReader('Dragon_Island.jar');
-		var reader = new zip.HttpReader('jars/picross.jar');
+		var reader = new zip.HttpReader('jars/asteroids.jar');
+		//var reader = new zip.HttpReader('jars/picross.jar');
 		
 		function loadClasses(classes, callback) {
 			var remain = 0;
@@ -72,7 +73,10 @@
 				}
 			});
 		}
-		function checkClasses(callback) {
+		function checkClasses(limit, callback) {
+			if (limit == 0) {
+				throw new Error('checkClasses problem');
+			}
 			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj) {
 				if (obj.prototype) {
 					try {
@@ -91,7 +95,7 @@
 			});
 			loadClasses(js2me.classes, function (isNewClasses) {
 				if (isNewClasses) {
-					checkClasses(callback);
+					checkClasses(limit - 1, callback);
 				} else {
 					callback();
 				}
@@ -99,15 +103,19 @@
 		}
 		
 		var start = function () {
-			checkClasses(function () {
+			checkClasses(10, function () {
 				setClassesNames();
 				setClassesPrototypes();
-				initClasses();
+				//initClasses();
 				var mainMidlet = js2me.manifest['midlet-1'];
 				var mainClass = js2me.findClass(js2me.JAVA_ROOT + '.$' + mainMidlet.split(',')[2].trim().replace(/\./g, '.$'));
-				var midlet = new mainClass();
-				midlet._init__V();
-				midlet.$startApp__V();
+				var mainThread = new javaRoot.$java.$lang.$Thread(function () {
+					js2me.initializeClass(mainClass);
+					var midlet = new mainClass();
+					midlet._init__V();
+					midlet.$startApp__V();
+				});
+				mainThread.$start__V();
 			});
 			
 		}
@@ -127,7 +135,10 @@
 		width: 240,
 		height: 266,
 		resources: {},
-		classes: {}
+		classes: {},
+		threads: [],
+		currentThread: 0,
+		restoreStack: []
 	};
 </script>
 
@@ -211,7 +222,9 @@
 <script type="text/javascript" src="js/loader.js"></script>
 <script type="text/javascript" src="js/me/java/lang/Object.js"></script>
 <script type="text/javascript" src="js/me/java/lang/String.js"></script>
+<script type="text/javascript" src="js/me/java/lang/Thread.js"></script>
 <script type="text/javascript" src="js/me/java/lang/NullPointerException.js"></script>
 <script type="text/javascript" src="js/me/java/lang/ArrayIndexOutOfBoundsException.js"></script>
+<script type="text/javascript" src="js/me/java/lang/ClassCastException.js"></script>
 
 

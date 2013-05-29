@@ -1,10 +1,89 @@
-js2me.execute = function (stream, locals, constantPool, exceptions) {
+js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo) {
 	var executors = [];
 	var stack = [];
 	var result = null;
 	var self = locals[0];
 	var position = stream.index;
 	var finish = false;
+	js2me.suspendThread = false;
+	if (restoreInfo) {
+		stack = restoreInfo.stack;
+		positon = restoreInfo.position;
+		executeFunction(function () {
+			return js2me.restoreThread(js2me.currentThread);
+		}, restoreInfo.saveResult);
+	}
+	
+	function findMethod(className, methodName) {
+		var classObj = js2me.findClass(className);
+		var method = classObj.prototype[methodName];
+		if (!method) {
+			if (classObj.prototype.superClass) {
+				method = findMethod(classObj.prototype.superClass, methodName);
+			}
+		}
+		return method
+	}
+	function executeFunction(func, saveResult) {
+		try {
+			var result = func();
+		} catch (exception) {
+			var handler = -1;
+			for (var i = 0; i < exceptions.length && handler == -1; i++) {
+				if (exceptions[i].startPc <= position && exceptions[i].endPc >= position) {
+					var obj = {__proto__: exception};
+					while (obj.__proto__.className) {
+						obj = obj.__proto__;
+						if (exceptions[i].catchType.className == obj.className) {
+							handler = exceptions[i].handler;
+						}
+					}
+				}
+			}
+			if (handler >= 0) {
+				stack.push(exception);
+				stream.index = handler;
+			} else {
+				throw exception;
+			}
+		}
+		if (js2me.suspendThread) {
+			if (js2me.restoreStack[js2me.currentThread] == null) {
+				js2me.restoreStack[js2me.currentThread] = [];
+			}
+			var restoreStack = js2me.restoreStack[js2me.currentThread];
+			restoreStack.push([stream, locals, constantPool, exceptions, { 
+				stack: stack,
+				position: position,
+				saveResult: saveResult
+			}]);
+			finish = true;
+			return;
+		}
+		if (saveResult) {
+			stack.push(result);
+		}
+		//console.log('END: ' + method.className + '->' + method.name);
+		
+	}
+	function invoke(static, virtual) {
+		var methodInfo = constantPool[stream.readUint16()];
+		var count = methodInfo.type.argumentsTypes.length;
+		var args = [];
+		for (var i = 0; i < count; i++) {
+			args.push(stack.pop());
+		}
+		args.reverse();
+		var obj = static ? window : stack.pop();
+		//console.log('START: ' + methodInfo.className + '->' + methodInfo.name);
+		var method = findMethod(virtual ? obj.className : methodInfo.className, methodInfo.name)
+		if (!method) {
+			throw new Error('Not implemented ' + methodInfo.className + '->' + methodInfo.name);
+		}
+		executeFunction(function () {
+			return method.apply(obj, args);
+		}, methodInfo.type.returnType != 'V');
+	}
 	
 	// aaload
 	executors[0x32] = function () {
@@ -101,6 +180,47 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		var value = stream.readInt8();
 		stack.push(value);
 	};
+	// caload
+	executors[0x34] = function () {
+		var index = stack.pop();
+		var array = stack.pop();
+		stack.push(array[index]);
+	};
+	// castore
+	executors[0x55] = function () {
+		var value = stack.pop();
+		var index = stack.pop();
+		var array = stack.pop();
+		array[index] = value;
+	};
+	// checkcast
+	executors[0xc0] = function () {
+		var ref = stack.pop();
+		var type = constantPool[stream.readUint16()];
+		var refClass = js2me.findClass(ref.className).prototype;
+		var cmpClass = js2me.findClass(type.className).prototype;
+		
+		if (ref != null) {
+			if (refClass.type == 'class') {
+				if (cmpClass.type == 'class') {
+					while (refClass.className != cmpClass.className && refClass.superClass) {
+						refClass = js2me.findClass(refClass.superClass).prototype;
+					}
+					if (refClass.className == cmpClass.className) {
+						stack.push(ref);
+					} else {
+						throw new javaRoot.$java.$lang.ClassCastException();
+					}
+				} else {
+					throw new Error('checkcast');
+				}
+			} else {
+				throw new Error('checkcast');
+			}
+		} else {
+			stack.push(ref);
+		}
+	}
 	// dup
 	executors[0x59] = function () {
 		var tmp = stack.pop();
@@ -124,17 +244,21 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		stack.push(c);
 		stack.push(b);
 		stack.push(a);
-	};
+	};*/
 	// dup2
 	executors[0x5c] = function () {
 		var a = stack.pop();
-		var b = stack.pop();
-		stack.push(b);
-		stack.push(a);
-		stack.push(b);
-		stack.push(a);
-		
-	};*/
+		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
+			var b = stack.pop();
+			stack.push(b);
+			stack.push(a);
+			stack.push(b);
+			stack.push(a);
+		} else {
+			stack.push(a);
+			stack.push(a);
+		}
+	};
 	// getfield
 	executors[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
@@ -144,8 +268,9 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	// getstatic
 	executors[0xb2] = function () {
 		var field = constantPool[stream.readUint16()];
-		var obj = js2me.findClass(field.className).prototype;
-		stack.push(obj[field.name]);
+		var obj = js2me.findClass(field.className);
+		js2me.initializeClass(obj);
+		stack.push(obj.prototype[field.name]);
 	};
 	// goto
 	executors[0xa7] = function () {
@@ -160,6 +285,21 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		} else {
 			stack.push(new js2me.Long(0xffffffff, value + 4294967296));
 		}
+	};
+	// i2f
+	executors[0x86] = function () {
+	};
+	// i2d
+	executors[0x87] = function () {
+	};
+	// l2i
+	executors[0x88] = function () {
+		var value = stack.pop();
+		var int = value.lo;
+		if (int >= 0x80000000) {
+			int -= 0xffffffff;
+		} 
+		stack.push(int);
 	};
 	// i2b
 	executors[0x91] = function () {
@@ -415,57 +555,10 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		var b = stack.pop();
 		stack.push(a * b);
 	}
-	function findMethod(className, methodName) {
-		var classObj = js2me.findClass(className);
-		var method = classObj.prototype[methodName];
-		if (!method) {
-			if (classObj.prototype.superClass) {
-				method = findMethod(classObj.prototype.superClass, methodName);
-			}
-		}
-		return method
-	}
-	function invoke(static, virtual) {
-		//TODO: I think that there's some differences...
-		var methodInfo = constantPool[stream.readUint16()];
-		var count = methodInfo.type.argumentsTypes.length;
-		var args = [];
-		for (var i = 0; i < count; i++) {
-			args.push(stack.pop());
-		}
-		args.reverse();
-		var obj = static ? window : stack.pop();
-		//console.log('START: ' + methodInfo.className + '->' + methodInfo.name);
-		var method = findMethod(virtual ? obj.className : methodInfo.className, methodInfo.name)
-		if (!method) {
-			throw new Error('Not implemented ' + methodInfo.className + '->' + methodInfo.name);
-		}
-		try {
-			var result = method.apply(obj, args);
-		} catch (exception) {
-			var handler = -1;
-			for (var i = 0; i < exceptions.length && handler == -1; i++) {
-				if (exceptions[i].startPc <= position && exceptions[i].endPc >= position) {
-					var obj = {__proto__: exception};
-					while (obj.__proto__.className) {
-						obj = obj.__proto__;
-						if (exceptions[i].catchType.className == obj.className) {
-							handler = exceptions[i].handler;
-						}
-					}
-				}
-			}
-			if (handler >= 0) {
-				stack.push(exception);
-				stream.index = handler;
-			} else {
-				throw exception;
-			}
-		}
-		//console.log('END: ' + method.className + '->' + method.name);
-		if (methodInfo.type.returnType != 'V') {
-			stack.push(result);
-		}
+	// ineg
+	executors[0x74] = function () {
+		var value = stack.pop();
+		stack.push(-value);
 	}
 	// invokespecial
 	executors[0xb7] = function () {
@@ -612,6 +705,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	executors[0x21] = function () {
 		stack.push(locals[3]);
 	};
+	// lor
+	executors[0x79] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(new js2me.Long(a.hi | b.hi, a.lo | b.lo));
+	};
 	// lshl
 	executors[0x79] = function () {
 		var shift = stack.pop() % 64;
@@ -649,7 +748,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	executors[0x65] = function () {
 		var b = stack.pop();
 		var a = stack.pop();
-		stack.push(b.sub(b));
+		stack.push(a.sub(b));
 	};
 	// new
 	executors[0xbb] = function () {
@@ -659,6 +758,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		if (!constructor) {
 			console.error('Not implemented: ' + classInfo.className);
 		}
+		js2me.initializeClass(constructor);
 		var instance = new constructor();
 		stack.push(instance);
 	};
@@ -716,7 +816,23 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		var value = stream.readUint16();
 		stack.push(value);
 	}
-	stream.reset();
+	// tableswitch
+	executors[0xaa] = function () {
+		while (stream.index % 4 != 0) {
+			stream.readUint8();
+		}
+		var def = stream.readInt32();
+		var low = stream.readInt32();
+		var high = stream.readInt32();
+		var count = high - low + 1;
+		var table = [];
+		for (var i = 0; i < count; i++) {
+			table[i] = stream.readInt32();
+		}
+		var index = stack.pop();
+		var offset = table[index] || def;
+		stream.seek(position + offset);
+	}
 	while (!stream.isEnd() && !finish) {
 		//console.log(stream.index);
 		position = stream.index;
@@ -730,4 +846,28 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	
 	
 	return result;
+};
+js2me.restoreThread = function (threadId) {
+	var restoreStack = js2me.restoreStack[threadId].pop();
+	if (restoreStack) {
+		js2me.currentThread = threadId;
+		if (typeof restoreStack == 'function') {
+			return restoreStack();
+		} else {
+			return js2me.execute.apply(js2me, restoreStack);
+		}
+	}
+};
+js2me.initializeClass = function(classObj) {
+	if (classObj.prototype.superClass) {
+		var superClassObj = js2me.findClass(classObj.prototype.superClass);
+		js2me.initializeClass(superClassObj);
+	}
+	if (classObj.prototype._clinit__V) {
+		console.log(classObj.prototype.className);
+		var clinit = classObj.prototype._clinit__V;
+		classObj.prototype._clinit__V = null;
+		clinit();
+		
+	}
 };

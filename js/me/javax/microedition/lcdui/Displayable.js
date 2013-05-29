@@ -38,6 +38,9 @@
 		$setCommandListener_Ljavax_microedition_lcdui_CommandListener__V: function (commandListener) {
 			this.commandListener = commandListener;
 		},
+		$isShown__Z: function () {
+			return this.element.parentNode != null;
+		},
 		refreshCommands: function () {
 			//TODO: no multicommands
 			if (!this.active) {
