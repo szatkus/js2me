@@ -407,6 +407,27 @@ js2me.Long = function (hi, lo) {
 		var v = (this.hi * 0xffffffff + this.lo) / (b.hi * 0xffffffff + b.lo);
 		return new js2me.Long(Math.floor(v / 0xffffffff), v % 0xffffffff);
 	};
+	this.sub = function (b) {
+		var x = this.hi;
+		if (x >= 0x80000000) {
+			x -= 0x100000000;
+		}
+		var y = b.hi;
+		if (y >= 0x80000000) {
+			y -= 0x100000000;
+		}
+		var hi = (x - y);
+		while (hi < 0) {
+			hi += 0x100000000;
+		}
+		hi = hi % 0xffffffff;
+		var lo = this.lo - b.lo;
+		while (lo < 0) {
+			lo += 0x100000000;
+			hi--;
+		}
+		return new js2me.Long(hi, lo);
+	};
 	this.toString = function () {
 		var digits = [];
 		for (var i = 0; i < 22; i++) {
@@ -439,7 +460,6 @@ js2me.Long = function (hi, lo) {
 				lo = Math.floor(lo / 10);
 			}
 		} else {
-			this.output.$write_B_V('-');
 			var hi = -(this.hi - 4294967296);
 			var i = 0;
 			while (hi > 0) {
@@ -490,4 +510,30 @@ js2me.createClass = function (proto) {
 	};
 	classObj.prototype = proto;
 	package[proto.name] = classObj;
+};
+js2me.UTF8ToString = function (array) {
+	var i = 0
+	var result = '';
+	while(i < array.length) {
+		if (array[i] < 0x80) {
+			var code = array[i];
+			i++;
+		} else if ((array[i] & 0xE0) == 0xC0) {
+			var code = ((array[i] & 0x1F) << 6) | (array[i + 1] & 0x3F);
+			i += 2;
+		} else if ((array[i] & 0xF0) == 0xE0) {
+			var code = (((array[i] & 0x0F) << 12) | ((array[i + 1] & 0x3F) << 6) | (array[i + 2] & 0x3F));
+			i += 3;
+		} else {
+			return null;
+		}
+		
+		var char = String.fromCharCode(code);
+		if (char != '') {
+			result += char;
+		} else {
+			return null;
+		}
+	}
+	return result;
 };

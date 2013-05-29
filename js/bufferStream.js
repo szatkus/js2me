@@ -29,7 +29,7 @@ js2me.BufferStream.prototype = {
 		this.index += length;
 	},
 	isEnd: function () {
-		return this.index < this.array.length;
+		return this.index >= this.array.length;
 	},
 	seek: function (index) {
 		this.index = index;

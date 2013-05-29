@@ -1,12 +1,14 @@
-(function () {
-	function Thread() {
-	}
-	Thread.prototype = {
-		$start__V: function () {
-			var worker = new Worker('js/threadWorker.js');
-			 worker.postMessage(4);
-		}
-	};
-	js2me.findPackage(js2me.JAVA_ROOT + '.$java.$lang')['$Thread'] = Thread;
-})();
+js2me.createClass({
+	_init_Ljava_lang_Runnable__V: function (runnable) {
+		this.runnable = runnable;
+	},
+	$start__V: function () {
+		var runnable = this.runnable || this;
+		setTimeout(function () {
+			runnable.$run__V();
+		}, 1);
+	},
+	package: 'javaRoot.$java.$lang',
+	name: '$Thread'
+});
 

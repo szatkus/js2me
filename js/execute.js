@@ -4,6 +4,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	var result = null;
 	var self = locals[0];
 	var position = stream.index;
+	var finish = false;
 	
 	// aaload
 	executors[0x32] = function () {
@@ -52,10 +53,14 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	// areturn
 	executors[0xb0] = function () {
 		result = stack.pop();
+		finish = true;
 	};
 	// arraylength
 	executors[0xbe] = function () {
 		var array = stack.pop();
+		if (array == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
 		stack.push(array.length);
 	};
 	// astore
@@ -415,7 +420,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		var method = classObj.prototype[methodName];
 		if (!method) {
 			if (classObj.prototype.superClass) {
-				method = findMethod(classObj.prototype.superClass.className, methodName);
+				method = findMethod(classObj.prototype.superClass, methodName);
 			}
 		}
 		return method
@@ -451,6 +456,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 				}
 			}
 			if (handler >= 0) {
+				stack.push(exception);
 				stream.index = handler;
 			} else {
 				throw exception;
@@ -489,6 +495,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 	executors[0xac] = function () {
 		var value = stack.pop();
 		result = value;
+		finish = true;
 	};
 	// ishl
 	executors[0x78] = function () {
@@ -610,13 +617,40 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		var shift = stack.pop() % 64;
 		var value = stack.pop();
 		stack.push(value.shl(shift));
-	}
+	};
 	// lshr
 	executors[0x7b] = function () {
 		var shift = stack.pop() % 64;
 		var value = stack.pop();
 		stack.push(value.shr(shift));
-	}
+	};
+	// lstore
+	executors[0x37] = function () {
+		var index = stream.readUint8();
+		locals[index] = stack.pop();
+	};
+	// lstore_0
+	executors[0x3f] = function () {
+		locals[0] = stack.pop();
+	};
+	// lstore_1
+	executors[0x40] = function () {
+		locals[1] = stack.pop();
+	};
+	// lstore_2
+	executors[0x41] = function () {
+		locals[2] = stack.pop();
+	};
+	// lstore_3
+	executors[0x42] = function () {
+		locals[3] = stack.pop();
+	};
+	// lsub
+	executors[0x65] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(b.sub(b));
+	};
 	// new
 	executors[0xbb] = function () {
 		var classInfo = constantPool[stream.readUint16()];
@@ -661,7 +695,9 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		obj[field.name] = value;
 	}
 	// return
-	executors[0xb1] = function () {};
+	executors[0xb1] = function () {
+		finish = true;
+	};
 	// saload
 	executors[0x35] = function () {
 		var index = stack.pop();
@@ -681,7 +717,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions) {
 		stack.push(value);
 	}
 	stream.reset();
-	while (stream.isEnd()) {
+	while (!stream.isEnd() && !finish) {
 		//console.log(stream.index);
 		position = stream.index;
 		var op = stream.readUint8();

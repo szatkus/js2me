@@ -13,6 +13,9 @@
 		},
 		$getHeight__I: function () {
 			return 10;
+		},
+		$stringWidth_Ljava_lang_String__I: function (str) {
+			return str.text.length * 5;
 		}
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$javax.$microedition.$lcdui')['$Font'] = Font;

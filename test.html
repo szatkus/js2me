@@ -63,7 +63,6 @@
 		function initClasses() {
 			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
 				if (obj.prototype && obj.prototype._clinit__V) {
-					
 						try {
 						obj.prototype._clinit__V.apply(obj);
 						}catch (e){
@@ -212,5 +211,7 @@
 <script type="text/javascript" src="js/loader.js"></script>
 <script type="text/javascript" src="js/me/java/lang/Object.js"></script>
 <script type="text/javascript" src="js/me/java/lang/String.js"></script>
+<script type="text/javascript" src="js/me/java/lang/NullPointerException.js"></script>
+<script type="text/javascript" src="js/me/java/lang/ArrayIndexOutOfBoundsException.js"></script>
 
 

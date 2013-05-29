@@ -7,5 +7,3 @@ js2me.createClass({
 	name: '$Object',
 	package: 'javaRoot.$java.$lang'
 });
-	
-
