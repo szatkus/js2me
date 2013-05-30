@@ -258,10 +258,10 @@ js2me.convertClass = function (stream) {
 				newClass.prototype[fieldName] = new js2me.Long(0);
 			}
 			if (type == 'C') {
-				newClass.prototype[fieldName] = String.fromCharCode(0);
+				newClass.prototype[fieldName] = 0;
 			}
 			if (type == 'Z') {
-				newClass.prototype[fieldName] = false;
+				newClass.prototype[fieldName] = 0;
 			}
 			if (attributes['ConstantValue']) {
 				newClass.prototype[fieldName] = attributes['ConstantValue'];

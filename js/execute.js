@@ -314,7 +314,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	// i2c
 	executors[0x92] = function () {
 		var value = stack.pop();
-		stack.push(String.fromCharCode(value));
+		stack.push(value);
 	};
 	// i2s
 	executors[0x93] = function () {
@@ -827,7 +827,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var count = high - low + 1;
 		var table = [];
 		for (var i = 0; i < count; i++) {
-			table[i] = stream.readInt32();
+			table[low + i] = stream.readInt32();
 		}
 		var index = stack.pop();
 		var offset = table[index] || def;

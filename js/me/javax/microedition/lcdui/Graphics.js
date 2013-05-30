@@ -31,12 +31,12 @@
 			this.context.closePath();
 		},
 		$drawChar_CIII_V: function (char, x, y, anchor) {
-			this.$drawString_Ljava_lang_String_III_V(char, x, y, anchor);
+			this.$drawString_Ljava_lang_String_III_V(String.fromCharCode(char), x, y, anchor);
 		},
 		$drawChars__CIIIII_V: function (data, offset, length, x, y, anchor) {
 			var text = '';
 			for (var i = 0; i < length; i++) {
-				text += data[offset + i];
+				text += String.fromCharCode(data[offset + i]);
 			}
 			var str = new javaRoot.$java.$lang.$String(text);
 			this.$drawString_Ljava_lang_String_III_V(str, x, y, anchor);
