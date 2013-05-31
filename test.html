@@ -130,6 +130,31 @@
 			
 		
 	};
+	window.onkeydown = function (e) {
+		var mapping = [];
+		mapping[38] = 'up';
+		mapping[37] = 'left';
+		mapping[39] = 'right';
+		mapping[40] = 'down';
+		mapping[32] = 'ok';
+		mapping[48] = 'num0';
+		mapping[49] = 'num1';
+		mapping[50] = 'num2';
+		mapping[51] = 'num3';
+		mapping[52] = 'num4';
+		mapping[53] = 'num5';
+		mapping[54] = 'num6';
+		mapping[55] = 'num7';
+		mapping[56] = 'num8';
+		mapping[57] = 'num9';
+		//console.log(e.keyCode);
+		if (mapping[e.keyCode]) {
+			var evt = document.createEvent("MouseEvents");
+			evt.initMouseEvent("mousedown", true, true, window);
+			var element = document.getElementById(mapping[e.keyCode]);
+			element.dispatchEvent(evt);
+		}
+	};
 	var js2me = {
 		JAVA_ROOT: 'javaRoot',
 		width: 240,
@@ -170,7 +195,7 @@
 	}
 	#choice.softkey, #back.softkey {
 		width: 48px;
-		height: 13px;
+		height: 18px;
 	}
 	.num {
 		width: 38px;

@@ -14,6 +14,7 @@ js2me.createClass({
 			this.current.active = false;
 		}
 		this.current = displayable;
+		displayable.display = this;
 		this.timeout = setTimeout(function () {
 			if (displayable.title) {
 				document.getElementById('title').innerHTML = displayable.title.text;
@@ -21,6 +22,7 @@ js2me.createClass({
 			screen.innerHTML = '';
 			screen.appendChild(displayable.element);
 			displayable.active = true;
+			
 			displayable.refreshCommands();
 		}, 1);
 	},
