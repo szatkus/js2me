@@ -5,8 +5,9 @@
 <script type="text/javascript" src="js/zip/zip-ext.js"></script>
 <script type="text/javascript">
 	window.onload = function () {
+		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
-		//var reader = new zip.HttpReader('Dragon_Island.jar');
+		//var reader = new zip.HttpReader('microBalls.jar');
 		var reader = new zip.HttpReader('jars/asteroids.jar');
 		//var reader = new zip.HttpReader('jars/picross.jar');
 		
@@ -16,6 +17,7 @@
 				try {
 					js2me.findClass(className);
 				} catch (e) {
+					//console.log(className);
 					remain++;
 					var classPath = className.replace(js2me.JAVA_ROOT, 'js/me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
 					var element = document.createElement('script');
@@ -64,12 +66,7 @@
 		function initClasses() {
 			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
 				if (obj.prototype && obj.prototype._clinit__V) {
-						try {
-						obj.prototype._clinit__V.apply(obj);
-						}catch (e){
-							console.log(e);
-						}
-					
+					obj.prototype._clinit__V.apply(obj);
 				}
 			});
 		}

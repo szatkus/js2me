@@ -254,8 +254,8 @@ js2me.convertClass = function (stream) {
 			if (type == 'D') {
 				newClass.prototype[fieldName] = new js2me.Double(0);
 			}
-			if (type == 'L') {
-				newClass.prototype[fieldName] = new js2me.Long(0);
+			if (type == 'J') {
+				newClass.prototype[fieldName] = new js2me.Long(0, 0);
 			}
 			if (type == 'C') {
 				newClass.prototype[fieldName] = 0;
@@ -521,6 +521,18 @@ js2me.Long = function (hi, lo) {
 	};
 	this.toInt = function () {
 		return this.hi * 0x100000000 + this.lo;
+	};
+	this.cmp = function (b) {
+		if (this.hi == b.hi && this.lo == b.lo) {
+			return 0;
+		}
+		if (this.hi > b.hi) {
+			return 1;
+		}
+		if (this.hi == b.hi && this.lo > b.lo) {
+			return 1;
+		}
+		return -1;
 	};
 };
 js2me.Double = function (double) {

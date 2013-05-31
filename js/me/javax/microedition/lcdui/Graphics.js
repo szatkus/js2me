@@ -24,9 +24,21 @@ js2me.createClass({
 		this.$setColor_III_V(red, green, blue);
 	},
 	$fillRect_IIII_V: function (x, y, width, height) {
+		if (width == 0) {
+			width = 1;
+		}
+		if (height == 0) {
+			height = 1;
+		}
 		this.context.fillRect(x, y, width, height);
 	},
 	$drawRect_IIII_V: function (x, y, width, height) {
+		if (width == 0) {
+			width = 1;
+		}
+		if (height == 0) {
+			height = 1;
+		}
 		this.context.strokeRect(x, y, width, height);
 	},
 	$drawLine_IIII_V: function (x1, y1, x2, y2) {
@@ -96,9 +108,12 @@ js2me.createClass({
 		this.context.drawImage(img.element, x, y);
 	},
 	$setClip_IIII_V: function (x, y, width, height) {
+		this.context.restore();
+		this.context.save();
 		this.context.beginPath();
 		this.context.rect(x, y, width, height);
 		this.context.clip();
+		this.context.closePath();
 	},
 	$drawRegion_Ljavax_microedition_lcdui_Image_IIIIIIII_V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
 		//TODO: transformations and achor

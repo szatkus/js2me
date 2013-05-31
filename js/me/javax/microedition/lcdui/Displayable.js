@@ -57,6 +57,16 @@ js2me.createClass({
 			this.refreshCommands();
 		}
 	},
+	$removeCommand_Ljavax_microedition_lcdui_Command__V: function (command) {
+		var index = this.commands.indexOf(command);
+		if (index != -1) {
+			var lastCommand = this.commands.pop();
+			if (command != lastCommand) {
+				this.commands[index] = lastCommand;
+			}
+			this.refreshCommands();
+		}
+	},
 	$setCommandListener_Ljavax_microedition_lcdui_CommandListener__V: function (commandListener) {
 		this.commandListener = commandListener;
 	},

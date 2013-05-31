@@ -9,6 +9,10 @@
 			image.element.height = height;
 			return image;
 		},
+		$createImage_Ljava_lang_String__Ljavax_microedition_lcdui_Image_: function (name) {
+			var data = javaRoot.$java.$lang.$Class.prototype.$getResourceAsStream_Ljava_lang_String__Ljava_io_InputStream_(name).stream.array;
+			return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage__BII_Ljavax_microedition_lcdui_Image_(data, 0, data.length);
+		},
 		$createImage__BII_Ljavax_microedition_lcdui_Image_: function (data, offset, length) {
 			if (data == null) {
 				throw new javaRoot.$java.$lang.$NullPointerException();
@@ -52,7 +56,7 @@
 				dataURI += code;
 			}
 			imageElement.src = dataURI;
-			console.log(dataURI);
+			//console.log(dataURI);
 			js2me.suspendThread = true;
 			var threadId = js2me.currentThread;
 			js2me.restoreStack[threadId] = [function () {
@@ -69,7 +73,7 @@
 		$getHeight__I: function () {
 			return this.element.height;
 		},
-		require: ['javaRoot.$javax.$microedition.$lcdui.$Graphics']
+		require: ['javaRoot.$javax.$microedition.$lcdui.$Graphics', 'javaRoot.$java.$lang.$Class']
 	};
 	js2me.findPackage('javaRoot.$javax.$microedition.$lcdui')['$Image'] = JavaImage;
 })();

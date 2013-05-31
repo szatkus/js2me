@@ -6,10 +6,11 @@ js2me.createClass({
 		this.runnable = runnable;
 	},
 	$start__V: function () {
-		var runnable = this.runnable || this;
+		var thread = this;
+		var runnable = this.runnable || thread;
 		setTimeout(function () {
 			js2me.currentThread = js2me.threads.length;
-			js2me.threads.push(this);
+			js2me.threads.push(thread);
 			runnable.$run__V();
 		}, 1);
 	},
@@ -20,7 +21,15 @@ js2me.createClass({
 			js2me.restoreThread(threadId);
 		}, miliseconds.toInt());
 	},
+	$yield__V: function () {
+		var currentThread = javaRoot.$java.$lang.$Thread.prototype.$currentThread__Ljava_lang_Thread_()
+		currentThread.$sleep_J_V(new js2me.Long(0, 1));
+	},
 	$currentThread__Ljava_lang_Thread_: function () {
+		return js2me.threads[js2me.currentThread];
+	},
+	$setPriority_I_V: function (priority) {
+		this.priority = priority;
 	},
 	package: 'javaRoot.$java.$lang',
 	name: '$Thread'

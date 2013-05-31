@@ -66,8 +66,11 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		//console.log('END: ' + method.className + '->' + method.name);
 		
 	}
-	function invoke(static, virtual) {
+	function invoke(static, virtual, garbage) {
 		var methodInfo = constantPool[stream.readUint16()];
+		if (garbage) {
+			stream.readUint16();
+		}
 		var count = methodInfo.type.argumentsTypes.length;
 		var args = [];
 		for (var i = 0; i < count; i++) {
@@ -560,6 +563,10 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var value = stack.pop();
 		stack.push(-value);
 	}
+	// invokeinterface
+	executors[0xb9] = function () {
+		invoke(false, true, true);
+	};
 	// invokespecial
 	executors[0xb7] = function () {
 		invoke(false, false);
@@ -647,6 +654,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var index = stack.pop();
 		var array = stack.pop();
 		array[index] = value;
+	};
+	// lcmp
+	executors[0x94] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a.cmp(b));
 	};
 	// lconst_0
 	executors[0x09] = function () {
@@ -864,7 +877,7 @@ js2me.initializeClass = function(classObj) {
 		js2me.initializeClass(superClassObj);
 	}
 	if (classObj.prototype._clinit__V) {
-		console.log(classObj.prototype.className);
+		//console.log(classObj.prototype.className);
 		var clinit = classObj.prototype._clinit__V;
 		classObj.prototype._clinit__V = null;
 		clinit();

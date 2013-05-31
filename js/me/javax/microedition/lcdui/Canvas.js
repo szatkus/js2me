@@ -85,7 +85,7 @@ js2me.createClass({
 	},
 	$serviceRepaints__V: function () {
 		//TODO: is it ok?
-		this.$repaint__V();
+		//this.$repaint__V();
 	},
 	$showNotify__V: function () {
 		for (var i = 0; i < this.keys.length; i++) {
