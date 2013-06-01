@@ -14,6 +14,18 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		}, restoreInfo.saveResult);
 	}
 	
+	function suspendCall(saveResult) {
+		if (js2me.restoreStack[js2me.currentThread] == null) {
+			js2me.restoreStack[js2me.currentThread] = [];
+		}
+		var restoreStack = js2me.restoreStack[js2me.currentThread];
+		restoreStack.push([stream, locals, constantPool, exceptions, { 
+			stack: stack,
+			position: position,
+			saveResult: saveResult
+		}]);
+		finish = true;
+	}
 	function findMethod(className, methodName) {
 		var classObj = js2me.findClass(className);
 		var method = classObj.prototype[methodName];
@@ -48,16 +60,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 			}
 		}
 		if (js2me.suspendThread) {
-			if (js2me.restoreStack[js2me.currentThread] == null) {
-				js2me.restoreStack[js2me.currentThread] = [];
-			}
-			var restoreStack = js2me.restoreStack[js2me.currentThread];
-			restoreStack.push([stream, locals, constantPool, exceptions, { 
-				stack: stack,
-				position: position,
-				saveResult: saveResult
-			}]);
-			finish = true;
+			suspendCall(saveResult);
 			return;
 		}
 		if (saveResult) {
@@ -216,7 +219,11 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 						throw new javaRoot.$java.$lang.ClassCastException();
 					}
 				} else {
-					throw new Error('checkcast');
+					if (refClass.interfaces.indexOf(cmpClass.className) != -1) {
+						stack.push(ref);
+					} else {
+						throw new javaRoot.$java.$lang.ClassCastException();
+					}
 				}
 			} else {
 				throw new Error('checkcast');
@@ -781,6 +788,44 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var b = stack.pop();
 		var a = stack.pop();
 		stack.push(a.sub(b));
+	};
+	// monitoenter
+	executors[0xc2] = function () {
+		var obj = stack.pop();
+		if (obj.monitorCount == null) {
+			obj.monitorCount = [];
+		}
+		if (obj.monitorQueue == null) {
+			obj.monitorQueue = [];
+		}
+		if (obj.monitorCount.length == 0 || obj.monitorCount[0] == js2me.currentThread) {
+			obj.monitorCount.push(js2me.currentThread)
+		} else {
+			obj.monitorQueue.push(js2me.currentThread)
+			js2me.suspendThread = true;
+			finish = true;
+			stream.index -= 2;
+			suspendCall(false);
+		}
+	};
+	// monitoexit
+	executors[0xc3] = function () {
+		var obj = stack.pop();
+		if (obj.monitorCount == null) {
+			obj.monitorCount = [];
+		}
+		if (obj.monitorQueue == null) {
+			obj.monitorQueue = [];
+		}
+		obj.monitorCount.pop();
+		if (obj.monitorCount.length == 0) {
+			var threadId = obj.monitorQueue.pop();
+			if (threadId != null) {
+				setTimeout(function () {
+					js2me.restoreThread(threadId);
+				}, 1);
+			}
+		}
 	};
 	// multinewarray
 	executors[0xc5] = function () {

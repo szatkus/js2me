@@ -233,10 +233,10 @@ js2me.convertClass = function (stream) {
 		newClass.prototype.superClass = constantPool[stream.readUint16()].className;
 	}
 	function readInterfaces() {
+		newClass.prototype.interfaces = [];
 		var count = stream.readUint16();
 		for (var i = 0; i < count; i++) {
-			//TODO
-			stream.readUint16();
+			newClass.prototype.interfaces.push(constantPool[stream.readUint16()].className);
 		}
 	}
 	function readFields() {

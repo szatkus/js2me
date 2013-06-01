@@ -22,6 +22,9 @@
 		$println_J_V: function (x) {
 			this.output.$write__B_V(x.toString());
 			this.output.$write_B_V(10);
+		},
+		$println_Ljava_lang_Object__V: function (obj) {
+			this.$println_Ljava_lang_String__V(obj.$toString__Ljava_lang_String_());
 		}
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$java.$io')['$PrintStream'] = PrintStream;

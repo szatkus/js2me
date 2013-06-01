@@ -4,6 +4,10 @@ js2me.createClass({
 	$getClass__Ljava_lang_Class_: function () {
 		return new javaRoot.$java.$lang.$Class(this.className);
 	},
+	$toString__Ljava_lang_String_: function () {
+		var text = this.className + ':' + this.$hashCode__I();
+		return new javaRoot.$java.$lang.$String(text);
+	},
 	$wait__V: function () {
 		if (this.waiting == null) {
 			this.waiting = [];
@@ -21,6 +25,12 @@ js2me.createClass({
 			js2me.lastHash++;
 		}
 		return this.hashCode;
+	},
+	$notify__V: function () {
+		var threadId = this.waiting.pop();
+		setTimeout(function () {
+			js2me.restoreThread(threadId);
+		}, 1);
 	},
 	name: '$Object',
 	package: 'javaRoot.$java.$lang'

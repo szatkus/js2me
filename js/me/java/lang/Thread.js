@@ -8,9 +8,10 @@ js2me.createClass({
 	$start__V: function () {
 		var thread = this;
 		var runnable = this.runnable || thread;
+		thread.id = js2me.threads.length;
+		js2me.threads.push(thread);
 		setTimeout(function () {
-			js2me.currentThread = js2me.threads.length;
-			js2me.threads.push(thread);
+			js2me.currentThread = thread.id;
 			runnable.$run__V();
 		}, 1);
 	},
@@ -30,6 +31,9 @@ js2me.createClass({
 	},
 	$setPriority_I_V: function (priority) {
 		this.priority = priority;
+	},
+	$activeCount__I: function () {
+		return js2me.threads.length;
 	},
 	package: 'javaRoot.$java.$lang',
 	name: '$Thread'

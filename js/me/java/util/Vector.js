@@ -30,6 +30,24 @@ js2me.createClass({
 		var enumeration = new javaRoot.$java.$util.$ArrayEnumeration(this.array);
 		return enumeration;
 	},
+	$insertElementAt_Ljava_lang_Object_I_V: function (obj, index) {
+		if (index < 0 || index > this.array.length) {
+			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
+		}
+		for (var i = this.array.length - 1; i >= index; i--) {
+			this.array[i + 1] = this.array[i];
+		}
+		this.array[index] = obj;
+	},
+	$removeElementAt_I_V: function (index) {
+		if (index < 0 || index >= this.array.length) {
+			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
+		}
+		for (var i = this.array.length - 1; i >= index; i--) {
+			this.array[i] = this.array[i + 1];
+		}
+		this.array.pop();
+	},
 	require: ['javaRoot.$java.$util.$NoSuchElementException', 'javaRoot.$java.$util.$ArrayEnumeration'],
 	package: 'javaRoot.$java.$util',
 	name: '$Vector'
