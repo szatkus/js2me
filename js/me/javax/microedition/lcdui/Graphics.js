@@ -3,7 +3,7 @@ js2me.createClass({
 		this.element = canvas;
 		this.context = canvas.getContext('2d');
 		this.context.textBaseline = 'top';
-		this.$setColor_III_V(0, 0, 0);
+		this.$setColor$III$V(0, 0, 0);
 	},
 	$HCENTERI: 1,
 	$VCENTERI: 2,
@@ -12,18 +12,18 @@ js2me.createClass({
 	$TOPI: 16,
 	$BOTTOMI: 32,
 	$BASELINEI: 64,
-	$setColor_III_V: function (r, g, b) {
+	$setColor$III$V: function (r, g, b) {
 		this.color = 'rgb(' + r + ', ' + g + ', ' + b + ')';
 		this.context.fillStyle = this.color;
 		this.context.strokeStyle = this.color;
 	},
-	$setColor_I_V: function (rgb) {
+	$setColor$I$V: function (rgb) {
 		var red = (rgb & 0xff0000) >> 16;
 		var green = (rgb & 0x00ff00) >> 8;
 		var blue = (rgb & 0x0000ff);
-		this.$setColor_III_V(red, green, blue);
+		this.$setColor$III$V(red, green, blue);
 	},
-	$fillRect_IIII_V: function (x, y, width, height) {
+	$fillRect$IIII$V: function (x, y, width, height) {
 		if (width == 0) {
 			width = 1;
 		}
@@ -32,7 +32,7 @@ js2me.createClass({
 		}
 		this.context.fillRect(x, y, width, height);
 	},
-	$drawRect_IIII_V: function (x, y, width, height) {
+	$drawRect$IIII$V: function (x, y, width, height) {
 		if (width == 0) {
 			width = 1;
 		}
@@ -41,7 +41,7 @@ js2me.createClass({
 		}
 		this.context.strokeRect(x, y, width, height);
 	},
-	$drawLine_IIII_V: function (x1, y1, x2, y2) {
+	$drawLine$IIII$V: function (x1, y1, x2, y2) {
 		this.context.beginPath();
 		if (x1 > x2) {
 			x1++;
@@ -64,22 +64,22 @@ js2me.createClass({
 		this.context.stroke();
 		this.context.closePath();
 	},
-	$drawChar_CIII_V: function (char, x, y, anchor) {
+	$drawChar$CIII$V: function (char, x, y, anchor) {
 		var str = new javaRoot.$java.$lang.$String(String.fromCharCode(char));
 		this.$drawString_Ljava_lang_String_III_V(str, x, y, anchor);
 	},
-	$drawChars__CIIIII_V: function (data, offset, length, x, y, anchor) {
+	$drawChars$_CIIIII$V: function (data, offset, length, x, y, anchor) {
 		var str = javaRoot.$java.$lang.$String.prototype.$valueOf__CII_Ljava_lang_String_(data, offset, length);
 		this.$drawString_Ljava_lang_String_III_V(str, x, y, anchor);
 	},
-	$drawArc_IIIIII_V: function (x, y, width, height, startAngle, arcAngle) {
+	$drawArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
 		//TODO: maybe it isn't an arc...
 		this.context.strokeRect(x, y, width, height);
 	},
-	$setFont_Ljavax_microedition_lcdui_Font__V: function (font) {
+	$setFont$Ljavax_microedition_lcdui_Font_$V: function (font) {
 		this.context.font = font.getCSS();
 	},
-	$drawString_Ljava_lang_String_III_V: function (str, x, y, anchor) {
+	$drawString$Ljava_lang_String_III$V: function (str, x, y, anchor) {
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;
 		}
@@ -103,11 +103,11 @@ js2me.createClass({
 		}
 		this.context.fillText(str.text, x, y);
 	},
-	$drawImage_Ljavax_microedition_lcdui_Image_III_V: function (img, x, y, anchor) {
+	$drawImage$Ljavax_microedition_lcdui_Image_III$V: function (img, x, y, anchor) {
 		//TODO: anchor
 		this.context.drawImage(img.element, x, y);
 	},
-	$setClip_IIII_V: function (x, y, width, height) {
+	$setClip$IIII$V: function (x, y, width, height) {
 		this.clipX = x;
 		this.clipY = y;
 		this.clipWidth = width;
@@ -119,19 +119,19 @@ js2me.createClass({
 		this.context.clip();
 		this.context.closePath();
 	},
-	$getClipX__I: function () {
+	$getClipX$$I: function () {
 		return this.clipX;
 	},
-	$getClipY__I: function () {
+	$getClipY$$I: function () {
 		return this.clipY;
 	},
-	$getClipWidth__I: function () {
+	$getClipWidth$$I: function () {
 		return this.clipWidth;
 	},
-	$getClipHeight__I: function () {
+	$getClipHeight$$I: function () {
 		return this.clipHeight;
 	},
-	$drawRegion_Ljavax_microedition_lcdui_Image_IIIIIIII_V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
+	$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
 		//TODO: transformations and achor
 		this.context.drawImage(src.element, sx, sy, width, height, dx, dy, width, height);
 	},		

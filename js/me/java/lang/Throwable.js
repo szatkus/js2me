@@ -2,10 +2,10 @@
 	function Throwable () {
 	}
 	Throwable.prototype = {
-		_init__V: function () {
+		_init$$V: function () {
 			
 		},
-		$printStackTrace__V: function () {
+		$printStackTrace$$V: function () {
 			//TODO
 			console.log('[stacktrace]');
 		}

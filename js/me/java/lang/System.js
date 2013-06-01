@@ -1,8 +1,8 @@
 js2me.createClass({
-	$currentTimeMillis__J: function () {
+	$currentTimeMillis$$J: function () {
 		return new js2me.Long(0, (new Date()).getTime());
 	},
-	_clinit__V: function () {
+	_clinit$$V: function () {
 		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
 			$write__B_V: function (b) {
@@ -25,7 +25,7 @@ js2me.createClass({
 			
 		});
 	},
-	$arraycopy_Ljava_lang_Object_ILjava_lang_Object_II_V: function (src, srcPosition, dst, dstPosition, length) {
+	$arraycopy$Ljava_lang_Object_ILjava_lang_Object_II$V: function (src, srcPosition, dst, dstPosition, length) {
 		if (src == null || dst == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException;
 		}
@@ -33,9 +33,12 @@ js2me.createClass({
 			dst[dstPosition + i] = src[srcPosition + i];
 		}
 	},
-	$gc__V: function () {
+	$gc$$V: function () {
 		// Calling the gc method suggests that the Java Virtual Machine expend effort toward recycling unused objects (...)
 		// Ignore the suggestion...
+	},
+	$getProperty$Ljava_lang_String_$Ljava_lang_String_: function (key) {
+		console.log(key.text);
 	},
 	require: ['javaRoot.$java.$io.$PrintStream'],
 	package: 'javaRoot.$java.$lang',

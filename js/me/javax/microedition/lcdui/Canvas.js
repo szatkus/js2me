@@ -28,17 +28,17 @@ js2me.createClass({
 	$KEY_NUM9I: 57,
 	$KEY_STARI: 42,
 	$KEY_POUNDI: 35,
-	_init__V: function () {
+	_init$$V: function () {
 		this.element = document.createElement('canvas');
 		this.element.width = js2me.width;
 		this.element.height = js2me.height;
 		this.graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		this.element.addEventListener('DOMNodeInserted', function () {
-			canvas.$showNotify__V();
+			canvas.$showNotify$$V();
 		});
 		this.element.addEventListener('DOMNodeRemoved', function () {
-			canvas.$showNotify__V();
+			canvas.$hideNotify$$V();
 		});
 		this.keys = document.getElementsByClassName('key');
 		var keyMapping = {
@@ -68,14 +68,14 @@ js2me.createClass({
 		this.keyListener = function (event) {
 			var id = event.currentTarget.id;
 			var keyCode = keyMapping[id];
-			canvas.$keyPressed_I_V(keyCode);
+			canvas.$keyPressed$I$V(keyCode);
 		};
 		this.init();
 	},
-	$repaint__V: function () {
-		this.$paint_Ljavax_microedition_lcdui_Graphics__V(this.graphics);
+	$repaint$$V: function () {
+		this.$paint$Ljavax_microedition_lcdui_Graphics_$V(this.graphics);
 	},
-	$getGameAction_I_I: function (keyCode) {
+	$getGameAction$I$I: function (keyCode) {
 		var gameAction = this.gameActionMapping[keyCode];
 		if (gameAction != null) {
 			return gameAction;
@@ -83,27 +83,27 @@ js2me.createClass({
 			return keyCode;
 		}
 	},
-	$serviceRepaints__V: function () {
+	$serviceRepaints$$V: function () {
 		//TODO: is it ok?
 		//this.$repaint__V();
 	},
-	$showNotify__V: function () {
+	$showNotify$$V: function () {
 		for (var i = 0; i < this.keys.length; i++) {
 			this.keys[i].addEventListener('mousedown', this.keyListener);
 		}
 		this.$repaint__V();
 	},
-	$hideNotify__V: function () {
+	$hideNotify$$V: function () {
 		for (var i = 0; i < this.keys.length; i++) {
 			this.keys[i].removeEventListener('mousedown', this.keyListener);
 		}
 	},
-	$setFullScreenMode_Z_V: function () {
+	$setFullScreenMode$Z$V: function () {
 		//TODO
 	},
-	$isDoubleBuffered__Z: function () {
+	$isDoubleBuffered$$Z: function () {
 		//TODO: let's think about this...
-		return false;
+		return 0;
 	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable',
 	package: 'javaRoot.$javax.$microedition.$lcdui',

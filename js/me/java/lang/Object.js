@@ -1,21 +1,21 @@
 js2me.createClass({
-	_init__V: function () {
+	_init$$V: function () {
 	},
-	$getClass__Ljava_lang_Class_: function () {
+	$getClass$$Ljava_lang_Class_: function () {
 		return new javaRoot.$java.$lang.$Class(this.className);
 	},
-	$toString__Ljava_lang_String_: function () {
+	$toString$$Ljava_lang_String_: function () {
 		var text = this.className + ':' + this.$hashCode__I();
 		return new javaRoot.$java.$lang.$String(text);
 	},
-	$wait__V: function () {
+	$wait$$V: function () {
 		if (this.waiting == null) {
 			this.waiting = [];
 		}
 		this.waiting.push(js2me.currentThread);
 		js2me.suspendThread = true;
 	},
-	$hashCode__I: function () {
+	$hashCode$$I: function () {
 		
 		if (js2me.lastHash == null) {
 			js2me.lastHash = 1;
@@ -26,7 +26,7 @@ js2me.createClass({
 		}
 		return this.hashCode;
 	},
-	$notify__V: function () {
+	$notify$$V: function () {
 		var threadId = this.waiting.pop();
 		setTimeout(function () {
 			js2me.restoreThread(threadId);

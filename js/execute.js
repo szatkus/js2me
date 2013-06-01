@@ -81,6 +81,9 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		}
 		args.reverse();
 		var obj = static ? window : stack.pop();
+		if (obj == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
 		//console.log('START: ' + methodInfo.className + '->' + methodInfo.name);
 		var method = findMethod(virtual ? obj.className : methodInfo.className, methodInfo.name)
 		if (!method) {
@@ -206,6 +209,10 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		
 		
 		if (ref != null) {
+			if (ref.constructor == Array) {
+				stack.push(ref);
+				return;
+			}
 			var refClass = js2me.findClass(ref.className).prototype;
 			var cmpClass = js2me.findClass(type.className).prototype;
 			if (refClass.type == 'class') {
@@ -247,15 +254,21 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		stack.push(a);
 	};
 	// dup_x2
-	/*executors[0x5b] = function () {
-		var a = stack.pop();
+	executors[0x5b] = function () {
 		var b = stack.pop();
-		var c = stack.pop();
-		stack.push(a);
-		stack.push(c);
-		stack.push(b);
-		stack.push(a);
-	};*/
+		var a = stack.pop();
+		if (b.constructor != js2me.Long && b.constructor != js2me.Double) {
+			var c = stack.pop();
+			stack.push(c);
+			stack.push(b);
+			stack.push(a);
+			stack.push(c);
+		} else {
+			stack.push(a);
+			stack.push(b);
+			stack.push(a);
+		}
+	};
 	// dup2
 	executors[0x5c] = function () {
 		var a = stack.pop();
@@ -900,6 +913,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x35] = function () {
 		var index = stack.pop();
 		var array = stack.pop();
+		if (array == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		if (index > array.length) {
+			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
+		}
 		stack.push(array[index]);
 	}
 	// sastore
@@ -962,10 +981,10 @@ js2me.initializeClass = function(classObj) {
 			var superClassObj = js2me.findClass(classObj.prototype.superClass);
 			js2me.initializeClass(superClassObj);
 		}
-		if (classObj.prototype._clinit__V) {
+		if (classObj.prototype._clinit$$V) {
 			//console.log(classObj.prototype.className);
-			var clinit = classObj.prototype._clinit__V;
-			classObj.prototype._clinit__V = null;
+			var clinit = classObj.prototype._clinit$$V;
+			classObj.prototype._clinit$$V = null;
 			clinit();
 		}
 	}

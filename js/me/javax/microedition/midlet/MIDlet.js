@@ -1,9 +1,9 @@
 js2me.createClass({
-	$notifyDestroyed__V: function () {
+	$notifyDestroyed$$V: function () {
 		//TODO
 		console.log('EXIT');
 	},
-	_init__V: function () {
+	_init$$V: function () {
 	},
 	package: 'javaRoot.$javax.$microedition.$midlet',
 	name: '$MIDlet'

@@ -1,5 +1,5 @@
 js2me.createClass({
-	$read__BII_I: function (buffer, offset, length) {
+	$read$_BII$I: function (buffer, offset, length) {
 		for (var i = 0; i < length; i++) {
 			var value = this.$read__I();
 			if (value != -1) {
@@ -10,7 +10,7 @@ js2me.createClass({
 		}
 		return length;
 	},
-	$close__V: function () {
+	$close$$V: function () {
 		// for what?
 	},
 	package: 'javaRoot.$java.$io',

@@ -140,7 +140,7 @@ js2me.convertClass = function (stream) {
 		return name;
 	}
 	function escapeType(typeName) {
-		typeName = typeName.replace(new RegExp('[\\[\\(\\);/]', 'g'), '_');
+		typeName = typeName.replace(new RegExp('[\\[;/]', 'g'), '_').replace(new RegExp('[\\(\\)]', 'g'), '$');
 		return typeName;
 	}
 	function resolveConstants() {

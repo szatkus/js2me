@@ -2,7 +2,7 @@ js2me.createClass({
 	construct: function (bufferStream) {
 		this.stream = bufferStream;
 	},
-	$read__I: function () {
+	$read$$I: function () {
 		if (this.stream.isEnd()) {
 			return -1;
 		}

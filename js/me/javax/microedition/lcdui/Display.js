@@ -1,5 +1,5 @@
 js2me.createClass({
-	$getDisplay_Ljavax_microedition_midlet_MIDlet__Ljavax_microedition_lcdui_Display_: function (midlet) {
+	$getDisplay$Ljavax_microedition_midlet_MIDlet_$Ljavax_microedition_lcdui_Display_: function (midlet) {
 		if (!midlet.display) {
 			midlet.display = new javaRoot.$javax.$microedition.$lcdui.$Display();
 			var element = document.getElementById('screen');
@@ -7,7 +7,7 @@ js2me.createClass({
 		}
 		return midlet.display;
 	},
-	$setCurrent_Ljavax_microedition_lcdui_Displayable__V: function (displayable) {
+	$setCurrent$Ljavax_microedition_lcdui_Displayable_$V: function (displayable) {
 		clearTimeout(this.timeout);
 		var screen = this.element;
 		if (this.current) {
@@ -26,13 +26,13 @@ js2me.createClass({
 			displayable.refreshCommands();
 		}, 1);
 	},
-	$callSerially_Ljava_lang_Runnable__V: function (r) {
+	$callSerially$Ljava_lang_Runnable_$V: function (r) {
 		a = 1;
 		setTimeout(function () {
-			r.$run__V();
+			r.$run$$V();
 		}, 1);
 	},
-	$getCurrent__Ljavax_microedition_lcdui_Displayable_: function () {
+	$getCurrent$$Ljavax_microedition_lcdui_Displayable_: function () {
 		return this.current;
 	},
 	package: 'javaRoot.$javax.$microedition.$lcdui',
