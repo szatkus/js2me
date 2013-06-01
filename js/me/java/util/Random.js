@@ -4,6 +4,10 @@
 	Random.prototype = {
 		_init__V: function () {
 		},
+		_init_J_V: function (seed) {
+			// is it needed?
+			//console.log(seed.lo);
+		},
 		$nextInt_I__I: function (n) {
 			return Math.floor(Math.random() * n)
 		},

@@ -3,7 +3,7 @@ js2me.createClass({
 		return new js2me.Long(0, (new Date()).getTime());
 	},
 	_clinit__V: function () {
-		this.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
+		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
 			$write__B_V: function (b) {
 				for (var i in b) {
@@ -32,6 +32,10 @@ js2me.createClass({
 		for (var i = 0; i < length; i++) {
 			dst[dstPosition + i] = src[srcPosition + i];
 		}
+	},
+	$gc__V: function () {
+		// Calling the gc method suggests that the Java Virtual Machine expend effort toward recycling unused objects (...)
+		// Ignore the suggestion...
 	},
 	require: ['javaRoot.$java.$io.$PrintStream'],
 	package: 'javaRoot.$java.$lang',

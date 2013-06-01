@@ -8,7 +8,9 @@
 			this.output.$write_B_V(10);
 		},
 		$print_Ljava_lang_String__V: function (x) {
-			this.output.$write__B_V(x);
+			for (var i = 0; i < x.text.length; i++) {
+				this.output.$write_B_V(x.text.charCodeAt(i));
+			}
 		},
 		$println_I_V: function (x) {
 			this.$print_I_V(x);

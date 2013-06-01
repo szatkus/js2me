@@ -42,7 +42,7 @@ js2me.createClass({
 			}
 		});
 	},
-	$setTitle_Ljava_lang_String__I: function (s) {
+	$setTitle_Ljava_lang_String__V: function (s) {
 		this.title = s;
 	},
 	$getWidth__I: function () {

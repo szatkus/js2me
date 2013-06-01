@@ -28,6 +28,10 @@
 				text += this.strings[i];
 			}
 			return new javaRoot.$java.$lang.$String(text);
+		},
+		$append_C_Ljava_lang_StringBuffer_: function (char) {
+			this.strings.push(String.fromCharCode(char));
+			return this;
 		}
 	};
 	js2me.findPackage(js2me.JAVA_ROOT + '.$java.$lang')['$StringBuffer'] = StringBuffer ;

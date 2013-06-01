@@ -108,12 +108,28 @@ js2me.createClass({
 		this.context.drawImage(img.element, x, y);
 	},
 	$setClip_IIII_V: function (x, y, width, height) {
+		this.clipX = x;
+		this.clipY = y;
+		this.clipWidth = width;
+		this.clipHeight = height;
 		this.context.restore();
 		this.context.save();
 		this.context.beginPath();
 		this.context.rect(x, y, width, height);
 		this.context.clip();
 		this.context.closePath();
+	},
+	$getClipX__I: function () {
+		return this.clipX;
+	},
+	$getClipY__I: function () {
+		return this.clipY;
+	},
+	$getClipWidth__I: function () {
+		return this.clipWidth;
+	},
+	$getClipHeight__I: function () {
+		return this.clipHeight;
 	},
 	$drawRegion_Ljavax_microedition_lcdui_Image_IIIIIIII_V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
 		//TODO: transformations and achor

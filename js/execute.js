@@ -200,10 +200,11 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0xc0] = function () {
 		var ref = stack.pop();
 		var type = constantPool[stream.readUint16()];
-		var refClass = js2me.findClass(ref.className).prototype;
-		var cmpClass = js2me.findClass(type.className).prototype;
+		
 		
 		if (ref != null) {
+			var refClass = js2me.findClass(ref.className).prototype;
+			var cmpClass = js2me.findClass(type.className).prototype;
 			if (refClass.type == 'class') {
 				if (cmpClass.type == 'class') {
 					while (refClass.className != cmpClass.className && refClass.superClass) {
@@ -636,6 +637,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var a = stack.pop();
 		stack.push(a - b);
 	};
+	// land
+	executors[0x61] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a.add(b));
+	};
 	// laload
 	executors[0x2f] = function () {
 		var index = stack.pop();
@@ -663,17 +670,11 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	};
 	// lconst_0
 	executors[0x09] = function () {
-		stack.push({
-			hi: 0,
-			lo: 0
-		});
+		stack.push(new js2me.Long(0, 0));
 	};
 	// lconst_1
 	executors[0x0a] = function () {
-		stack.push({
-			hi: 0,
-			lo: 1
-		});
+		stack.push(new js2me.Long(0, 1));
 	};
 	// ldc
 	executors[0x12] = function () {
@@ -718,6 +719,24 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x21] = function () {
 		stack.push(locals[3]);
 	};
+	// lookupswitch
+	executors[0xab] = function () {
+		while (stream.index % 4 != 0) {
+			stream.readUint8();
+		}
+		var def = stream.readInt32();
+		var count = stream.readInt32();
+		var key = stack.pop();
+		var offset = def;
+		for (var i = 0; i < count; i++) {
+			var match = stream.readInt32();
+			var value = stream.readInt32();
+			if (key == match) {
+				offset = value;
+			}
+		}
+		stream.seek(position + offset);
+	}
 	// lor
 	executors[0x79] = function () {
 		var b = stack.pop();
@@ -762,6 +781,27 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var b = stack.pop();
 		var a = stack.pop();
 		stack.push(a.sub(b));
+	};
+	// multinewarray
+	executors[0xc5] = function () {
+		stream.readUint16();
+		var dimensions = stream.readUint8();
+		var counts = [];
+		for (var i = 0; i < dimensions; i++) {
+			counts[i] = stack.pop();
+		}
+		function setLength(element, depth) {
+			if (depth + 1 == dimensions) {
+				return;
+			}
+			for (var i = 0; i < counts[depth]; i++) {
+				element[i] = [];
+				setLength(element[i], depth + 1);
+			}
+		}
+		var array = [];
+		setLength(array, 0);
+		stack.push(array);
 	};
 	// new
 	executors[0xbb] = function () {
@@ -872,15 +912,16 @@ js2me.restoreThread = function (threadId) {
 	}
 };
 js2me.initializeClass = function(classObj) {
-	if (classObj.prototype.superClass) {
-		var superClassObj = js2me.findClass(classObj.prototype.superClass);
-		js2me.initializeClass(superClassObj);
-	}
-	if (classObj.prototype._clinit__V) {
-		//console.log(classObj.prototype.className);
-		var clinit = classObj.prototype._clinit__V;
-		classObj.prototype._clinit__V = null;
-		clinit();
-		
+	if (classObj.prototype) {
+		if (classObj.prototype.superClass) {
+			var superClassObj = js2me.findClass(classObj.prototype.superClass);
+			js2me.initializeClass(superClassObj);
+		}
+		if (classObj.prototype._clinit__V) {
+			//console.log(classObj.prototype.className);
+			var clinit = classObj.prototype._clinit__V;
+			classObj.prototype._clinit__V = null;
+			clinit();
+		}
 	}
 };

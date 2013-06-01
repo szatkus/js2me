@@ -2,7 +2,7 @@ js2me.createClass({
 	_init_Ljava_lang_String__V: function (title) {
 		this.element = document.createElement('div');
 		this.element.className = 'form';
-		this.$setTitle_Ljava_lang_String__I(title);
+		this.$setTitle_Ljava_lang_String__V(title);
 		this.init();
 	},
 	$append_Ljava_lang_String__I: function (str) {

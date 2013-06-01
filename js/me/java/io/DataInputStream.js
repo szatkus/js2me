@@ -27,6 +27,9 @@ js2me.createClass({
 		}
 		return value;
 	},
+	$readUnsignedByte__I: function () {
+		return this.stream.$read__I();
+	},
 	$readFully__B_V: function (buffer) {
 		if (this.stream.$read__BII_I(buffer, 0, buffer.length) < buffer.length) {
 			throw new javaRoot.$java.$io.$EOFException();

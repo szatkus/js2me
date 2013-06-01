@@ -11,6 +11,7 @@ js2me.createClass({
 		} else {
 			if (createIfNecessary) {
 				localStorage.setItem(storageName, 0)
+				localStorage.setItem(storageName + 'lastModified', 0);
 				return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);
 			} else {
 				throw new javaRoot.$javax.$microedition.$rms.$RecordStoreNotFoundException();
@@ -21,10 +22,15 @@ js2me.createClass({
 	$getNumRecords__I : function () {
 		return localStorage.getItem(this.storageName);
 	},
+	$getLastModified__J: function () {
+		var time = parseInt(localStorage.getItem(this.storageName + 'lastModified'));
+		return new js2me.Long(0, time);
+	},
 	$addRecord__BII_I: function (data, offset, numBytes) {
 		var id = parseInt(localStorage.getItem(this.storageName)) + 1;
 		localStorage.setItem(this.storageName, id);
 		localStorage.setItem(this.storageName + id, data.slice(offset, offset + numBytes).toString());
+		localStorage.setItem(this.storageName + 'lastModified', (new Date()).getTime());
 	},
 	$getRecord_I__B: function (id) {
 		try {
