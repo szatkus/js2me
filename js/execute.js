@@ -1011,6 +1011,9 @@ js2me.restoreThread = function (threadId) {
 	if (threadId == null) {
 		threadId = js2me.currentThread;
 	}
+	if (js2me.restoreStack[threadId] == undefined) {
+		return;
+	}
 	var restoreStack = js2me.restoreStack[threadId].pop();
 	if (restoreStack) {
 		js2me.currentThread = threadId;

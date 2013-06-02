@@ -58,8 +58,8 @@ js2me.createClass({
 		return this.context.measureText(String.fromCharCode(char)).width;
 	},
 	$charsWidth$_CII$I: function (data, offset, length) {
-		var str = javaRoot.$java.$lang.$String.prototype.$valueOf__CII_Ljava_lang_String_(data, offset, length)
-		return this.$stringWidth_Ljava_lang_String__I(str);
+		var str = javaRoot.$java.$lang.$String.prototype.$valueOf$_CII$Ljava_lang_String_(data, offset, length)
+		return this.$stringWidth$Ljava_lang_String_$I(str);
 	},
 	getCSS: function () {
 		return this.style + (this.height * 0.75) + 'px/' + this.height + 'px ' + this.face;

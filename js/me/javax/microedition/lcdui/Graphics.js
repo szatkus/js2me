@@ -66,11 +66,11 @@ js2me.createClass({
 	},
 	$drawChar$CIII$V: function (char, x, y, anchor) {
 		var str = new javaRoot.$java.$lang.$String(String.fromCharCode(char));
-		this.$drawString_Ljava_lang_String_III_V(str, x, y, anchor);
+		this.$drawString$Ljava_lang_String_III$V(str, x, y, anchor);
 	},
 	$drawChars$_CIIIII$V: function (data, offset, length, x, y, anchor) {
-		var str = javaRoot.$java.$lang.$String.prototype.$valueOf__CII_Ljava_lang_String_(data, offset, length);
-		this.$drawString_Ljava_lang_String_III_V(str, x, y, anchor);
+		var str = javaRoot.$java.$lang.$String.prototype.$valueOf$_CII$Ljava_lang_String_(data, offset, length);
+		this.$drawString$Ljava_lang_String_III$V(str, x, y, anchor);
 	},
 	$drawArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
 		//TODO: maybe it isn't an arc...

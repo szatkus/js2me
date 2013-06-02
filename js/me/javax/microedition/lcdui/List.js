@@ -4,14 +4,14 @@ js2me.createClass({
 		this.element.className = 'list';
 		this.init();
 	},
-	_init_Ljava_lang_String_I_V: function (title, listType) {
+	_init$Ljava_lang_String_I$V: function (title, listType) {
 		
-		this.$setTitle_Ljava_lang_String__I(title);
+		this.$setTitle$Ljava_lang_String_$I(title);
 		if (listType != 3) {
 			throw new Error('List: only IMPLICIT type');
 		}
 	},
-	$append_Ljava_lang_String_Ljavax_microedition_lcdui_Image__I: function (stringPart, imagePart) {
+	$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I: function (stringPart, imagePart) {
 		var newItem = document.createElement('div');
 		newItem.className = 'item';
 		newItem.innerHTML = stringPart.text;
@@ -26,16 +26,16 @@ js2me.createClass({
 					list.selectedItem = i;
 				}
 			}
-			list.commandListener.$commandAction_Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable__V(list.command, list);
+			list.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(list.command, list);
 		});
 	},
-	$deleteAll__V: function () {
+	$deleteAll$$V: function () {
 		this.element.innerHTML = '';
 	},
-	$setSelectCommand_Ljavax_microedition_lcdui_Command__V: function (command) {
+	$setSelectCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
 		this.command = command;
 	},
-	$getSelectedIndex__I : function () {
+	$getSelectedIndex$$I : function () {
 		return this.selectedItem;
 	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable',

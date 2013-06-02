@@ -1,5 +1,5 @@
 js2me.createClass({
-	$cancel__Z: function () {
+	$cancel$$Z: function () {
 		clearTimeout(this.timer);
 		return this.executing;
 	},

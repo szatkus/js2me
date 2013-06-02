@@ -4,9 +4,9 @@ js2me.createClass({
 	},
 	$writeBoolean$Z$V: function (v) {
 		if (v) {
-			this.out.$write_I_V(1);
+			this.out.$write$I$V(1);
 		} else {
-			this.out.$write_I_V(0);
+			this.out.$write$I$V(0);
 		}
 	},
 	$writeInt$I$V: function (value) {
@@ -19,7 +19,7 @@ js2me.createClass({
 			value = value >> 8;
 		}
 		buffer.reverse();
-		this.out.$write__B_V(buffer);
+		this.out.$write$_B$V(buffer);
 	},
 	$writeUTF$Ljava_lang_String_$V: function (str) {
 		if (str == null) {
@@ -30,10 +30,10 @@ js2me.createClass({
 		this.out.$write$_B$V(str.$getBytes$$_B());
 	},
 	$flush$$V: function () {
-		this.out.$flush__V();
+		this.out.$flush$$V();
 	},
 	$close$$V: function () {
-		this.out.$close__V();
+		this.out.$close$$V();
 	},
 	superClass: 'javaRoot.$java.$io.$OutputStream',
 	package: 'javaRoot.$java.$io',

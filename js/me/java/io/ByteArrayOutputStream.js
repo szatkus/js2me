@@ -1,24 +1,23 @@
-(function () {
-	function ByteArrayOutputStream() {
+js2me.createClass({
+	construct: function () {
 		this.buffer = [];
-	}
-	ByteArrayOutputStream.prototype = {
-		_init__V: function () {
-		},
-		_init_I_V: function (size) {
-		},
-		$write_I_V: function (b) {
-			b = b & 0xff;
-			if (b > 127) {
-				b -= 255;
-			}
-			this.buffer.push(b);
-		},
-		$toByteArray___B: function () {
-			return this.buffer.slice(0);
-		},
-		superClass: 'javaRoot.$java.$io.$OutputStream'
-	};
-	js2me.findPackage('javaRoot.$java.$io')['$ByteArrayOutputStream'] = ByteArrayOutputStream ;
-})();
+	},
+	_init$$V: function () {
+	},
+	_init$I$V: function (size) {
+	},
+	$write$I$V: function (b) {
+		b = b & 0xff;
+		if (b > 127) {
+			b -= 255;
+		}
+		this.buffer.push(b);
+	},
+	$toByteArray$$_B: function () {
+		return this.buffer.slice(0);
+	},
+	superClass: 'javaRoot.$java.$io.$OutputStream',
+	package: 'javaRoot.$java.$io',
+	name: '$ByteArrayOutputStream'
+});
 

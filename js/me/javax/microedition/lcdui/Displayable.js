@@ -9,10 +9,10 @@ js2me.createClass({
 		var displayable = this;
 		displayable.currentCommands = [];
 		var moreMenuListener = {
-			$commandAction_Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable__V: function () {
-				var command = displayable.currentCommands[displayable.moreList.$getSelectedIndex__I()];
-				displayable.display.$setCurrent_Ljavax_microedition_lcdui_Displayable__V(displayable);
-				displayable.commandListener.$commandAction_Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable__V(command, displayable);
+			$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V: function () {
+				var command = displayable.currentCommands[displayable.moreList.$getSelectedIndex$$I()];
+				displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable);
+				displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(command, displayable);
 			}
 		};
 		if (this.moreList == null) {
@@ -24,21 +24,21 @@ js2me.createClass({
 			if (displayable.commandListener && displayable.active) {
 				displayable.currentCommands = displayable.choiceCommands;
 				if (displayable.choiceCommands.length == 1) {
-					displayable.commandListener.$commandAction_Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable__V(displayable.choiceCommands[0], displayable);
+					displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(displayable.choiceCommands[0], displayable);
 				}
 				if (displayable.choiceCommands.length > 1) {
-					displayable.display.$setCurrent_Ljavax_microedition_lcdui_Displayable__V(displayable.moreList);
-					displayable.moreList.$setCommandListener_Ljavax_microedition_lcdui_CommandListener__V(moreMenuListener);
-					displayable.moreList.$deleteAll__V();
+					displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable.moreList);
+					displayable.moreList.$setCommandListener$Ljavax_microedition_lcdui_CommandListener_$V(moreMenuListener);
+					displayable.moreList.$deleteAll$$V();
 					for (var i = 0; i < displayable.currentCommands.length; i++) {
-						displayable.moreList.$append_Ljava_lang_String_Ljavax_microedition_lcdui_Image__I(displayable.currentCommands[i].label, null);
+						displayable.moreList.$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I(displayable.currentCommands[i].label, null);
 					}
 				}
 			}
 		});
 		this.backButton.addEventListener('mousedown', function () {
 			if (displayable.backCommands.length == 1 && displayable.commandListener) {
-				displayable.commandListener.$commandAction_Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable__V(displayable.backCommands[0], displayable);
+				displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(displayable.backCommands[0], displayable);
 			}
 		});
 	},

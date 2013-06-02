@@ -1,19 +1,19 @@
 js2me.createClass({
-	_init__V: function () {
+	_init$$V: function () {
 		this.threadId = js2me.threads.length;
 		js2me.threads.push(this);
 		this.timers = [];
 	},
-	$schedule_Ljava_util_TimerTask_J_V: function (task, delay) {
+	$schedule$Ljava_util_TimerTask_J$V: function (task, delay) {
 		task.executing = true;
 		var timer = this;
 		task.timer = setTimeout(function () {
 			task.executing = false;
-			task.$run__V();
+			task.$run$$V();
 		}, delay.toInt());
 		this.timers.push(task.timer);
 	},
-	$schedule_Ljava_util_TimerTask_JJ_V: function (task, delay, interval) {
+	$schedule$Ljava_util_TimerTask_JJ$V: function (task, delay, interval) {
 		task.executing = true;
 		var timer = this;
 		task.timer = setInterval(function () {
@@ -28,15 +28,15 @@ js2me.createClass({
 					if (js2me.restoreStack[timer.threadId] && js2me.restoreStack[timer.threadId].length > 0) {
 						return;
 					}
-					task.$run__V();
+					task.$run$$V();
 				}, interval.toInt());
 				timer.timers.push(task.timer);
 			}
-			task.$run__V();
+			task.$run$$V();
 		}, delay.toInt());
 		this.timers.push(task.timer);
 	},
-	$cancel__V: function () {
+	$cancel$$V: function () {
 		for (var i = 0; i < this.timers.length; i++) {
 			clearTimeout(this.timers[i]);
 		}

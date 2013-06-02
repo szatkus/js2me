@@ -91,7 +91,7 @@ js2me.createClass({
 		for (var i = 0; i < this.keys.length; i++) {
 			this.keys[i].addEventListener('mousedown', this.keyListener);
 		}
-		this.$repaint__V();
+		this.$repaint$$V();
 	},
 	$hideNotify$$V: function () {
 		for (var i = 0; i < this.keys.length; i++) {

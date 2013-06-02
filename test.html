@@ -7,8 +7,8 @@
 	window.onload = function () {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
-		var reader = new zip.HttpReader('super_street_fighter_2_-_the_new_challengers_240x320-289913.jar');
-		//var reader = new zip.HttpReader('jars/asteroids.jar');
+		//var reader = new zip.HttpReader('super_street_fighter_2_-_the_new_challengers_240x320-289913.jar');
+		var reader = new zip.HttpReader('jars/asteroids.jar');
 		//var reader = new zip.HttpReader('jars/test.jar');
 		
 		function loadClasses(classes, callback) {
