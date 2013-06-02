@@ -29,12 +29,7 @@ js2me.createClass({
 	$addRecord$_BII$I: function (data, offset, numBytes) {
 		var id = parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
 		localStorage.setItem(this.storageName + 'size', id);
-		var str = '';
-		if (data) {
-			str = data.slice(offset, offset + numBytes).toString();
-		}
-		localStorage.setItem(this.storageName + id, str);
-		localStorage.setItem(this.storageName + 'lastModified', (new Date()).getTime());
+		this.$setRecord$I_BII$V(id, data, offset, numBytes);
 	},
 	$getRecord$I$_B: function (id) {
 		try {
@@ -68,6 +63,22 @@ js2me.createClass({
 				result.push(new javaRoot.$java.$lang.$String(storageName));
 			}
 		}
+	},
+	$deleteRecordStore$Ljava_lang_String_$V: function (storageName) {
+		var size = localStorage.getItem(storageName + 'size')
+		localStorage.removeItem(storageName + 'size');
+		localStorage.removeItem(storageName + 'lastModified');
+		for (var i = 0; i < size; i++) {
+			localStorage.removeItem(storageName + i);
+		}
+	},
+	$setRecord$I_BII$V: function (id, data, offset, numBytes) {
+		var str = '';
+		if (data) {
+			str = data.slice(offset, offset + numBytes).toString();
+		}
+		localStorage.setItem(this.storageName + id, str);
+		localStorage.setItem(this.storageName + 'lastModified', (new Date()).getTime());
 	},
 	require: [
 		'javaRoot.$javax.$microedition.$rms.$RecordEnumerationImpl', 

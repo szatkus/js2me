@@ -1,21 +1,41 @@
 js2me.Long = function (hi, lo) {
+	if (hi < 0) {
+		hi += 4294967296;
+	}
 	this.hi = hi;
 	if (lo < 0) {
 		lo += 4294967296;
 	}
 	this.lo = lo;
 	this.shl = function (shift) {
-		var lo = this.lo << shift;
-		var rest = Math.floor(lo / 0xffffffff);
-		lo = lo % 0xffffffff;
-		var hi = this.hi << shift;
-		hi = hi % 0xffffffff + rest;
+		var lo = this.lo;
+		var hi = this.hi;
+		for (var i = 0; i < shift; i++) {
+			lo *= 2;
+			hi *= 2;
+		}
+		var rest = Math.floor(lo / 0x100000000);
+		lo = lo % 0x100000000;
+		hi = hi % 0x100000000 + rest;
 		return new js2me.Long(hi, lo);
 	};
 	this.shr = function (shift) {
-		var lo = this.lo >> shift;
-		lo += (this.hi % (0xffffffff >> (32 - shift))) << (32 - shift);
-		var hi = this.hi >> shift;
+		var lo = this.lo;
+		var hi = this.hi;
+		var base = 1;
+		
+		for (var i = 0; i < shift; i++) {
+			lo /= 2;
+			hi /= 2;
+			base *= 2;
+		}
+		var rest = this.hi % base;
+		for (var i = 0; i < (32 - shift); i++) {
+			rest *= 2;
+		}
+		lo = Math.floor(lo);
+		hi = Math.floor(hi);
+		lo += rest;
 		return new js2me.Long(hi, lo);
 	};
 	this.neg = function () {
@@ -53,16 +73,48 @@ js2me.Long = function (hi, lo) {
 			sign = !sign;
 			b = b.neg();
 		}
-		if (b.hi != 0) {
-			result.lo = Math.floor(a.toInt() / b.toInt());
-		} else {
-			result.hi = a.hi / b.lo;
-			result.lo = Math.floor(a.lo / b.lo);
-			if ((result.hi % 1) < 1) {
-				result.lo += Math.round((result.hi % 1) * 0x100000000);
-				result.hi = Math.floor(result.hi);
+		var c = b;
+		var base = new js2me.Long(0, 1);
+		while (c.cmp(a) != 1) {
+			c = c.shl(1);
+			base = base.shl(1);
+		}
+		while (a.cmp(b) != -1) {
+			c = c.shr(1);
+			base = base.shr(1);
+			if (c.cmp(a) != 1) {
+				a = a.sub(c);
+				result = result.add(base);
 			}
 		}
+		if (sign) {
+			result = result.neg();
+		}
+		if (this.sign()) {
+			a = a.neg();
+		}
+		return {
+			div: result,
+			rem: a
+		};
+	};
+	this.mul = function (b) {
+		var result = new js2me.Long(0, 0);
+		var sign = false;
+		var a = this.copy();
+		if (this.sign()) {
+			sign = !sign;
+			a = this.neg();
+		}
+		if (b.sign()) {
+			sign = !sign;
+			b = b.neg();
+		}
+		result.hi = (a.hi * b.lo + a.lo * b.hi);
+		result.lo = a.lo * b.lo;
+		var rest = Math.floor(result.lo / 0x100000000);
+		result.hi = (result.hi + rest) % 0x100000000;
+		result.lo = result.lo % 0x100000000;
 		if (sign) {
 			result = result.neg();
 		}
@@ -78,15 +130,15 @@ js2me.Long = function (hi, lo) {
 			y -= 0x100000000;
 		}
 		var hi = (x - y);
-		while (hi < 0) {
-			hi += 0x100000000;
-		}
-		hi = hi % 0xffffffff;
 		var lo = this.lo - b.lo;
 		while (lo < 0) {
 			lo += 0x100000000;
 			hi--;
 		}
+		while (hi < 0) {
+			hi += 0x100000000;
+		}
+		
 		return new js2me.Long(hi, lo);
 	};
 	this.toString = function () {

@@ -107,6 +107,10 @@ js2me.createClass({
 		//TODO: anchor
 		this.context.drawImage(img.element, x, y);
 	},
+	$clipRect$IIII$V: function (x, y, width, height) {
+		this.$setClip$IIII$V(Math.max(x, this.clipX), Math.max(y, this.clipY), 
+							Math.max(width, this.clipWidth), Math.max(height, this.clipHeight));
+	},
 	$setClip$IIII$V: function (x, y, width, height) {
 		this.clipX = x;
 		this.clipY = y;
@@ -134,7 +138,18 @@ js2me.createClass({
 	$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
 		//TODO: transformations and achor
 		this.context.drawImage(src.element, sx, sy, width, height, dx, dy, width, height);
-	},		
+	},
+	$getTranslateX$$I: function () {
+		return this.translateX;
+	},
+	$getTranslateY$$I: function () {
+		return this.translateY;
+	},
+	$translate$II$V: function (x, y) {
+		this.translateX = x;
+		this.translateY = y;
+		this.context.translate(x, y);
+	},
 	package: 'javaRoot.$javax.$microedition.$lcdui', 
 	name: '$Graphics'
 });

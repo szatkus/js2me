@@ -63,6 +63,19 @@ js2me.createClass({
 	$trim$$Ljava_lang_String_: function () {
 		return new javaRoot.$java.$lang.$String(this.text.trim());
 	},
+	$getChars$II_CI$V: function (srcBegin, srcEnd, dst, dstBegin) {
+		var length = srcEnd - srcBegin;
+		if (srcBegin < 0 || srcBegin > srcEnd || srcEnd > this.text.length ||
+			dstBegin < 0 || dstBegin + length > dst.length) {
+			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
+		}
+		if (dst == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		for (var i = 0; i < length; i++) {
+			dst[dstBegin + i] = this.text.charCodeAt(srcBegin + i);
+		}
+	},
 	package: 'javaRoot.$java.$lang',
 	name: '$String'
 });

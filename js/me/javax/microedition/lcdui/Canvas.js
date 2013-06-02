@@ -35,9 +35,16 @@ js2me.createClass({
 		this.graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		this.element.addEventListener('DOMNodeInserted', function () {
+			for (var i = 0; i < canvas.keys.length; i++) {
+				canvas.keys[i].addEventListener('mousedown', canvas.keyListener);
+			}
+			canvas.$repaint$$V();
 			canvas.$showNotify$$V();
 		});
 		this.element.addEventListener('DOMNodeRemoved', function () {
+			for (var i = 0; i < canvas.keys.length; i++) {
+				canvas.keys[i].removeEventListener('mousedown', canvas.keyListener);
+			}
 			canvas.$hideNotify$$V();
 		});
 		this.keys = document.getElementsByClassName('key');
@@ -72,6 +79,8 @@ js2me.createClass({
 		};
 		this.init();
 	},
+	$paint$Ljavax_microedition_lcdui_Graphics_$V: function () {
+	},
 	$repaint$$V: function () {
 		this.$paint$Ljavax_microedition_lcdui_Graphics_$V(this.graphics);
 	},
@@ -88,15 +97,10 @@ js2me.createClass({
 		//this.$repaint__V();
 	},
 	$showNotify$$V: function () {
-		for (var i = 0; i < this.keys.length; i++) {
-			this.keys[i].addEventListener('mousedown', this.keyListener);
-		}
-		this.$repaint$$V();
+		
 	},
 	$hideNotify$$V: function () {
-		for (var i = 0; i < this.keys.length; i++) {
-			this.keys[i].removeEventListener('mousedown', this.keyListener);
-		}
+		
 	},
 	$setFullScreenMode$Z$V: function () {
 		//TODO

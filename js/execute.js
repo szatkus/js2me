@@ -735,7 +735,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x6d] = function () {
 		var b = stack.pop();
 		var a = stack.pop();
-		stack.push(a.div(b));
+		stack.push(a.div(b).div);
 	};
 	// lload
 	executors[0x16] = function () {
@@ -757,6 +757,17 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	// lload_3
 	executors[0x21] = function () {
 		stack.push(locals[3]);
+	};
+	// lmul
+	executors[0x69] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a.mul(b));
+	};
+	// lneg
+	executors[0x75] = function () {
+		var a = stack.pop();
+		stack.push(a.neg());
 	};
 	// lookupswitch
 	executors[0xab] = function () {
@@ -781,6 +792,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var b = stack.pop();
 		var a = stack.pop();
 		stack.push(new js2me.Long(a.hi | b.hi, a.lo | b.lo));
+	};
+	// lrem
+	executors[0x71] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a.div(b).rem);
 	};
 	// lshl
 	executors[0x79] = function () {

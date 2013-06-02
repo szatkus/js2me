@@ -1,13 +1,13 @@
 js2me.createClass({
-	_init__B_V: function (buffer) {
-		this._init__BII_V(buffer, 0, buffer.length);
+	_init$_B$V: function (buffer) {
+		this._init$_BII$V(buffer, 0, buffer.length);
 	},
-	_init__BII_V: function (buffer, offset, length) {
+	_init$_BII$V: function (buffer, offset, length) {
 		this.$buf_B = buffer;
 		this.$posI = offset;
 		this.$countI = offset + length;
 	},
-	$read__I: function () {
+	$read$$I: function () {
 		if (!this.$buf_B) {
 			throw new javaRoot.$java.$io.$IOException();
 		}

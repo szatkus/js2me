@@ -1,32 +1,31 @@
-(function () {
-	function PrintStream(output) {
+js2me.createClass({
+	construct: function (output) {
 		this.output = output;
-	}
-	PrintStream.prototype = {
-		$println_Ljava_lang_String__V: function (x) {
-			this.$print_Ljava_lang_String__V(x);
-			this.output.$write_B_V(10);
-		},
-		$print_Ljava_lang_String__V: function (x) {
-			for (var i = 0; i < x.text.length; i++) {
-				this.output.$write_B_V(x.text.charCodeAt(i));
-			}
-		},
-		$println_I_V: function (x) {
-			this.$print_I_V(x);
-			this.output.$write_B_V(10);
-		},
-		$print_I_V: function (x) {
-			this.output.$write__B_V(x.toString());
-		},
-		$println_J_V: function (x) {
-			this.output.$write__B_V(x.toString());
-			this.output.$write_B_V(10);
-		},
-		$println_Ljava_lang_Object__V: function (obj) {
-			this.$println_Ljava_lang_String__V(obj.$toString__Ljava_lang_String_());
+	},
+	$println$Ljava_lang_String_$V: function (x) {
+		this.$print$Ljava_lang_String_$V(x);
+		this.output.$write$B$V(10);
+	},
+	$print$Ljava_lang_String_$V: function (x) {
+		for (var i = 0; i < x.text.length; i++) {
+			this.output.$write$B$V(x.text.charCodeAt(i));
 		}
-	};
-	js2me.findPackage(js2me.JAVA_ROOT + '.$java.$io')['$PrintStream'] = PrintStream;
-})();
+	},
+	$println$I$V: function (x) {
+		this.$print$I$V(x);
+		this.output.$write$B$V(10);
+	},
+	$print$I$V: function (x) {
+		this.output.$write$_B$V(x.toString());
+	},
+	$println$J$V: function (x) {
+		this.output.$write$_B$V(x.toString());
+		this.output.$write$B$V(10);
+	},
+	$println$Ljava_lang_Object_$V: function (obj) {
+		this.$println$Ljava_lang_String_$V(obj.$toString$$Ljava_lang_String_());
+	},
+	package: 'javaRoot.$java.$io',
+	name: '$PrintStream'
+});
 

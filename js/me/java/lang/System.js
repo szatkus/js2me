@@ -5,12 +5,12 @@ js2me.createClass({
 	_clinit$$V: function () {
 		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
-			$write__B_V: function (b) {
+			$write$_B$V: function (b) {
 				for (var i in b) {
-					this.$write_B_V(b[i]);
+					this.$write$B$V(b[i]);
 				}
 			},
-			$write_B_V: function (b) {
+			$write$B$V: function (b) {
 				if (b == 10) {
 					console.log(this.buffer);
 					this.buffer = '';

@@ -3,7 +3,7 @@ js2me.createClass({
 		this.stream = stream;
 	},
 	$readShort$$S: function () {
-		var value = (this.stream.$read$$I() << 8) + this.stream.$read__I();
+		var value = (this.stream.$read$$I() << 8) + this.stream.$read$$I();
 		if (value < 0) {
 			throw new javaRoot.$java.$io.$EOFException();
 		}
