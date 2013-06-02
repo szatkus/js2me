@@ -1,7 +1,7 @@
 js2me.createClass({
 	$read$_BII$I: function (buffer, offset, length) {
 		for (var i = 0; i < length; i++) {
-			var value = this.$read__I();
+			var value = this.$read$$I();
 			if (value != -1) {
 				buffer[offset + i] = value;
 			} else {
@@ -9,6 +9,9 @@ js2me.createClass({
 			}
 		}
 		return length;
+	},
+	$read$_B$I: function (buffer) {
+		return this.$read$_BII$I(buffer, 0, buffer.length);
 	},
 	$close$$V: function () {
 		// for what?

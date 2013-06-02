@@ -31,6 +31,38 @@ js2me.createClass({
 			}
 		}
 	},
+	$getBytes$$_B: function () {
+		var result = [];
+		for (var i = 0; i < this.text.length; i++) {
+			var char = this.text.charCodeAt(i);
+			if (char >= 0x01 && char <= 0x007F) {
+				result.push(char);
+			}
+			if (char == 0 || (char >= 0x0080 && char <= 0x07FF)) {
+				result.push(0xC0 | (0x1F & (char >> 6)));
+				result.push(0x80 | (0x3F & char));
+			}
+			if (char >= 0x0800 && char <= 0xFFFF) {
+				result.push(0xE0 | (0x0F & (char >> 12)));
+				result.push(0x80 | (0x3F & (char >>  6)));
+				result.push(0x80 | (0x3F & char));
+			}
+		}
+		return result;
+	},
+	$toCharArray$$_C: function () {
+		var result = [];
+		for (var i = 0; i < this.text.length; i++) {
+			result.push(this.text.charCodeAt(i));
+		}
+		return result;
+	},
+	$length$$I: function () {
+		return this.text.length;
+	},
+	$trim$$Ljava_lang_String_: function () {
+		return new javaRoot.$java.$lang.$String(this.text.trim());
+	},
 	package: 'javaRoot.$java.$lang',
 	name: '$String'
 });

@@ -7,7 +7,7 @@
 	window.onload = function () {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
-		var reader = new zip.HttpReader('pop.jar');
+		var reader = new zip.HttpReader('super_street_fighter_2_-_the_new_challengers_240x320-289913.jar');
 		//var reader = new zip.HttpReader('jars/asteroids.jar');
 		//var reader = new zip.HttpReader('jars/test.jar');
 		
@@ -109,7 +109,19 @@
 					js2me.initializeClass(mainClass);
 					var midlet = new mainClass();
 					midlet._init$$V();
-					midlet.$startApp$$V();
+					var startApp = function () {
+						js2me.restoreThread();
+						if (js2me.suspendThread) {
+							js2me.restoreStack[js2me.currentThread].push(startApp);
+						} else {
+							midlet.$startApp$$V();
+						}
+					};
+					if (!js2me.suspendThread) {
+						startApp();
+					} else {
+						js2me.restoreStack[js2me.currentThread].push(startApp);
+					}
 				});
 				setTimeout(function () {
 					mainThread.$start$$V();

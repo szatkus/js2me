@@ -1,14 +1,19 @@
 js2me.createClass({
-	_init__V: function () {
+	_init$$V: function () {
 		this.array = [];
 	},
-	$get_Ljava_lang_Object__Ljava_lang_Object_: function (key) {
-		return this.array[key.$hashCode__I()];
+	$get$Ljava_lang_Object_$Ljava_lang_Object_: function (key) {
+		return this.array[key.$hashCode$$I()];
 	},
-	$put_Ljava_lang_Object_Ljava_lang_Object__Ljava_lang_Object_: function (key, obj) {
-		this.array[key.$hashCode__I()] = obj;
+	$put$Ljava_lang_Object_Ljava_lang_Object_$Ljava_lang_Object_: function (key, obj) {
+		if (key == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		var value = this.array[key.$hashCode$$I()];
+		this.array[key.$hashCode$$I()] = obj;
+		return value;
 	},
-	$contains_Ljava_lang_Object__Z: function (obj) {
+	$contains$Ljava_lang_Object_$Z: function (obj) {
 		for (var i in this.array) {
 			if (this.array[i] == obj) {
 				return 1;
@@ -16,7 +21,7 @@ js2me.createClass({
 		}
 		return 0;
 	},
-	$elements__Ljava_util_Enumeration_: function () {
+	$elements$$Ljava_util_Enumeration_: function () {
 		var enumeration = new javaRoot.$java.$util.$ArrayEnumeration(this.array);
 		return enumeration;
 	},

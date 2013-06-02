@@ -2,9 +2,9 @@
 	function JavaMath () {
 	}
 	JavaMath.prototype = {
-		$abs_I_I: Math.abs,
-		$min_II_I: Math.min,
-		$max_JJ_J: function (a, b) {
+		$abs$I$I: Math.abs,
+		$min$II$I: Math.min,
+		$max$JJ$J: function (a, b) {
 			if (a.toInt() > b.toInt()) {
 				return a;
 			} else {

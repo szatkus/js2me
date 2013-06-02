@@ -7,8 +7,8 @@ js2me.createClass({
 		return image;
 	},
 	$createImage$Ljava_lang_String_$Ljavax_microedition_lcdui_Image_: function (name) {
-		var data = javaRoot.$java.$lang.$Class.prototype.$getResourceAsStream_Ljava_lang_String__Ljava_io_InputStream_(name).stream.array;
-		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage__BII_Ljavax_microedition_lcdui_Image_(data, 0, data.length);
+		var data = javaRoot.$java.$lang.$Class.prototype.$getResourceAsStream$Ljava_lang_String_$Ljava_io_InputStream_(name).stream.array;
+		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
 	},
 	$createImage$_BII$Ljavax_microedition_lcdui_Image_: function (data, offset, length) {
 		if (data == null) {
@@ -35,7 +35,7 @@ js2me.createClass({
 		if (mime == null) {
 			throw new Error('Unsupported image format');
 		}
-		var image = new javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage_II_Ljavax_microedition_lcdui_Image_(100, 100);
+		var image = new javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(100, 100);
 		var imageElement = new Image();
 		imageElement.onload = function () {
 			image.element.width = imageElement.width;

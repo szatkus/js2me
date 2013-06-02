@@ -82,7 +82,10 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		args.reverse();
 		var obj = static ? window : stack.pop();
 		if (obj == null) {
-			throw new javaRoot.$java.$lang.$NullPointerException();
+			executeFunction(function () {
+				throw new javaRoot.$java.$lang.$NullPointerException();
+			}, false);
+			return;
 		}
 		//console.log('START: ' + methodInfo.className + '->' + methodInfo.name);
 		var method = findMethod(virtual ? obj.className : methodInfo.className, methodInfo.name)
@@ -657,6 +660,22 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var a = stack.pop();
 		stack.push(a - b);
 	};
+	// iushr
+	executors[0x7c] = function () {
+		var shift = stack.pop() % 32;
+		var value = stack.pop();
+		if (value >= 0) {
+			stack.push(value >> shift);
+		} else {
+			stack.push((value >> shift) + (2 << ~shift));
+		}
+	};
+	// ixor
+	executors[0x82] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a ^ b);
+	};
 	// land
 	executors[0x61] = function () {
 		var b = stack.pop();
@@ -842,14 +861,29 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	};
 	// multinewarray
 	executors[0xc5] = function () {
-		stream.readUint16();
+		var type = constantPool[stream.readUint16()].className;
 		var dimensions = stream.readUint8();
 		var counts = [];
 		for (var i = 0; i < dimensions; i++) {
 			counts[i] = stack.pop();
 		}
+		counts.reverse();
 		function setLength(element, depth) {
 			if (depth + 1 == dimensions) {
+				for (var i = 0; i < counts[depth]; i++) {
+					if (type.indexOf('L') != -1) {
+						if (type.indexOf('J') != -1) {
+							element[i] = new js2me.Long(0, 0);
+						} else if (type.indexOf('D') != -1) {
+							element[i] = new js2me.Double(0, 0);
+						} else {
+							element[i] = 0;
+						}
+					} else {
+						element[i] = null;
+					}
+						
+				}
 				return;
 			}
 			for (var i = 0; i < counts[depth]; i++) {
@@ -875,9 +909,18 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	};
 	// newarray
 	executors[0xbc] = function () {
-		var type = constantPool[stream.readUint8()];
+		var type = stream.readUint8();
 		var length = stack.pop();
 		var array = new Array(length);
+		for (var i = 0; i < length; i++) {
+			if (type == 7) {
+				array[i] = new js2me.Double(0);
+			} else if (type == 11) {
+				array[i] = new js2me.Long(0, 0);
+			} else {
+				array[i] = 0;
+			}
+		}
 		stack.push(array);
 	}
 	// noop
@@ -965,6 +1008,9 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	return result;
 };
 js2me.restoreThread = function (threadId) {
+	if (threadId == null) {
+		threadId = js2me.currentThread;
+	}
 	var restoreStack = js2me.restoreStack[threadId].pop();
 	if (restoreStack) {
 		js2me.currentThread = threadId;

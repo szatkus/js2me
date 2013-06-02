@@ -1,15 +1,18 @@
 js2me.createClass({
-	_init_I_V: function (value) {
+	_init$I$V: function (value) {
 		this.value = value;
 	},
-	$toString_I_Ljava_lang_String_: function (i) {
+	$toString$I$Ljava_lang_String_: function (i) {
 		return new javaRoot.$java.$lang.$String(i.toString());
 	},
-	$parseInt_Ljava_lang_String__I: function (str) {
+	$parseInt$Ljava_lang_String_$I: function (str) {
 		return parseInt(str.text);
 	},
-	$hashCode__I: function () {
+	$hashCode$$I: function () {
 		return this.value;
+	},
+	$toHexString$I$Ljava_lang_String_: function (value) {
+		return new javaRoot.$java.$lang.$String(value.toString(16));
 	},
 	package: 'javaRoot.$java.$lang',
 	name: '$Integer'

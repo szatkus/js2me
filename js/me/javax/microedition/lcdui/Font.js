@@ -9,7 +9,7 @@ js2me.createClass({
 	$SIZE_SMALLI: 8,
 	$SIZE_MEDIUMI: 0,
 	$SIZE_LARGEI: 16,
-	$getFont_III_Ljavax_microedition_lcdui_Font_: function (face, style, size) {
+	$getFont$III$Ljavax_microedition_lcdui_Font_: function (face, style, size) {
 		if (this.context == null) {
 			var canvas = document.createElement('canvas');
 			javaRoot.$javax.$microedition.$lcdui.$Font.prototype.context = canvas.getContext('2d');
@@ -42,22 +42,22 @@ js2me.createClass({
 		}
 		return font;
 	},
-	$getBaselinePosition__I: function () {
+	$getBaselinePosition$$I: function () {
 		//TODO
 		return 10;
 	},
-	$getHeight__I: function () {
+	$getHeight$$I: function () {
 		return this.height;
 	},
-	$stringWidth_Ljava_lang_String__I: function (str) {
+	$stringWidth$Ljava_lang_String_$I: function (str) {
 		this.context.font = this.getCSS();
 		return this.context.measureText(str.text).width;
 	},
-	$charWidth_C_I: function (char) {
+	$charWidth$C$I: function (char) {
 		this.context.font = this.getCSS();
 		return this.context.measureText(String.fromCharCode(char)).width;
 	},
-	$charsWidth__CII_I: function (data, offset, length) {
+	$charsWidth$_CII$I: function (data, offset, length) {
 		var str = javaRoot.$java.$lang.$String.prototype.$valueOf__CII_Ljava_lang_String_(data, offset, length)
 		return this.$stringWidth_Ljava_lang_String__I(str);
 	},

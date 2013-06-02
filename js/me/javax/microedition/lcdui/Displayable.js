@@ -42,22 +42,22 @@ js2me.createClass({
 			}
 		});
 	},
-	$setTitle_Ljava_lang_String__V: function (s) {
+	$setTitle$Ljava_lang_String_$V: function (s) {
 		this.title = s;
 	},
-	$getWidth__I: function () {
+	$getWidth$$I: function () {
 		return js2me.width;
 	},
-	$getHeight__I: function () {
+	$getHeight$$I: function () {
 		return js2me.height;
 	},
-	$addCommand_Ljavax_microedition_lcdui_Command__V: function (command) {
+	$addCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
 		if (this.commands.indexOf(command) == -1) {
 			this.commands.push(command);
 			this.refreshCommands();
 		}
 	},
-	$removeCommand_Ljavax_microedition_lcdui_Command__V: function (command) {
+	$removeCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
 		var index = this.commands.indexOf(command);
 		if (index != -1) {
 			var lastCommand = this.commands.pop();
@@ -67,10 +67,10 @@ js2me.createClass({
 			this.refreshCommands();
 		}
 	},
-	$setCommandListener_Ljavax_microedition_lcdui_CommandListener__V: function (commandListener) {
+	$setCommandListener$Ljavax_microedition_lcdui_CommandListener_$V: function (commandListener) {
 		this.commandListener = commandListener;
 	},
-	$isShown__Z: function () {
+	$isShown$$Z: function () {
 		return this.element.parentNode != null;
 	},
 	refreshCommands: function () {
