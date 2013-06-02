@@ -12,6 +12,8 @@ js2me.createClass({
 	$TOPI: 16,
 	$BOTTOMI: 32,
 	$BASELINEI: 64,
+	$SOLIDI: 0,
+	$DOTTEDI: 1,
 	$setColor$III$V: function (r, g, b) {
 		this.color = 'rgb(' + r + ', ' + g + ', ' + b + ')';
 		this.context.fillStyle = this.color;
@@ -149,6 +151,13 @@ js2me.createClass({
 		this.translateX = x;
 		this.translateY = y;
 		this.context.translate(x, y);
+	},
+	$setStrokeStyle$I$V: function (style) {
+		if (style == this.$DOTTEDI) {
+			this.context.mozDash = [2];
+		} else {
+			this.context.mozDash = null;
+		}	
 	},
 	package: 'javaRoot.$javax.$microedition.$lcdui', 
 	name: '$Graphics'

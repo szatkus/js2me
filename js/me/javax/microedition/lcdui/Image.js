@@ -7,7 +7,14 @@ js2me.createClass({
 		return image;
 	},
 	$createImage$Ljava_lang_String_$Ljavax_microedition_lcdui_Image_: function (name) {
-		var data = javaRoot.$java.$lang.$Class.prototype.$getResourceAsStream$Ljava_lang_String_$Ljava_io_InputStream_(name).stream.array;
+		if (name == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		var input = javaRoot.$java.$lang.$Class.prototype.$getResourceAsStream$Ljava_lang_String_$Ljava_io_InputStream_(name);
+		if (input == null) {
+			throw new javaRoot.$java.$io.$IOException();
+		}
+		var data = input.stream.array;
 		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
 	},
 	$createImage$_BII$Ljavax_microedition_lcdui_Image_: function (data, offset, length) {
@@ -70,7 +77,7 @@ js2me.createClass({
 	$getHeight$$I: function () {
 		return this.element.height;
 	},
-	require: ['javaRoot.$javax.$microedition.$lcdui.$Graphics', 'javaRoot.$java.$lang.$Class'],
+	require: ['javaRoot.$javax.$microedition.$lcdui.$Graphics', 'javaRoot.$java.$lang.$Class', 'javaRoot.$java.$io.$IOException'],
 	package: 'javaRoot.$javax.$microedition.$lcdui',
 	name: '$Image'
 });

@@ -5,8 +5,18 @@ js2me.createClass({
 	_init$Ljava_lang_String_$V: function (value) {
 		this.text = value.text;
 	},
+	_init$_BLjava_lang_String_$V: function (data, enc) {
+		this.text = js2me.UTF8ToString(data);
+	},
+	_init$_B$V: function (data) {
+		this._init$_BLjava_lang_String_$V(data);
+	},
 	$equals$Ljava_lang_Object_$Z: function (obj) {
-		return (this.className == obj.className && this.text == obj.text);
+		if (this.className == obj.className && this.text == obj.text) {
+			return 1;
+		} else {
+			return 0;
+		}
 	},
 	$valueOf$_CII$Ljava_lang_String_: function (data, offset, length) {
 		var text = '';
@@ -75,6 +85,58 @@ js2me.createClass({
 		for (var i = 0; i < length; i++) {
 			dst[dstBegin + i] = this.text.charCodeAt(srcBegin + i);
 		}
+	},
+	$indexOf$I$I: function (charCode) {
+		return this.$indexOf$II$I(charCode, 0);
+	},
+	$indexOf$II$I: function (charCode, index) {
+		if (index < 0) {
+			index = 0;
+		}
+		for (var i = index; i < this.text.length; i++) {
+			if (this.text.charCodeAt(i) == charCode) {
+				return i;
+			}
+		}
+		return -1;
+	},
+	$lastIndexOf$I$I: function (charCode) {
+		for (var i = this.text.length - 1; i >= 0; i--) {
+			if (this.text.charCodeAt(i) == charCode) {
+				return i;
+			}
+		}
+		return -1;
+	},
+	$substring$II$Ljava_lang_String_: function (beginIndex, endIndex) {
+		if (beginIndex < 0 || endIndex > this.text.length || beginIndex > endIndex) {
+			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
+		}
+		return new javaRoot.$java.$lang.$String(this.text.substring(beginIndex, endIndex));
+	},
+	$substring$I$Ljava_lang_String_: function (index) {
+		return this.$substring$II$Ljava_lang_String_(index, this.text.length);
+	},
+	$charAt$I$C: function (index) {
+		if (index < 0 || index >= this.text.length) {
+			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
+		}
+		return this.text.charCodeAt(index);
+	},
+	$hashCode$$I: function () {
+		var hashCode = 0;
+		for (var i = 0; i < this.text.length; i++) {
+			var value = this.text.charCodeAt(i);
+			var n = this.text.length - i - 1;
+			for (var j = 0; j < n; j++) {
+				value = (value * 31) % 0x100000000;
+			}
+			hashCode = (hashCode + value) % 0x100000000;
+		}
+		if (hashCode >= 0x80000000) {
+			hashCode -= 0x80000000;
+		}
+		return hashCode;
 	},
 	package: 'javaRoot.$java.$lang',
 	name: '$String'

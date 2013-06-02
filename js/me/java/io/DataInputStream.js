@@ -3,10 +3,12 @@ js2me.createClass({
 		this.stream = stream;
 	},
 	$readShort$$S: function () {
-		var value = (this.stream.$read$$I() << 8) + this.stream.$read$$I();
-		if (value < 0) {
+		var a = this.stream.$read$$I() 
+		var b = this.stream.$read$$I();
+		if (a == -1 || b == -1) {
 			throw new javaRoot.$java.$io.$EOFException();
 		}
+		var value = (a << 8) + b;
 		if (value >= 0x8000) {
 			value -= 0xffff;
 		}
@@ -29,6 +31,9 @@ js2me.createClass({
 	},
 	$readByte$$B: function () {
 		var value = this.stream.$read$$I();
+		if (value == -1) {
+			throw new javaRoot.$java.$io.$EOFException();
+		}
 		if (value >= 128) {
 			value -= 256;
 		}
@@ -58,7 +63,16 @@ js2me.createClass({
 		return new javaRoot.$java.$lang.$String(result);
 	},
 	$skip$J$J: function (n) {
-		this.stream.$skip$J$J(n);
+		return this.stream.$skip$J$J(n);
+	},
+	$skipBytes$I$I: function (n) {
+		return this.$skip$J$J(new js2me.Long(0, n)).lo;
+	},
+	$available$$I: function () {
+		return this.stream.$available$$I();
+	},
+	$read$$I: function () {
+		return this.stream.$read$$I();
 	},
 	superClass: 'javaRoot.$java.$io.$InputStream',
 	package: 'javaRoot.$java.$io',

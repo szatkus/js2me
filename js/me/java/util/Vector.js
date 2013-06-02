@@ -2,23 +2,23 @@ js2me.createClass({
 	construct: function () {
 		this.array = [];
 	},
-	_init__V: function () {
+	_init$$V: function () {
 	},
-	_init_II_V: function () {
+	_init$II$V: function () {
 	},
-	$addElement_Ljava_lang_Object__V: function (obj) {
+	$addElement$Ljava_lang_Object_$V: function (obj) {
 		this.array.push(obj);
 	},
-	$size__I: function () {
+	$size$$I: function () {
 		return this.array.length;
 	},
-	$elementAt_I_Ljava_lang_Object_: function (index) {
+	$elementAt$I$Ljava_lang_Object_: function (index) {
 		if (index >= this.array.length) {
 			throw new javaRoot.$java.$util.$NoSuchElementException();
 		}
 		return this.array[index];
 	},
-	$contains_Ljava_lang_Object__Z: function (obj) {
+	$contains$Ljava_lang_Object_$Z: function (obj) {
 		for (var i in this.array) {
 			if (this.array[i] == obj) {
 				return 1;
@@ -26,11 +26,11 @@ js2me.createClass({
 		}
 		return 0;
 	},
-	$elements__Ljava_util_Enumeration_: function () {
+	$elements$$Ljava_util_Enumeration_: function () {
 		var enumeration = new javaRoot.$java.$util.$ArrayEnumeration(this.array);
 		return enumeration;
 	},
-	$insertElementAt_Ljava_lang_Object_I_V: function (obj, index) {
+	$insertElementAt$Ljava_lang_Object_I$V: function (obj, index) {
 		if (index < 0 || index > this.array.length) {
 			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
 		}
@@ -39,7 +39,7 @@ js2me.createClass({
 		}
 		this.array[index] = obj;
 	},
-	$removeElementAt_I_V: function (index) {
+	$removeElementAt$I$V: function (index) {
 		if (index < 0 || index >= this.array.length) {
 			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
 		}
@@ -47,6 +47,13 @@ js2me.createClass({
 			this.array[i] = this.array[i + 1];
 		}
 		this.array.pop();
+	},
+	$copyInto$_Ljava_lang_Object_$V: function (array) {
+		var index = 0;
+		for (var i in this.array) {
+			array[index] = this.array[i];
+			index++;
+		}
 	},
 	require: ['javaRoot.$java.$util.$NoSuchElementException', 'javaRoot.$java.$util.$ArrayEnumeration'],
 	package: 'javaRoot.$java.$util',

@@ -21,6 +21,16 @@ js2me.createClass({
 		buffer.reverse();
 		this.out.$write$_B$V(buffer);
 	},
+	$writeByte$I$V: function (value) {
+		if (value < 0) {
+			value += 0xFF;
+		}
+		this.out.$write$_B$V(value);
+	},
+	$writeLong$J$V: function (value) {
+		this.$writeInt$I$V(value.hi);
+		this.$writeInt$I$V(value.lo);
+	},
 	$writeUTF$Ljava_lang_String_$V: function (str) {
 		if (str == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();

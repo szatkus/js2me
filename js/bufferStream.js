@@ -26,7 +26,15 @@ js2me.BufferStream.prototype = {
 		return new js2me.BufferStream(this.array.subarray(this.index, this.index + length));
 	},
 	skip: function (length) {
+		var pos = this.index;
 		this.index += length;
+		if (this.index > this.array.length) {
+			this.index = this.array.length;
+		}
+		return this.index - pos;
+	},
+	getRemaining: function () {
+		return this.array.length - this.index;
 	},
 	isEnd: function () {
 		return this.index >= this.array.length;

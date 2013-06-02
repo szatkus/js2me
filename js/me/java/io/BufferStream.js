@@ -12,7 +12,10 @@ js2me.createClass({
 		if (n.hi > 0) {
 			console.log('Too large skip value');
 		}
-		this.stream.skip(n.lo);
+		return new js2me.Long(0, this.stream.skip(n.lo));
+	},
+	$available$$I: function () {
+		return this.stream.getRemaining();
 	},
 	superClass: 'javaRoot.$java.$io.$InputStream',
 	package: 'javaRoot.$java.$io',

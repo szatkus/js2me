@@ -101,6 +101,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x32] = function () {
 		var index = stack.pop();
 		var array = stack.pop();
+		if (array == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		if (index < 0 || index >= array.length) {
+			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
+		}
 		stack.push(array[index]);
 	}
 	// aastore
@@ -108,6 +114,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var value = stack.pop();
 		var index = stack.pop();
 		var array = stack.pop();
+		if (array == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		if (index < 0 || index >= array.length) {
+			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
+		}
 		array[index] = value;
 	}
 	// aconst_null
@@ -290,6 +302,9 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
 		var obj = stack.pop();
+		if (obj == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
 		stack.push(obj[field.name]);
 	};
 	// getstatic
@@ -798,6 +813,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var b = stack.pop();
 		var a = stack.pop();
 		stack.push(a.div(b).rem);
+	};
+	// lreturn
+	executors[0xad] = function () {
+		var value = stack.pop();
+		result = value;
+		finish = true;
 	};
 	// lshl
 	executors[0x79] = function () {

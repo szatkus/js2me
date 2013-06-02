@@ -310,9 +310,9 @@ js2me.convertClass = function (stream) {
 				value = constantPool[stream.readUint16()];
 			}
 			if (attributeName == 'InnerClasses') {
-				var count = stream.readUint16();
+				var classCount = stream.readUint16();
 				value = [];
-				for (var j = 0; j < count; j++) {
+				for (var j = 0; j < classCount; j++) {
 					var classInfo = {
 						innerClass: constantPool[stream.readUint16()],
 						outerClass: constantPool[stream.readUint16()],
