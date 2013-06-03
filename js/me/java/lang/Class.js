@@ -14,6 +14,9 @@ js2me.createClass({
 		var stream = new js2me.BufferStream(resource);
 		return new javaRoot.$java.$io.$BufferStream(stream);
 	},
+	$getName$$Ljava_lang_String_: function () {
+		return new javaRoot.$java.$lang.$String(this.classObj.prototype.className);
+	},
 	require: ['javaRoot.$java.$io.$BufferStream'],
 	package: 'javaRoot.$java.$lang',
 	name: '$Class'

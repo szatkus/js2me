@@ -375,6 +375,10 @@ js2me.convertClass = function (stream) {
 	var package = js2me.findPackage(thisClass.className.substr(0, thisClass.className.lastIndexOf('.')));
 	package[thisClass.className.substr(thisClass.className.lastIndexOf('.') + 1)] = newClass;
 }
+js2me.cache = {
+	classes: {},
+	packages: {}
+};
 js2me.findPackage = function (path, current) {
 	if (!current) {
 		current = window;
@@ -393,19 +397,18 @@ js2me.findPackage = function (path, current) {
 	}
 }
 js2me.findClass = function (path) {
-	try {
+	if (js2me.cache.classes[path]) {
+		return js2me.cache.classes[path];
+	}
 	var package = this.findPackage(path.substr(0, path.lastIndexOf('.')));
-} catch (e) {
-	a = 0;
-}
 	var classObj = package[path.substr(path.lastIndexOf('.') + 1)];
 	if (!classObj) {
 		throw new Error('Uninmplemented class ' + path);
 	}
+	js2me.cache.classes[path] = classObj;
 	return classObj;
 };
 js2me.createClass = function (proto) {
-	var package = js2me.findPackage(proto.package, window);
 	var classObj = function () {
 		if (proto.construct) {
 			proto.construct.apply(this, arguments);
@@ -413,7 +416,7 @@ js2me.createClass = function (proto) {
 	};
 	classObj.prototype = proto;
 	proto.type = 'class';
-	package[proto.name] = classObj;
+	js2me.classBucket = classObj;
 };
 js2me.createInterface = function (proto) {
 	js2me.createClass(proto);

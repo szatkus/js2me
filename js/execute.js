@@ -9,9 +9,14 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	if (restoreInfo) {
 		stack = restoreInfo.stack;
 		positon = restoreInfo.position;
-		executeFunction(function () {
-			return js2me.restoreThread(js2me.currentThread);
-		}, restoreInfo.saveResult);
+		try {
+			executeFunction(function () {
+				return js2me.restoreThread(js2me.currentThread);
+			}, restoreInfo.saveResult);
+		} catch (exception) {
+			tryCatchException(exception);
+		}
+		
 	}
 	
 	function suspendCall(saveResult) {
@@ -36,29 +41,28 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		}
 		return method
 	}
-	function executeFunction(func, saveResult) {
-		try {
-			var result = func();
-		} catch (exception) {
-			var handler = -1;
-			for (var i = 0; i < exceptions.length && handler == -1; i++) {
-				if (exceptions[i].startPc <= position && exceptions[i].endPc >= position) {
-					var obj = {__proto__: exception};
-					while (obj.__proto__.className) {
-						obj = obj.__proto__;
-						if (exceptions[i].catchType.className == obj.className) {
-							handler = exceptions[i].handler;
-						}
+	function tryCatchException(exception) {
+		var handler = -1;
+		for (var i = 0; i < exceptions.length && handler == -1; i++) {
+			if (exceptions[i].startPc <= position && exceptions[i].endPc >= position) {
+				var obj = {__proto__: exception};
+				while (obj.__proto__.className) {
+					obj = obj.__proto__;
+					if (exceptions[i].catchType.className == obj.className) {
+						handler = exceptions[i].handler;
 					}
 				}
 			}
-			if (handler >= 0) {
-				stack.push(exception);
-				stream.index = handler;
-			} else {
-				throw exception;
-			}
 		}
+		if (handler >= 0) {
+			stack.push(exception);
+			stream.index = handler;
+		} else {
+			throw exception;
+		}
+	}
+	function executeFunction(func, saveResult) {
+		var result = func();
 		if (js2me.suspendThread) {
 			suspendCall(saveResult);
 			return;
@@ -1036,7 +1040,11 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		position = stream.index;
 		var op = stream.readUint8();
 		if (executors[op]) {
-			executors[op]();
+			try {
+				executors[op]();
+			} catch (exception) {
+				tryCatchException(exception);
+			}
 		} else {
 			throw new Error('Op ' + op.toString(16) + ' not supported');
 		}
@@ -1046,6 +1054,9 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	return result;
 };
 js2me.restoreThread = function (threadId) {
+	if (js2me.kill) {
+		return;
+	}
 	if (threadId == null) {
 		threadId = js2me.currentThread;
 	}

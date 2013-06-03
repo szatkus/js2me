@@ -7,28 +7,47 @@
 	window.onload = function () {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
-		var reader = new zip.HttpReader('tr.jar');
+		//var reader = new zip.HttpReader('FPC_Bench_3.jar');
 		//var reader = new zip.HttpReader('jars/asteroids.jar');
-		//var reader = new zip.HttpReader('jars/test.jar');
+		var reader = new zip.HttpReader('out/throwable.jar');
 		
 		function loadClasses(classes, callback) {
 			var remain = 0;
+			if (classes.constructor == Array) {
+				var array = classes;
+				classes = {};
+				for (var i in array) {
+					classes[array[i]] = true;
+				}
+			}
 			for (var className in classes) {
 				try {
 					js2me.findClass(className);
 				} catch (e) {
-					//console.log(className);
-					remain++;
-					var classPath = className.replace(js2me.JAVA_ROOT, 'js/me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
-					var element = document.createElement('script');
-					element.src = classPath;
-					element.onload = function () {
-						remain--;
-						if (remain == 0) {
-							callback(true);
-						}
-					};
-					document.head.appendChild(element);
+					(function (className) {
+						//console.log(className);
+						remain++;
+						var classPath = className.replace(js2me.JAVA_ROOT, 'js/me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
+						var element = document.createElement('script');
+						element.src = classPath;
+						element.onload = function () {
+							if (js2me.classBucket == null) {
+								throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
+							}
+							var proto = js2me.classBucket.prototype;
+							var splitPoint = className.lastIndexOf('.');
+							proto.package = className.substring(0, splitPoint);
+							proto.name = className.substring(splitPoint + 1);
+							var package = js2me.findPackage(proto.package, window);
+							package[proto.name] = js2me.classBucket;
+							js2me.classBucket = null;
+							remain--;
+							if (remain == 0) {
+								callback(true);
+							}
+						};
+						document.head.appendChild(element);
+					})(className);
 				}
 			}
 			if (remain == 0) {
@@ -129,11 +148,19 @@
 			});
 			
 		}
-		zip.createReader(reader, function(zipReader) {
-			zipReader.getEntries(function (entries) {
-				js2me.loadEntries(entries, start);
-			});
-		}); 
+		var standardClasses = [
+			'javaRoot.$java.$lang.$Object',
+			'javaRoot.$java.$lang.$String',
+			'javaRoot.$java.$lang.$Thread',
+			'javaRoot.$java.$lang.$ClassNotFoundException'
+		];
+		loadClasses(standardClasses, function () {
+			zip.createReader(reader, function(zipReader) {
+				zipReader.getEntries(function (entries) {
+					js2me.loadEntries(entries, start);
+				});
+			}); 
+		});
 		//document.getElementById('keypad').style.width = js2me.width + 'px';
 		document.getElementById('screen').style.width = js2me.width + 'px';
 		document.getElementById('screen').style.height = js2me.height + 'px';
@@ -173,8 +200,13 @@
 		classes: {},
 		threads: [],
 		currentThread: 0,
-		restoreStack: []
+		restoreStack: [],
+		stats: [],
+		kill: false
 	};
+	for (var i = 0; i < 255; i++) {
+		js2me.stats[i] = 0;
+	}
 </script>
 
 <style>

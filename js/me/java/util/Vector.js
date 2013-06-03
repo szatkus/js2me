@@ -43,7 +43,7 @@ js2me.createClass({
 		if (index < 0 || index >= this.array.length) {
 			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
 		}
-		for (var i = this.array.length - 1; i >= index; i--) {
+		for (var i = index; i < this.array.length; i++) {
 			this.array[i] = this.array[i + 1];
 		}
 		this.array.pop();
