@@ -5,10 +5,11 @@ It's implementation of Java ME in JavaScript. I'm planning to use this as a part
 
 Milestone 1 - Hello world (test.jar) works (done)
 Milestone 2 - Picross (picross.jar) works (done)
-Milestone 2.5 - Play around...
-Milestone 3 - Make all my old J2ME projects working
-Milestone 4 - Refactoring and Firefox OS application
-Milestone 5 - ...
+Milestone 2.5 - Play around... (done)
+Milestone 3 - Run FPC benchmark (http://www.dpsoftware.org/)
+Milestone 4 - Optimizations
+...
+Milestone X - Refactoring and Firefox OS application
 
 
 Zip.js from https://github.com/gildas-lormeau/zip.js
