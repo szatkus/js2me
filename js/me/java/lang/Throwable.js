@@ -26,7 +26,7 @@ js2me.createClass({
 		return new javaRoot.$java.$lang.$String(text);
 	},
 	toString: function () {
-		return this.className + ': ' + message + '\n' + this.stack;
+		return this.className + ': ' + this.message.text + '\n' + this.stack;
 	}
 });
 

@@ -25,6 +25,9 @@ js2me.createClass({
 		}
 		return new javaRoot.$java.$lang.$String(text);
 	},
+	$valueOf$I$Ljava_lang_String_: function (value) {
+		return new javaRoot.$java.$lang.$String(value.toString());
+	},
 	$compareTo$Ljava_lang_String_$I: function (str) {
 		if (str == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();

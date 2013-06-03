@@ -403,7 +403,7 @@ js2me.findClass = function (path) {
 	var package = this.findPackage(path.substr(0, path.lastIndexOf('.')));
 	var classObj = package[path.substr(path.lastIndexOf('.') + 1)];
 	if (!classObj) {
-		throw new Error('Uninmplemented class ' + path);
+		throw new javaRoot.$java.$lang.$ClassNotFoundException(path);
 	}
 	js2me.cache.classes[path] = classObj;
 	return classObj;

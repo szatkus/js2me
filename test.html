@@ -7,9 +7,9 @@
 	window.onload = function () {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
-		//var reader = new zip.HttpReader('FPC_Bench_3.jar');
+		var reader = new zip.HttpReader('FPC_Bench_3.jar');
 		//var reader = new zip.HttpReader('jars/asteroids.jar');
-		var reader = new zip.HttpReader('out/throwable.jar');
+		//var reader = new zip.HttpReader('out/throwable.jar');
 		
 		function loadClasses(classes, callback) {
 			var remain = 0;
@@ -94,6 +94,16 @@
 			}
 			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj) {
 				if (obj.prototype) {
+					obj.prototype.require = [];
+					for (var i in obj.prototype) {
+						if (obj.prototype[i].constructor == Function) {
+							var source = obj.prototype[i].toString();
+							var requirements = source.match(new RegExp('javaRoot(\\.\\$[a-zA-Z]+)+', 'g'));
+							for (var j = 0; requirements && j < requirements.length; j++) {
+								obj.prototype.require.push(requirements[j]);
+							}
+						}
+					}
 					try {
 						if (obj.prototype.superClass) {
 							js2me.findClass(obj.prototype.superClass);

@@ -1,6 +1,9 @@
 js2me.createClass({
 	construct: function (className) {
 		this.classObj = js2me.findClass(className);
+		if (this.classObj == null) {
+			throw new javaRoot.$java.$lang.ClassNotFoundException();
+		}
 	},
 	$getResourceAsStream$Ljava_lang_String_$Ljava_io_InputStream_: function (name) {
 		var resourceName = name.text;
@@ -17,7 +20,9 @@ js2me.createClass({
 	$getName$$Ljava_lang_String_: function () {
 		return new javaRoot.$java.$lang.$String(this.classObj.prototype.className);
 	},
-	require: ['javaRoot.$java.$io.$BufferStream'],
+	$forName$Ljava_lang_String_$Ljava_lang_Class_: function (name) {
+		return new javaRoot.$java.$lang.$Class(name.text);
+	},
 	package: 'javaRoot.$java.$lang',
 	name: '$Class'
 });
