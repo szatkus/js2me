@@ -10,7 +10,11 @@ js2me.createClass({
 		if (interactive == 0) {
 			this.gauge.disabled = true;
 		}
+		this.$setValue$I$V(initialValue);
 		this.content.appendChild(this.gauge);
+	},
+	$setValue$I$V: function (value) {
+		this.gauge.value = value;
 	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Item'
 });

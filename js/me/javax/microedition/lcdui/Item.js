@@ -16,10 +16,22 @@ js2me.createClass({
 		this.element.appendChild(this.content);
 	},
 	$setLabel$Ljava_lang_String_$V: function (str) {
-		this.label.innerHTML = str.text;
+		if (str != null) {
+			this.label.innerHTML = str.text;
+		} else {
+			this.label.innerHTML = '';
+		}
 	},
 	$getLabel$$Ljava_lang_String_: function (str) {
 		return new javaRoot.$java.$lang.$String(this.label.innerHTML);
+	},
+	$setLayout$I$V: function (layout) {
+		if (layout == this.$LAYOUT_RIGHTI) {
+			this.content.style.textAlign = 'right';
+		}
+		if (layout == this.$LAYOUT_CENTERI) {
+			this.content.style.textAlign = 'center';
+		}
 	},
 	name: '$Item',
 	package: 'javaRoot.$javax.$microedition.$lcdui'

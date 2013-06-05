@@ -247,3 +247,16 @@ js2me.Long = function (hi, lo) {
 js2me.Double = function (double) {
 	this.double = double;
 };
+js2me.checkOverflow = function (value, bits) {
+	var base = 1;
+	for (var i = 0; i < bits - 1; i++) {
+		base *= 2;
+	}
+	if (value >= base) {
+		value -= base * 2;
+	}
+	if (value < -base) {
+		value += base * 2;
+	}
+	return value;
+};

@@ -387,7 +387,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x60] = function () {
 		var b = stack.pop();
 		var a = stack.pop();
-		stack.push(a + b);
+		stack.push(js2me.checkOverflow(a + b, 32));
 	};
 	// iand
 	executors[0x7e] = function () {
@@ -440,7 +440,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x6c] = function () {
 		var b = stack.pop();
 		var a = stack.pop();
-		stack.push(Math.floor(a / b));
+		stack.push(js2me.checkOverflow(Math.floor(a / b), 32));
 	};
 	// if_acmpeq
 	executors[0xa5] = function () {
@@ -584,6 +584,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var index = stream.readUint8();
 		var value = stream.readInt8();
 		locals[index] += value;
+		locals[index] = js2me.checkOverflow(locals[index], 32);
 	};
 	// iload
 	executors[0x15] = function () {
@@ -610,12 +611,13 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x68] = function () {
 		var a = stack.pop();
 		var b = stack.pop();
-		stack.push(a * b);
+		stack.push(js2me.checkOverflow(a * b, 32));
+		
 	}
 	// ineg
 	executors[0x74] = function () {
 		var value = stack.pop();
-		stack.push(-value);
+		stack.push(js2me.checkOverflow(-value, 32));
 	}
 	// invokeinterface
 	executors[0xb9] = function () {
@@ -637,7 +639,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x80] = function () {
 		var b = stack.pop();
 		var a = stack.pop();
-		stack.push(a & b);
+		stack.push(a | b);
 	};
 	// irem
 	executors[0x70] = function () {

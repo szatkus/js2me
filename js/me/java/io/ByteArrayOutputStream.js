@@ -16,6 +16,9 @@ js2me.createClass({
 	$toByteArray$$_B: function () {
 		return this.buffer.slice(0);
 	},
+	$size$$I: function () {
+		return this.buffer.length;
+	},
 	superClass: 'javaRoot.$java.$io.$OutputStream',
 	package: 'javaRoot.$java.$io',
 	name: '$ByteArrayOutputStream'

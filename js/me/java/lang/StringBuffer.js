@@ -12,7 +12,7 @@ js2me.createClass({
 		return this;
 	},
 	$append$J$Ljava_lang_StringBuffer_: function (l) {
-		this.string += l.toString();
+		this.string += js2me.UTF8ToString(l.toString());
 		return this;
 	},
 	$append$I$Ljava_lang_StringBuffer_: function (i) {

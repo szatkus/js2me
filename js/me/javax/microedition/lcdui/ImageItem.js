@@ -2,12 +2,7 @@ js2me.createClass({
 	_init$Ljava_lang_String_Ljavax_microedition_lcdui_Image_ILjava_lang_String_$V: function (label, image, layout, altText) {
 		this.$setLabel$Ljava_lang_String_$V(label);
 		this.$setImage$Ljavax_microedition_lcdui_Image_$V(image);
-		if (layout == this.$LAYOUT_RIGHTI) {
-			this.content.style.textAlign = 'right';
-		}
-		if (layout == this.$LAYOUT_CENTERI) {
-			this.content.style.textAlign = 'center';
-		}
+		this.$setLayout$I$V(layout);
 	},
 	$setImage$Ljavax_microedition_lcdui_Image_$V: function (image) {
 		this.image = image;
