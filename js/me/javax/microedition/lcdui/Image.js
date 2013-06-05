@@ -17,6 +17,15 @@ js2me.createClass({
 		var data = input.stream.array;
 		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
 	},
+	$createImage$Ljavax_microedition_lcdui_Image_$Ljavax_microedition_lcdui_Image_: function (source) {
+		if (source == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		var image = this.$createImage$II$Ljavax_microedition_lcdui_Image_(source.$getWidth$$I(), source.$getHeight$$I());
+		var graphics = image.$getGraphics$$Ljavax_microedition_lcdui_Graphics_();
+		graphics.$drawImage$Ljavax_microedition_lcdui_Image_III$V(source, 0, 0, 0);
+		return image;
+	},
 	$createImage$_BII$Ljavax_microedition_lcdui_Image_: function (data, offset, length) {
 		if (data == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();

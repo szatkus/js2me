@@ -302,6 +302,12 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 			stack.push(a);
 		}
 	};
+	// fadd
+	executors[0x62] = function () {
+		var b = stack.pop();
+		var a = stack.pop();
+		stack.push(a + b);
+	};
 	// getfield
 	executors[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
@@ -337,6 +343,11 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	};
 	// i2d
 	executors[0x87] = function () {
+	};
+	// f2i
+	executors[0x8b] = function () {
+		var value = stack.pop();
+		stack.push(Math.floor(value));
 	};
 	// l2i
 	executors[0x88] = function () {

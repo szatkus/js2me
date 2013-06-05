@@ -7,9 +7,9 @@
 	window.onload = function () {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
-		var reader = new zip.HttpReader('FPC_Bench_3.jar');
+		//var reader = new zip.HttpReader('FPC_Bench_3.jar');
 		//var reader = new zip.HttpReader('jars/asteroids.jar');
-		//var reader = new zip.HttpReader('out/throwable.jar');
+		var reader = new zip.HttpReader('out/form.jar');
 		
 		function loadClasses(classes, callback) {
 			var remain = 0;
@@ -265,6 +265,9 @@
 		border: 1px solid black;
 		display: inline-block;
 	}
+	.item {
+		text-align: left;
+	}
 </style>
 <div id="frame">
 	<div id="title"></div>
@@ -298,9 +301,3 @@
 <script type="text/javascript" src="js/manifest.js"></script>
 <script type="text/javascript" src="js/loader.js"></script>
 <script type="text/javascript" src="js/numbers.js"></script>
-<script type="text/javascript" src="js/me/java/lang/Object.js"></script>
-<script type="text/javascript" src="js/me/java/lang/String.js"></script>
-<script type="text/javascript" src="js/me/java/lang/Thread.js"></script>
-<script type="text/javascript" src="js/me/java/lang/NullPointerException.js"></script>
-<script type="text/javascript" src="js/me/java/lang/ArrayIndexOutOfBoundsException.js"></script>
-<script type="text/javascript" src="js/me/java/lang/ClassCastException.js"></script>

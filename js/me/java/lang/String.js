@@ -140,8 +140,6 @@ js2me.createClass({
 			hashCode -= 0x80000000;
 		}
 		return hashCode;
-	},
-	package: 'javaRoot.$java.$lang',
-	name: '$String'
+	}
 });
 

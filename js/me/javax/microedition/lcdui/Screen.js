@@ -1,5 +1,6 @@
 js2me.createClass({
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable',
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Screen'
+	$setTicker$Ljavax_microedition_lcdui_Ticker_$V: function () {
+		//TODO
+	},
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
 });
