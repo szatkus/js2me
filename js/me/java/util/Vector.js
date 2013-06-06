@@ -4,6 +4,8 @@ js2me.createClass({
 	},
 	_init$$V: function () {
 	},
+	_init$I$V: function () {
+	},
 	_init$II$V: function () {
 	},
 	$addElement$Ljava_lang_Object_$V: function (obj) {

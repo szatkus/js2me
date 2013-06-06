@@ -48,7 +48,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 				var obj = {__proto__: exception};
 				while (obj.__proto__.className) {
 					obj = obj.__proto__;
-					if (exceptions[i].catchType.className == obj.className) {
+					if (exceptions[i].catchType == null || exceptions[i].catchType.className == obj.className) {
 						handler = exceptions[i].handler;
 					}
 				}
@@ -190,6 +190,10 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x4e] = function () {
 		locals[3] = stack.pop();
 	}
+	// athrow
+	executors[0xbf] = function () {
+		throw stack.pop();
+	}
 	// baload
 	executors[0x33] = function () {
 		var index = stack.pop();
@@ -234,25 +238,10 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 			}
 			var refClass = js2me.findClass(ref.className).prototype;
 			var cmpClass = js2me.findClass(type.className).prototype;
-			if (refClass.type == 'class') {
-				if (cmpClass.type == 'class') {
-					while (refClass.className != cmpClass.className && refClass.superClass) {
-						refClass = js2me.findClass(refClass.superClass).prototype;
-					}
-					if (refClass.className == cmpClass.className) {
-						stack.push(ref);
-					} else {
-						throw new javaRoot.$java.$lang.ClassCastException();
-					}
-				} else {
-					if (refClass.interfaces.indexOf(cmpClass.className) != -1) {
-						stack.push(ref);
-					} else {
-						throw new javaRoot.$java.$lang.ClassCastException();
-					}
-				}
+			if (refClass.isImplement(cmpClass.className)) {
+				stack.push(ref);
 			} else {
-				throw new Error('checkcast');
+				throw new javaRoot.$java.$lang.$ClassCastException();
 			}
 		} else {
 			stack.push(ref);
@@ -307,6 +296,18 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var b = stack.pop();
 		var a = stack.pop();
 		stack.push(a + b);
+	};
+	// fconst_0
+	executors[0x0b] = function () {
+		stack.push(0);
+	};
+	// fconst_1
+	executors[0x0c] = function () {
+		stack.push(1);
+	};
+	// fconst_2
+	executors[0x0d] = function () {
+		stack.push(2);
 	};
 	// getfield
 	executors[0xb4] = function () {
@@ -618,6 +619,26 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 	executors[0x74] = function () {
 		var value = stack.pop();
 		stack.push(js2me.checkOverflow(-value, 32));
+	}
+	// instanceof
+	executors[0xc1] = function () {
+		var ref = stack.pop();
+		var type = constantPool[stream.readUint16()];
+		if (ref != null) {
+			if (ref.constructor == Array) {
+				stack.push(ref);
+				return;
+			}
+			var refClass = js2me.findClass(ref.className).prototype;
+			var cmpClass = js2me.findClass(type.className).prototype;
+			if (refClass.isImplement(cmpClass.className)) {
+				stack.push(1);
+			} else {
+				stack.push(0);
+			}
+		} else {
+			stack.push(0);
+		}
 	}
 	// invokeinterface
 	executors[0xb9] = function () {
@@ -1048,6 +1069,7 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		var offset = table[index] || def;
 		stream.seek(position + offset);
 	}
+	var startTime = (new Date()).getTime();
 	while (!stream.isEnd() && !finish) {
 		//console.log(stream.index);
 		position = stream.index;
@@ -1055,8 +1077,17 @@ js2me.execute = function (stream, locals, constantPool, exceptions, restoreInfo)
 		if (executors[op]) {
 			try {
 				executors[op]();
+				
 			} catch (exception) {
 				tryCatchException(exception);
+			}
+			if ((new Date()).getTime() - startTime > 100 && !finish) {
+				suspendCall(false);
+				var threadID = js2me.currentThread;
+				setTimeout(function () {
+					console.log('aaa');
+					js2me.restoreThread(threadID);
+				}, 1);
 			}
 		} else {
 			throw new Error('Op ' + op.toString(16) + ' not supported');

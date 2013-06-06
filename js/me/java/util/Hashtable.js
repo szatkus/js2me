@@ -25,6 +25,9 @@ js2me.createClass({
 		var enumeration = new javaRoot.$java.$util.$ArrayEnumeration(this.array);
 		return enumeration;
 	},
+	$clear$$V: function () {
+		this.array = [];
+	},
 	require: ['javaRoot.$java.$util.$ArrayEnumeration'],
 	package: 'javaRoot.$java.$util',
 	name: '$Hashtable'

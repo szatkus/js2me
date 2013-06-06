@@ -323,11 +323,9 @@ js2me.convertClass = function (stream) {
 				}
 			}
 			if (attributeName == 'Exceptions') {
-				var count = stream.readUint16();
+				var exceptionsCount = stream.readUint16();
 				value = [];
-				for (var j = 0; j < count; j++) {
-					
-					
+				for (var j = 0; j < exceptionsCount; j++) {
 					value.push(constantPool[stream.readUint16()]);
 				}
 			}

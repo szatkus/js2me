@@ -25,7 +25,7 @@ js2me.createClass({
 		if (index < 0 || index >= this.items.length) {
 			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
 		}
-		this.element.removeChild(this.items[index]);
+		this.element.removeChild(this.items[index].element);
 		for (var i = index; i < this.items.length - 1; i++) {
 			this.items[i] = this.items[i + 1];
 		}

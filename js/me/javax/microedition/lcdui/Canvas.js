@@ -115,6 +115,10 @@ js2me.createClass({
 	$hasPointerMotionEvents$$Z: function () {
 		return 1;
 	},
+	$getKeyName$I$Ljava_lang_String_: function () {
+		//TODO
+		return new javaRoot.$java.$lang.$String('pomidor');
+	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable',
 	package: 'javaRoot.$javax.$microedition.$lcdui',
 	name: '$Canvas'

@@ -140,6 +140,29 @@ js2me.createClass({
 			hashCode -= 0x80000000;
 		}
 		return hashCode;
+	},
+	$toUpperCase$$Ljava_lang_String_: function () {
+		return new javaRoot.$java.$lang.$String(this.text.toUpperCase());
+	},
+	$indexOf$Ljava_lang_String_$I: function (str) {
+		if (str == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		return this.text.indexOf(str.text);
+	},
+	$startsWith$Ljava_lang_String_$Z: function (str) {
+		if (this.text.indexOf(str.text) == 0) {
+			return 1;
+		} else {
+			return 0;
+		}
+	},
+	$endsWith$Ljava_lang_String_$Z: function (str) {
+		if (this.text.indexOf(str.text) == this.text.length - str.text.length) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 });
 

@@ -21,7 +21,13 @@ js2me.createClass({
 		return new javaRoot.$java.$lang.$String(this.classObj.prototype.className);
 	},
 	$forName$Ljava_lang_String_$Ljava_lang_Class_: function (name) {
-		return new javaRoot.$java.$lang.$Class(name.text);
+		var innerName = ('javaRoot.' + name.text).replace(/\./g, '.$');
+		return new javaRoot.$java.$lang.$Class(innerName);
+	},
+	$newInstance$$Ljava_lang_Object_: function () {
+		var obj = new this.classObj();
+		obj._init$$V();
+		return obj;
 	},
 	package: 'javaRoot.$java.$lang',
 	name: '$Class'

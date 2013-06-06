@@ -2,8 +2,12 @@ js2me.createClass({
 	construct: function (action) {
 		this.$run$$V = action;
 	},
-	_init$Ljava_lang_Runnable_$V: function (runnable) {
+	_init$Ljava_lang_Runnable_Ljava_lang_String_$V: function (runnable, name) {
 		this.runnable = runnable;
+		this.name = name;
+	},
+	_init$Ljava_lang_Runnable_$V: function (runnable) {
+		this._init$Ljava_lang_Runnable_Ljava_lang_String_$V(runnable);
 	},
 	$start$$V: function () {
 		var thread = this;

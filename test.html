@@ -96,7 +96,7 @@
 				if (obj.prototype) {
 					obj.prototype.require = [];
 					for (var i in obj.prototype) {
-						if (obj.prototype[i].constructor == Function) {
+						if (obj.prototype[i] != null && obj.prototype[i].constructor == Function) {
 							var source = obj.prototype[i].toString();
 							var requirements = source.match(new RegExp('javaRoot(\\.\\$[a-zA-Z]+)+', 'g'));
 							for (var j = 0; requirements && j < requirements.length; j++) {
@@ -162,7 +162,8 @@
 			'javaRoot.$java.$lang.$Object',
 			'javaRoot.$java.$lang.$String',
 			'javaRoot.$java.$lang.$Thread',
-			'javaRoot.$java.$lang.$ClassNotFoundException'
+			'javaRoot.$java.$lang.$ClassNotFoundException',
+			'javaRoot.$java.$lang.$ClassCastException'
 		];
 		loadClasses(standardClasses, function () {
 			zip.createReader(reader, function(zipReader) {

@@ -38,7 +38,10 @@ js2me.createClass({
 		// Ignore the suggestion...
 	},
 	$getProperty$Ljava_lang_String_$Ljava_lang_String_: function (key) {
-		console.log(key.text);
+		console.log('Asking for property ' + key.text);
+		if (key.text == 'microedition.platform') {
+			return new javaRoot.$java.$lang.$String('js2me/m3');
+		}
 	},
 	require: ['javaRoot.$java.$io.$PrintStream'],
 	package: 'javaRoot.$java.$lang',

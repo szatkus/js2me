@@ -54,6 +54,22 @@ js2me.createClass({
 			return 0;
 		}
 	},
-	name: '$Object',
-	package: 'javaRoot.$java.$lang'
+	isImplement: function (className) {
+		if (this.className == className) {
+			return true;
+		}
+		for (var i = 0; this.interfaces && i < this.interfaces.length; i++) {
+			var interface = js2me.findClass(this.interfaces[i]).prototype;
+			if (interface.isImplement(className)) {
+				return true;
+			}
+		}
+		if (this.superClass) {
+			var superClass = js2me.findClass(this.superClass).prototype;
+			if (superClass.isImplement(className)) {
+				return true;
+			}
+		}
+		return false;
+	}
 });
