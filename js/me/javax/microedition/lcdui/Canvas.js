@@ -1,11 +1,10 @@
 js2me.createClass({
-	construct: function () {
-		this.gameActionMapping = [];
-		this.gameActionMapping[-1] = this.$UPI;
-		this.gameActionMapping[-2] = this.$DOWNI;
-		this.gameActionMapping[-3] = this.$LEFTI;
-		this.gameActionMapping[-4] = this.$RIGHTI;
-		this.gameActionMapping[-5] = this.$FIREI;
+	gameActionMapping: {
+		'-1': 1,
+		'-2': 6,
+		'-3': 2,
+		'-4': 5,
+		'-5': 8
 	},
 	$UPI: 1,
 	$DOWNI: 6,

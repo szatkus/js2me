@@ -292,6 +292,7 @@ js2me.convertClass = function (stream) {
 					};
 				}
 				readAttributes();
+				var program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool);
 				value = function () {
 					var locals = [];
 					if (this != window) {
@@ -300,7 +301,7 @@ js2me.convertClass = function (stream) {
 					for (var i = 0; i < arguments.length; i++) {
 						locals.push(arguments[i]);
 					}
-					return js2me.execute(new js2me.BufferStream(codeStream), locals, constantPool, exceptions);
+					return js2me.execute(program, locals, constantPool, exceptions);
 				};
 			}
 			if (attributeName == 'Synthetic') {
