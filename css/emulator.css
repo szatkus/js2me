@@ -1,0 +1,59 @@
+@font-face {
+	font-family: Miso;
+	src: url('miso-bold.ttf');
+} 
+#title {
+	border: 1px solid black;
+	text-align: center;
+	height: 44px;
+	background-color: #aaa;
+}
+#keypad {
+	text-align: center;
+	height: 240px;
+}
+.key, .softkey {
+	display: inline-block;
+	border: 1px solid black;
+	background-color: #444;
+	font-family: Miso;
+	font-size: 9mm;
+	color: #eee;
+	cursor: pointer;
+	margin: 1px;
+}
+.softkey {
+	width: 30%;
+	height: 18%;
+	background: #333;
+}
+.key:hover, .softkey:hover {
+	background: #aaf;
+}
+#joypad {
+	display: inline-block;
+	width: 30%;
+	height: 18%;
+}
+.num {
+	width: 30%;
+	height: 18%;
+	padding-top: 1px;
+}
+#frame {
+	display: inline-block;
+	border: 1px solid black;
+	overflow: hidden;
+	width: 320px;
+	height: 480px;
+	text-align: center;
+	background-color: #111;
+}
+#screen {
+	border: 1px solid black;
+	display: inline-block;
+	background-color: #fff;
+}
+.item {
+	text-align: left;
+}

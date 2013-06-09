@@ -940,7 +940,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		};
 	}
 	// lor
-	generators[0x79] = function (context) {
+	generators[0x81] = function (context) {
 		var b = context.stack.pop();
 		var a = context.stack.pop();
 		context.stack.push(new js2me.Long(a.hi | b.hi, a.lo | b.lo));

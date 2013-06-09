@@ -1,5 +1,5 @@
 var js2me = {
 	JAVA_ROOT: 'javaRoot',
-	width: 240,
-	height: 266,
+	width: 176,
+	height: 176,
 };

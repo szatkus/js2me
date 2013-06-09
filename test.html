@@ -1,8 +1,22 @@
 <!doctype html>
 <title>JS2ME</title>
+<link rel="stylesheet" type="text/css" href="css/emulator.css">
 <script type="text/javascript" src="js/zip/zip.js"></script>
 <script type="text/javascript" src="js/zip/inflate.js"></script>
 <script type="text/javascript" src="js/zip/zip-ext.js"></script>
+<script type="text/javascript" src="js/js2me.js"></script>
+<script type="text/javascript" src="js/bufferStream.js"></script>
+<script type="text/javascript" src="js/convert.js"></script>
+<script type="text/javascript" src="js/classes.js"></script>
+<script type="text/javascript" src="js/execute.js"></script>
+<script type="text/javascript" src="js/manifest.js"></script>
+<script type="text/javascript" src="js/launcher.js"></script>
+<script type="text/javascript" src="js/loader.js"></script>
+<script type="text/javascript" src="js/numbers.js"></script>
+<script type="text/javascript" src="js/program.js"></script>
+<script type="text/javascript" src="js/resources.js"></script>
+<script type="text/javascript" src="js/threads.js"></script>
+<script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript">
 	window.onkeydown = function (e) {
 		var mapping = [];
@@ -33,92 +47,26 @@
 	
 </script>
 
-<style>
-	#title {
-		border: 1px solid black;
-		text-align: center;
-		height: 14px;
-	}
-	#keypad {
-		text-align: center;
-	}
-	.key, .softkey {
-		display: inline-block;
-		border: 1px solid black;
-	}
-	.key:hover, .softkey:hover {
-		background: #aaf
-	}
-	#up.key, #down.key {
-		width: 80px;
-		height: 13px;
-		
-	}
-	#left.key, #right.key, #ok.key {
-		width: 38px;
-		height: 13px;
-		
-	}
-	#choice.softkey, #back.softkey {
-		width: 48px;
-		height: 18px;
-	}
-	.num {
-		width: 38px;
-		height: 13px;
-	}
-	#frame {
-		display: inline-block;
-		border: 1px solid black;
-		overflow: hidden;
-		width: 320px;
-		height: 480px;
-		text-align: center;
-	}
-	#screen {
-		border: 1px solid black;
-		display: inline-block;
-	}
-	.item {
-		text-align: left;
-	}
-</style>
 <div id="frame">
 	<div id="title"></div>
 	<div id="screen"></div>
 	<div id="keypad">
-		<a id="up" class="key"></a><br>
-		<a id="choice" class="softkey"></a>
-		<a id="left" class="key"></a>
-		<a id="ok" class="key"></a>
-		<a id="right" class="key"></a>
-		<a id="back" class="softkey"></a><br>
-		<a id="down" class="key"></a><br>
-		<a id="num1" class="key num"></a>
-		<a id="num2" class="key num"></a>
-		<a id="num3" class="key num"></a><br>
-		<a id="num4" class="key num"></a>
-		<a id="num5" class="key num"></a>
-		<a id="num6" class="key num"></a><br>
-		<a id="num7" class="key num"></a>
-		<a id="num8" class="key num"></a>
-		<a id="num9" class="key num"></a><br>
-		<a id="star" class="key num"></a>
-		<a id="num0" class="key num"></a>
-		<a id="pound" class="key num"></a><br>
+		
+		<a id="choice" class="softkey">&nbsp;</a>
+		<a id="joypad" class="key">&nbsp;</a>
+		<a id="back" class="softkey">&nbsp;</a><br>
+		
+		<a id="num1" class="key num">1</a>
+		<a id="num2" class="key num">2</a>
+		<a id="num3" class="key num">3</a><br>
+		<a id="num4" class="key num">4</a>
+		<a id="num5" class="key num">5</a>
+		<a id="num6" class="key num">6</a><br>
+		<a id="num7" class="key num">7</a>
+		<a id="num8" class="key num">8</a>
+		<a id="num9" class="key num">9</a><br>
+		<a id="star" class="key num">*</a>
+		<a id="num0" class="key num">0</a>
+		<a id="pound" class="key num">#</a><br>
 	</div>
 </div>
-<script type="text/javascript" src="js/js2me.js"></script>
-<script type="text/javascript" src="js/bufferStream.js"></script>
-<script type="text/javascript" src="js/convert.js"></script>
-<script type="text/javascript" src="js/classes.js"></script>
-<script type="text/javascript" src="js/execute.js"></script>
-<script type="text/javascript" src="js/manifest.js"></script>
-<script type="text/javascript" src="js/launcher.js"></script>
-<script type="text/javascript" src="js/loader.js"></script>
-<script type="text/javascript" src="js/numbers.js"></script>
-<script type="text/javascript" src="js/program.js"></script>
-<script type="text/javascript" src="js/resources.js"></script>
-<script type="text/javascript" src="js/threads.js"></script>
-<script type="text/javascript" src="js/utils.js"></script>
-

@@ -5,7 +5,7 @@ js2me.createClass({
 	$openRecordStore$Ljava_lang_String_Z$Ljavax_microedition_rms_RecordStore_: function (recordStoreName, createIfNecessary) {
 		var vendorName = js2me.manifest['midlet-vendor'];
 		var suiteName = js2me.manifest['midlet-name'];
-		var storageName = vendorName + '/' + suiteName + '/' + recordStoreName + '/';
+		var storageName = vendorName + '/' + suiteName + '/' + recordStoreName.text + '/';
 		if (localStorage.getItem(storageName)) {
 			return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);
 		} else {
