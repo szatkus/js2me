@@ -1,32 +1,28 @@
-js2me.loadEntries = function (entries, callback) {
-	var remain = entries.length * 2;
-	function finish() {
-		remain--;
-		if (remain == 0) {
-			callback();
-		}
-	}
-	function addResource(entry) {
-		entry.getData(new zip.ArrayBufferWriter(), function (content) {
-			js2me.resources[entry.filename] = content;
-			finish();
+/**
+ * Loads classes and resources from a given JAR file. This function purges state of JVM.
+ * @param {string} filename Path to JAR file.
+ * @param {function} callback Function to execute when loading is over.
+ */
+js2me.loadJAR = function (filename, callback) {
+	js2me.setupJVM(function () {
+		zip.useWebWorkers = false;
+		zip.workerScriptsPath = 'js/zip/';
+		var reader = new zip.HttpReader(filename);
+		zip.createReader(reader, function(zipReader) {
+			zipReader.getEntries(function (entries) {
+				js2me.loadResources(entries, function () {
+					for (var name in js2me.resources) {
+						if (name.lastIndexOf('class') >= 0 && name.lastIndexOf('class') == name.length - 5) {
+							js2me.loadJavaClass(new js2me.BufferStream(js2me.resources[name]));
+						}
+						if (name == 'META-INF/MANIFEST.MF') {
+							var content = js2me.UTF8ToString(js2me.resources[name]);
+							js2me.manifest = js2me.parseManifest(content);
+						}
+					}
+					js2me.checkClasses(callback);
+				});
+			});
 		});
-	}
-	for (var i in entries) {
-		if (entries[i].filename.lastIndexOf('class') >= 0 &&
-			entries[i].filename.lastIndexOf('class') == entries[i].filename.length - 5) {
-			entries[i].getData(new zip.ArrayBufferWriter(), function (content) {
-				js2me.convertClass(new js2me.BufferStream(content));
-				finish();
-			});
-		} else if (entries[i].filename == 'META-INF/MANIFEST.MF') {
-			entries[i].getData(new zip.TextWriter('utf-8'), function (content) {
-				js2me.manifest = js2me.parseManifest(content);
-				finish();
-			});
-		} else {
-			finish();
-		}
-		addResource(entries[i]);
-	}
+	});
 }

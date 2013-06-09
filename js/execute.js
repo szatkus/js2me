@@ -98,37 +98,3 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	
 	return context.result;
 };
-js2me.restoreThread = function (threadId) {
-	if (js2me.kill) {
-		return;
-	}
-	if (threadId == null) {
-		threadId = js2me.currentThread;
-	}
-	if (js2me.restoreStack[threadId] == undefined) {
-		return;
-	}
-	var restoreStack = js2me.restoreStack[threadId].pop();
-	if (restoreStack) {
-		js2me.currentThread = threadId;
-		if (typeof restoreStack == 'function') {
-			return restoreStack();
-		} else {
-			return js2me.execute.apply(js2me, restoreStack);
-		}
-	}
-};
-js2me.initializeClass = function(classObj) {
-	if (classObj.prototype) {
-		if (classObj.prototype.superClass) {
-			var superClassObj = js2me.findClass(classObj.prototype.superClass);
-			js2me.initializeClass(superClassObj);
-		}
-		if (classObj.prototype._clinit$$V) {
-			//console.log(classObj.prototype.className);
-			var clinit = classObj.prototype._clinit$$V;
-			classObj.prototype._clinit$$V = null;
-			clinit();
-		}
-	}
-};

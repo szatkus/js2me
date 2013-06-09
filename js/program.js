@@ -331,7 +331,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		var field = constantPool[stream.readUint16()];
 		return function (context) {
 			var obj = js2me.findClass(field.className);
-			js2me.initializeClass(obj);
+			js2me.initializeClass(obj, function () {});
 			context.stack.push(obj.prototype[field.name]);
 		};
 	};
@@ -1075,12 +1075,14 @@ js2me.generateProgram = function (stream, constantPool) {
 	// new
 	generators[0xbb] = function () {
 		var classInfo = constantPool[stream.readUint16()];
+		require.push(classInfo.className);
 		return function (context) {
 			var constructor = js2me.findClass(classInfo.className);
+			
 			if (!constructor) {
 				console.error('Not implemented: ' + classInfo.className);
 			}
-			js2me.initializeClass(constructor);
+			js2me.initializeClass(constructor, function () {});
 			var instance = new constructor();
 			context.stack.push(instance);
 		};
@@ -1188,6 +1190,7 @@ js2me.generateProgram = function (stream, constantPool) {
 	}
 	var program = [];
 	var positionMapping = [];
+	var require = [];
 	while (!stream.isEnd()) {
 		positionMapping[stream.index] = program.length;
 		var op = stream.readUint8();
@@ -1209,6 +1212,7 @@ js2me.generateProgram = function (stream, constantPool) {
 	}
 	return {
 		content: program,
-		mapping: positionMapping
+		mapping: positionMapping,
+		require: require
 	};
 };

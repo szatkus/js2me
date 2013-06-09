@@ -1,18 +1,15 @@
+/**
+ * Converts Java class definition into JavaScript.
+ * @param {BufferStream} stream The class file format compliant with JVM specifications.
+ * @return {constructor} JavaScript constructor of class.
+ */
 js2me.convertClass = function (stream) {
 	var newClass = function () {
 		
 	};
 	var constantPool = [];
 	newClass.prototype.pool = constantPool;
-	function checkHeader() {
-		if (stream.readUint32() != 0xCAFEBABE) {
-			throw new Error('Incorrect header');
-		}
-	}
-	function checkVersion() {
-		// Who cares...
-		stream.readUint32();
-	}
+	newClass.prototype.require = [];
 	var TAG_UTF8 = 1;
 	var TAG_INTEGER = 3;
 	var TAG_FLOAT = 4;
@@ -24,6 +21,15 @@ js2me.convertClass = function (stream) {
 	var TAG_METHODREF = 10;
 	var TAG_INTERFACEREF = 11;
 	var TAG_NAME_AND_TYPE = 12;
+	function checkHeader() {
+		if (stream.readUint32() != 0xCAFEBABE) {
+			throw new Error('Incorrect header');
+		}
+	}
+	function checkVersion() {
+		// Who cares...
+		stream.readUint32();
+	}
 	function readConstantPool() {
 		var count = stream.readUint16() - 1;
 		for (var i = 1; i <= count; i++) {
@@ -163,7 +169,7 @@ js2me.convertClass = function (stream) {
 				className = js2me.JAVA_ROOT + '.' + className;
 				
 				if (className.indexOf('[') == -1 ) {
-					js2me.classes[className] = true;
+					newClass.prototype.require.push(className);
 				}
 				constantPool[index] = {
 					className: className
@@ -301,8 +307,22 @@ js2me.convertClass = function (stream) {
 					for (var i = 0; i < arguments.length; i++) {
 						locals.push(arguments[i]);
 					}
-					return js2me.execute(program, locals, constantPool, exceptions);
+					var result = js2me.execute(program, locals, constantPool, exceptions);
+					if (arguments.length > 0 && typeof arguments[arguments.length - 1] == 'function') {
+						var callback = arguments[arguments.length - 1];
+						function tryCallback() {
+							if (!js2me.suspendThread) {
+								callback();
+							} else {
+								var threadId = js2me.currentThread;
+								js2me.restoreStack.push(tryCallback);
+							}
+						}
+						tryCallback();
+					}
+					return result;
 				};
+				value.data = program;
 			}
 			if (attributeName == 'Synthetic') {
 				value = true;
@@ -366,84 +386,11 @@ js2me.convertClass = function (stream) {
 		newClass.prototype.type = 'interface';
 	}
 	var thisClass = constantPool[stream.readUint16()];
+	newClass.prototype.className = thisClass.className;
 	readSuperClass();
 	readInterfaces();
 	readFields();
 	readMethods();
 	readAttributes();
-	var package = js2me.findPackage(thisClass.className.substr(0, thisClass.className.lastIndexOf('.')));
-	package[thisClass.className.substr(thisClass.className.lastIndexOf('.') + 1)] = newClass;
-}
-js2me.cache = {
-	classes: {},
-	packages: {}
-};
-js2me.findPackage = function (path, current) {
-	if (!current) {
-		current = window;
-	}
-	if (!path) {
-		return current;
-	}
-	var name = path.substr(0, path.indexOf('.')) || path;
-	if (!current[name]) {
-		current[name] = {};
-	}
-	if (path.indexOf('.') > 0) {
-		return js2me.findPackage(path.substr(path.indexOf('.') + 1), current[name]);
-	} else {
-		return current[name];
-	}
-}
-js2me.findClass = function (path) {
-	if (js2me.cache.classes[path]) {
-		return js2me.cache.classes[path];
-	}
-	var package = this.findPackage(path.substr(0, path.lastIndexOf('.')));
-	var classObj = package[path.substr(path.lastIndexOf('.') + 1)];
-	if (!classObj) {
-		throw new javaRoot.$java.$lang.$ClassNotFoundException(path);
-	}
-	js2me.cache.classes[path] = classObj;
-	return classObj;
-};
-js2me.createClass = function (proto) {
-	var classObj = function () {
-		if (proto.construct) {
-			proto.construct.apply(this, arguments);
-		}
-	};
-	classObj.prototype = proto;
-	proto.type = 'class';
-	js2me.classBucket = classObj;
-};
-js2me.createInterface = function (proto) {
-	js2me.createClass(proto);
-	proto.type = 'interface';
-};
-js2me.UTF8ToString = function (array) {
-	var i = 0
-	var result = '';
-	while(i < array.length) {
-		if (array[i] < 0x80) {
-			var code = array[i];
-			i++;
-		} else if ((array[i] & 0xE0) == 0xC0) {
-			var code = ((array[i] & 0x1F) << 6) | (array[i + 1] & 0x3F);
-			i += 2;
-		} else if ((array[i] & 0xF0) == 0xE0) {
-			var code = (((array[i] & 0x0F) << 12) | ((array[i + 1] & 0x3F) << 6) | (array[i + 2] & 0x3F));
-			i += 3;
-		} else {
-			return null;
-		}
-		
-		var char = String.fromCharCode(code);
-		if (char != '') {
-			result += char;
-		} else {
-			return null;
-		}
-	}
-	return result;
+	return newClass;
 };

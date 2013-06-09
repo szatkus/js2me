@@ -1,3 +1,8 @@
+/**
+ * Creates manifest object from given content.
+ * @param {string} content Manifest file's content.
+ * @return {object} Manifest object.
+ */
 js2me.parseManifest = function (content) {
 	var manifest = {};
 	var lines = content.split('\n');

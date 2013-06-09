@@ -2,7 +2,7 @@ js2me.createClass({
 	$currentTimeMillis$$J: function () {
 		return new js2me.Long(0, (new Date()).getTime());
 	},
-	_clinit$$V: function () {
+	_clinit$$V: function (callback) {
 		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
 			$write$_B$V: function (b) {
@@ -24,6 +24,7 @@ js2me.createClass({
 			}
 			
 		});
+		callback();
 	},
 	$arraycopy$Ljava_lang_Object_ILjava_lang_Object_II$V: function (src, srcPosition, dst, dstPosition, length) {
 		if (src == null || dst == null) {
