@@ -7,6 +7,9 @@ js2me.createClass({
 		this.input.value = text.text;
 		this.content.appendChild(this.input);
 	},
+	$setString$Ljava_lang_String_$V: function (str) {
+		this.input.value = str.text;
+	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Item',
 	name: '$TextField',
 	package: 'javaRoot.$javax.$microedition.$lcdui'

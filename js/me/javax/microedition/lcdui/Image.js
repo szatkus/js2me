@@ -14,7 +14,7 @@ js2me.createClass({
 		if (input == null) {
 			throw new javaRoot.$java.$io.$IOException();
 		}
-		var data = input.stream.array;
+		var data = new Int8Array(input.stream.array);
 		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
 	},
 	$createImage$Ljavax_microedition_lcdui_Image_$Ljavax_microedition_lcdui_Image_: function (source) {
@@ -34,7 +34,7 @@ js2me.createClass({
 			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
 		}
 		var headers = {
-			'image/png': [137, 80, 78, 71, 13, 10, 26, 10]
+			'image/png': [-119, 80, 78, 71, 13, 10, 26, 10]
 		};
 		var mime = null;
 		for (var i in headers) {
@@ -62,7 +62,11 @@ js2me.createClass({
 		var dataURI = 'data:' + mime + ',';
 		for (var j = offset; j < offset + length; j++) {
 			dataURI += '%';
-			var code = data[j].toString(16);
+			var code = data[j];
+			if (code < 0) {
+				code += 256;
+			}
+			code = code.toString(16)
 			if (code.length == 1) {
 				dataURI += '0';
 			}

@@ -29,8 +29,8 @@ js2me.createClass({
 	$KEY_POUNDI: 35,
 	_init$$V: function () {
 		this.element = document.createElement('canvas');
-		this.element.width = js2me.width;
-		this.element.height = js2me.height;
+		this.element.width = js2me.config.width;
+		this.element.height = js2me.config.height;
 		this.graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		this.element.addEventListener('DOMNodeInserted', function () {

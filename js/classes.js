@@ -265,10 +265,9 @@
 			'javaRoot.$java.$lang.$String',
 			'javaRoot.$java.$lang.$Thread',
 			'javaRoot.$java.$lang.$ClassNotFoundException',
-			'javaRoot.$java.$lang.$ClassCastException'
+			'javaRoot.$java.$lang.$ClassCastException',
+			'javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException'
 			];
 			loadNativeClasses(standardClasses, callback);
-			document.getElementById('screen').style.width = js2me.width + 'px';
-			document.getElementById('screen').style.height = js2me.height + 'px';
 		};
 })();

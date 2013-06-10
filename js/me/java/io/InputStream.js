@@ -3,6 +3,9 @@ js2me.createClass({
 		for (var i = 0; i < length; i++) {
 			var value = this.$read$$I();
 			if (value != -1) {
+				if (value >= 128) {
+					value -= 256;
+				}
 				buffer[offset + i] = value;
 			} else {
 				return i;

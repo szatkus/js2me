@@ -46,10 +46,10 @@ js2me.createClass({
 		this.title = s;
 	},
 	$getWidth$$I: function () {
-		return js2me.width;
+		return js2me.config.width;
 	},
 	$getHeight$$I: function () {
-		return js2me.height;
+		return js2me.config.height;
 	},
 	$addCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
 		if (this.commands.indexOf(command) == -1) {

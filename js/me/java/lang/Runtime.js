@@ -7,7 +7,7 @@ js2me.createClass({
 		// here you are...
 		return new js2me.Long(0, 999999999);
 	},
-	package: 'javaRoot.$java.$lang',
-	name: '$Runtime'
+	$freeMemory$$J: function () {
+		return new js2me.Long(0, 2000000);
+	}
 });
-

@@ -1,4 +1,4 @@
-js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo) {
+js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo, callback) {
 	var context = {
 		stack: [],
 		result: null,
@@ -11,6 +11,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	if (restoreInfo) {
 		context.stack = restoreInfo.stack;
 		context.position = restoreInfo.position;
+		callback = restoreInfo.callback;
 		try {
 			executeFunction(function () {
 				return js2me.restoreThread(js2me.currentThread);
@@ -29,7 +30,8 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		restoreStack.push([program, locals, constantPool, exceptions, { 
 			stack: context.stack,
 			position: context.position,
-			saveResult: context.saveResult
+			saveResult: context.saveResult,
+			callback: callback
 		}]);
 		context.finish = true;
 	}
@@ -62,9 +64,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		}
 		if (saveResult) {
 			context.stack.push(result);
-		}
-		//console.log('END: ' + method.className + '->' + method.name);
-		
+		}		
 	}
 	
 	
@@ -88,13 +88,14 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 			var threadID = js2me.currentThread;
 			js2me.suspendThread = true;
 			setTimeout(function () {
-				//console.log('aaa');
 				js2me.restoreThread(threadID);
 			}, 1);
 		}
 		
 	}
-	
+	if (callback != null && !js2me.suspendThread) {
+		callback(context.result);
+	}
 	
 	return context.result;
 };

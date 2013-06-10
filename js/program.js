@@ -691,43 +691,39 @@ js2me.generateProgram = function (stream, constantPool) {
 			}
 		};
 	}
-	function findMethod(className, methodName) {
-		var classObj = js2me.findClass(className);
-		var method = classObj.prototype[methodName];
-		if (!method) {
-			if (classObj.prototype.superClass) {
-				method = findMethod(classObj.prototype.superClass, methodName);
-			}
-		}
-		return method
-	}
 	function generateInvoke(static, virtual, garbage) {
 		var methodInfo = constantPool[stream.readUint16()];
 		if (garbage) {
 			stream.readUint16();
 		}
-		return function (context) {
-			var count = methodInfo.type.argumentsTypes.length;
-			var args = [];
-			for (var i = 0; i < count; i++) {
-				args.push(context.stack.pop());
-			}
-			args.reverse();
-			var obj = static ? window : context.stack.pop();
-			if (obj == null) {
-				throw new javaRoot.$java.$lang.$NullPointerException();
-			}
-			//console.log('START: ' + methodInfo.className + '->' + methodInfo.name);
-			var method = findMethod(virtual ? obj.className : methodInfo.className, methodInfo.name)
-			if (!method) {
-				throw new Error('Not implemented ' + methodInfo.className + '->' + methodInfo.name);
-			}
-			context.saveResult = methodInfo.type.returnType != 'V';
-			var result = method.apply(obj, args);
-			if (context.saveResult && !js2me.suspendThread) {
-				context.stack.push(result);
-			}
-		};
+		var argumentsCount = methodInfo.type.argumentsTypes.length;
+		var body = 'var args = [];\n' +
+		'for (var i = 0; i < ' + argumentsCount + '; i++) {\n' +
+		'	args.push(context.stack.pop());\n' +
+		'}\n' +
+		'args.reverse();\n';
+		if (static) {
+			body += 'var obj = window;\n';
+		} else {
+			body += 'var obj = context.stack.pop();\n' +
+			'if (obj == null) {\n' +
+			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
+			'}\n';
+		}
+		if (virtual) {
+			body += 'var method = obj.' + methodInfo.name + ';\n';
+		} else {
+			body += 'var method = ' + methodInfo.className + '.prototype.' + methodInfo.name + ';\n';
+		}
+		body += 'if (!method) {\n' +
+		'	throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
+		'}' +
+		'context.saveResult = ' + (methodInfo.type.returnType != 'V') + ';\n' +
+		'var result = method.apply(obj, args);\n' + 
+		'if (context.saveResult && !js2me.suspendThread) {\n' +
+		'	context.stack.push(result);\n' +
+		'}\n';
+		return new Function('context', body);
 	}
 	// invokeinterface
 	generators[0xb9] = function () {
@@ -1168,6 +1164,13 @@ js2me.generateProgram = function (stream, constantPool) {
 		var value = stream.readUint16();
 		return new Function('context', 'context.stack.push(' + value + ');');
 	}
+	// swap
+	generators[0x5f] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a);
+		context.stack.push(b);
+	}
 	// tableswitch
 	generators[0xaa] = function () {
 		var start = stream.index - 1;
@@ -1199,6 +1202,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			try {
 				func = generators[op]();
 			} catch (e) {
+				var wannaBreakpoint = true;
 			}
 			if (func != null) {
 				program.push(func);

@@ -307,19 +307,11 @@ js2me.convertClass = function (stream) {
 					for (var i = 0; i < arguments.length; i++) {
 						locals.push(arguments[i]);
 					}
-					var result = js2me.execute(program, locals, constantPool, exceptions);
+					var callback = null;
 					if (arguments.length > 0 && typeof arguments[arguments.length - 1] == 'function') {
-						var callback = arguments[arguments.length - 1];
-						function tryCallback() {
-							if (!js2me.suspendThread) {
-								callback();
-							} else {
-								var threadId = js2me.currentThread;
-								js2me.restoreStack.push(tryCallback);
-							}
-						}
-						tryCallback();
+						callback = arguments[arguments.length - 1];
 					}
+					var result = js2me.execute(program, locals, constantPool, exceptions, null, callback);
 					return result;
 				};
 				value.data = program;
