@@ -225,6 +225,9 @@
 							}
 						}
 					}
+					if (!obj.prototype.superClass && obj != javaRoot.$java.$lang.$Object) {
+						obj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
+					}
 					try {
 						if (obj.prototype.superClass) {
 							var superClass = js2me.findClass(obj.prototype.superClass);

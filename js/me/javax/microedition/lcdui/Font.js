@@ -16,13 +16,13 @@ js2me.createClass({
 		}
 		var font = new javaRoot.$javax.$microedition.$lcdui.$Font();
 		font.face = 'sans-serif';
-		font.height = 20;
+		font.height = 10;
 		font.style = '';
 		if (size & this.$SIZE_SMALLI) {
-			font.height = 16;
+			font.height = 8;
 		}
 		if (size & this.$SIZE_LARGEI) {
-			font.height = 24;
+			font.height = 12;
 		}
 		if (size & this.$FACE_MONOSPACEI) {
 			font.face = 'monospace';

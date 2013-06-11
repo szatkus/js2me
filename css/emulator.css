@@ -53,6 +53,7 @@
 	border: 1px solid black;
 	display: inline-block;
 	background-color: #fff;
+	font-size: 10px;
 }
 .item {
 	text-align: left;

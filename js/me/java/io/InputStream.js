@@ -19,6 +19,17 @@ js2me.createClass({
 	$close$$V: function () {
 		// for what?
 	},
+	getBytes: function () {
+		var bytes =  [];
+		var byte = -1;
+		while ((byte = this.$read$$I()) != -1) {
+			if (byte >= 128) {
+				byte -= 256;
+			}
+			bytes.push(byte);
+		}
+		return bytes;
+	},
 	package: 'javaRoot.$java.$io',
 	name: '$InputStream'
 });

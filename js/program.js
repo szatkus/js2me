@@ -931,7 +931,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			table[match] = value;
 		}
 		return function (context) {
-			var offset = table[context.stack.pop()] | def;
+			var offset = table[context.stack.pop()] || def;
 			context.position = positionMapping[offset];
 		};
 	}

@@ -20,7 +20,7 @@ js2me.createClass({
 		
 	}, 
 	$getNumRecords$$I : function () {
-		return localStorage.getItem(this.storageName + 'size');
+		return parseInt(localStorage.getItem(this.storageName + 'size'));
 	},
 	$getLastModified$$J: function () {
 		var time = parseInt(localStorage.getItem(this.storageName + 'lastModified'));

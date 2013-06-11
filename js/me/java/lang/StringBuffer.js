@@ -7,6 +7,9 @@ js2me.createClass({
 		this._init$$V();
 		this.capacity = length;
 	},
+	_init$Ljava_lang_String_$V: function (str) {
+		this.string = str.text;
+	},
 	$append$Ljava_lang_String_$Ljava_lang_StringBuffer_: function (str) {
 		this.string += str.text;
 		return this;

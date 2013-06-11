@@ -59,20 +59,7 @@ js2me.createClass({
 			image.element.getContext('2d').drawImage(imageElement, 0, 0);
 			js2me.restoreThread(threadId);
 		};
-		var dataURI = 'data:' + mime + ',';
-		for (var j = offset; j < offset + length; j++) {
-			dataURI += '%';
-			var code = data[j];
-			if (code < 0) {
-				code += 256;
-			}
-			code = code.toString(16)
-			if (code.length == 1) {
-				dataURI += '0';
-			}
-			dataURI += code;
-		}
-		imageElement.src = dataURI;
+		imageElement.src = js2me.bytesToDataURI(data, offset, length, mime);
 		//console.log(dataURI);
 		js2me.suspendThread = true;
 		var threadId = js2me.currentThread;

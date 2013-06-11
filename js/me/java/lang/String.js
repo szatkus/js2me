@@ -11,6 +11,9 @@ js2me.createClass({
 	_init$_B$V: function (data) {
 		this._init$_BLjava_lang_String_$V(data);
 	},
+	_init$_BII$V: function (data, offset, length) {
+		this.text = js2me.UTF8ToString(data, offset, length);
+	},
 	$equals$Ljava_lang_Object_$Z: function (obj) {
 		if (this.className == obj.className && this.text == obj.text) {
 			return 1;
