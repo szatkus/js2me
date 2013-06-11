@@ -14,16 +14,20 @@ js2me.createClass({
 			this.current.active = false;
 		}
 		this.current = displayable;
-		displayable.display = this;
+		if (displayable != null) {
+			displayable.display = this;
+		}
 		this.timeout = setTimeout(function () {
-			if (displayable.title) {
-				document.getElementById('title').innerHTML = displayable.title.text;
-			}
+			document.getElementById('title').innerHTML = '';
 			screen.innerHTML = '';
-			screen.appendChild(displayable.element);
-			displayable.active = true;
-			
-			displayable.refreshCommands();
+			if (displayable != null) {
+				if (displayable.title) {
+					document.getElementById('title').innerHTML = displayable.title.text;
+				}
+				screen.appendChild(displayable.element);
+				displayable.active = true;
+				displayable.refreshCommands();
+			}
 		}, 1);
 	},
 	$callSerially$Ljava_lang_Runnable_$V: function (r) {

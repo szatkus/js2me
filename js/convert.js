@@ -274,7 +274,7 @@ js2me.convertClass = function (stream) {
 			}
 		}
 	}
-	function readAttributes() {
+	function readAttributes(name) {
 		var count = stream.readUint16();
 		var attributes = {};
 		for (var i = 0; i < count; i++) {
@@ -299,6 +299,7 @@ js2me.convertClass = function (stream) {
 				}
 				readAttributes();
 				var program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool);
+				program.name = thisClass.className + '->' + name;
 				value = function () {
 					var locals = [];
 					if (this != window) {
@@ -362,7 +363,7 @@ js2me.convertClass = function (stream) {
 			var accessFlags = stream.readUint16();
 			var name = constantPool[stream.readUint16()];
 			var type = constantPool[stream.readUint16()];
-			var attributes = readAttributes();
+			var attributes = readAttributes(escapeName(name) + escapeType(type));
 			newClass.prototype[escapeName(name) + escapeType(type)] = attributes['Code'];
 		}
 	}

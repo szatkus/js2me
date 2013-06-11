@@ -9,7 +9,7 @@ js2me.parseManifest = function (content) {
 	for (var i in lines) {
 		var parts = lines[i].split(':');
 		if (parts.length > 1) {
-			manifest[parts[0].toLowerCase()] = parts[1];
+			manifest[parts[0].toLowerCase()] = parts[1].trim();
 		}
 	}
 	return manifest;

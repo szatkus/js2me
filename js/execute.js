@@ -11,6 +11,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	if (restoreInfo) {
 		context.stack = restoreInfo.stack;
 		context.position = restoreInfo.position;
+		context.saveResult = restoreInfo.saveResult;
 		callback = restoreInfo.callback;
 		try {
 			executeFunction(function () {
