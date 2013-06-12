@@ -252,6 +252,17 @@
 				}
 			});
 		}
+		
+		js2me.checkMethods = function () {
+			for (var methodPath in js2me.usedMethods) {
+				// yeah, yeah, I know...
+				var ref = eval(methodPath.replace('->', '.prototype.'));
+				if (ref == null) {
+					console.log('Method not found: ' + methodPath);
+				}
+			}
+		};
+		
 		/*
 		 * Prepares a JVM to usage. Basicaly loads some basic classes and sets initial state.
 		 * @param {function} callback Function to execute when machine is ready.
@@ -262,6 +273,7 @@
 			js2me.currentThread = 0;
 			js2me.restoreStack = [];
 			js2me.kill = false;
+			js2me.usedMethods = {};
 			javaRoot = {};
 			var standardClasses = [
 			'javaRoot.$java.$lang.$Object',
@@ -269,7 +281,9 @@
 			'javaRoot.$java.$lang.$Thread',
 			'javaRoot.$java.$lang.$ClassNotFoundException',
 			'javaRoot.$java.$lang.$ClassCastException',
-			'javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException'
+			'javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException',
+			'javaRoot.$java.$lang.$NegativeArraySizeException',
+			'javaRoot.$java.$lang.$ArrayObject'
 			];
 			loadNativeClasses(standardClasses, callback);
 		};

@@ -58,10 +58,15 @@ js2me.generateProgram = function (stream, constantPool) {
 	};
 	// anewarray
 	generators[0xbd] = function () {
-		stream.readUint16();
+		var type = constantPool[stream.readUint16()];
 		return function (context) {
 			var length = context.stack.pop();
-			context.stack.push(new Array(length));
+			if (length < 0) {
+				throw new javaRoot.$java.$lang.$NegativeArraySizeException();
+			}
+			var array = new Array(length);
+			array.className = type.className;
+			context.stack.push(array);
 		}
 	};
 	// areturn
@@ -155,6 +160,29 @@ js2me.generateProgram = function (stream, constantPool) {
 			}
 		}
 	};
+	// d2i
+	generators[0x8e] = function (context) {
+		var value = context.stack.pop();
+		if (isNaN(value)) {
+			context.stack.push(0);
+			return;
+		}
+		if (value < -0x100000000) {
+			context.stack.push(-0x100000000);
+			return;
+		}
+		if (value > 0xffffffff) {
+			context.stack.push(0xffffffff);
+			return;
+		}
+		context.stack.push(value);
+	};
+	// dmul
+	generators[0x6b] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(new js2me.Double(a.double * b.double));
+	};
 	// dup
 	generators[0x59] = function () {
 		return function (context) {
@@ -191,13 +219,30 @@ js2me.generateProgram = function (stream, constantPool) {
 	generators[0x5c] = function (context) {
 		var a = context.stack.pop();
 		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
-			var b = context.stack.pop();
+			
 			context.stack.push(b);
 			context.stack.push(a);
 			context.stack.push(b);
 			context.stack.push(a);
 		} else {
 			context.stack.push(a);
+			context.stack.push(a);
+		}
+	};
+	// dup2_x1
+	generators[0x5d] = function (context) {
+		var a = context.stack.pop();
+		var b = context.stack.pop();
+		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
+			var c = context.stack.pop();
+			context.stack.push(b);
+			context.stack.push(a);
+			context.stack.push(c);
+			context.stack.push(b);
+			context.stack.push(a);
+		} else {
+			context.stack.push(a);
+			context.stack.push(b);
 			context.stack.push(a);
 		}
 	};
@@ -708,6 +753,9 @@ js2me.generateProgram = function (stream, constantPool) {
 			body += 'var obj = context.stack.pop();\n' +
 			'if (obj == null) {\n' +
 			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
+			'}\n' +
+			'if (obj.constructor == Array) {\n' +
+			'	obj = new javaRoot.$java.$lang.$ArrayObject(obj);\n' +
 			'}\n';
 		}
 		if (virtual) {
@@ -1043,7 +1091,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			function setLength(element, depth) {
 				if (depth + 1 == dimensions) {
 					for (var i = 0; i < counts[depth]; i++) {
-						if (type.indexOf('L') != -1) {
+						if (type.indexOf('L') == -1) {
 							if (type.indexOf('J') != -1) {
 								element[i] = new js2me.Long(0, 0);
 							} else if (type.indexOf('D') != -1) {

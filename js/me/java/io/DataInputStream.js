@@ -45,6 +45,13 @@ js2me.createClass({
 	$readUnsignedShort$$I: function () {
 		return (this.stream.$read$$I() << 8) + this.stream.$read$$I();
 	},
+	$readLong$$J: function () {
+		var a = this.stream.$read$$I();
+		var b = this.stream.$read$$I();
+		var c = this.stream.$read$$I();
+		var d = this.stream.$read$$I();
+		return new js2me.Long(a * 0x100000000 + b, c * 0x100000000 + d);
+	},
 	$readFully$_B$V: function (buffer) {
 		if (this.stream.$read$_BII$I(buffer, 0, buffer.length) < buffer.length) {
 			throw new javaRoot.$java.$io.$EOFException();

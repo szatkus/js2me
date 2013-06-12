@@ -34,17 +34,36 @@ js2me.createClass({
 		this.graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		this.element.addEventListener('DOMNodeInserted', function () {
-			js2me.addEventListener(canvas.keyListener);
+			js2me.addEventListener('keypress', canvas.keyPressListener);
+			js2me.addEventListener('keyreleased', canvas.keyReleasedListener);
 			canvas.$repaint$$V();
 			canvas.$showNotify$$V();
 		});
 		this.element.addEventListener('DOMNodeRemoved', function () {
-			js2me.removeEventListener(canvas.keyListener);
+			js2me.removeEventListener('keypress', canvas.keyPressListener);
+			js2me.removeEventListener('keyreleased', canvas.keyReleasedListener);
 			canvas.$hideNotify$$V();
 		});
-		this.keyListener = function (keyCode) {
+		this.keyPressListener = function (keyCode) {
+			canvas.keysState[keyCode] = true;
 			canvas.$keyPressed$I$V(keyCode);
 		};
+		this.keyReleasedListener = function (keyCode) {
+			if (keyCode != null) {
+				canvas.keysState[keyCode] = true;
+				canvas.$keyReleased$I$V(keyCode);
+			} else {
+				for (var i in canvas.keysState) {
+					if (canvas.keysState[i]) {
+						canvas.keysState[i] = false;
+						setTimeout(function () {
+							canvas.$keyReleased$I$V(i);
+						}, 1);
+					}
+				}
+			}
+		};
+		this.keysState = [];
 		this.init();
 	},
 	$paint$Ljavax_microedition_lcdui_Graphics_$V: function () {
@@ -70,8 +89,12 @@ js2me.createClass({
 	$hideNotify$$V: function () {
 		
 	},
-	$setFullScreenMode$Z$V: function () {
-		//TODO
+	$setFullScreenMode$Z$V: function (mode) {
+		if (mode == 0) {
+			this.element.height = js2me.config.height;
+		} else {
+			this.element.height = js2me.config.fullHeight;
+		}
 	},
 	$isDoubleBuffered$$Z: function () {
 		//TODO: let's think about this...
@@ -87,7 +110,5 @@ js2me.createClass({
 		//TODO
 		return new javaRoot.$java.$lang.$String('pomidor');
 	},
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable',
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Canvas'
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
 });

@@ -11,7 +11,11 @@ js2me.createClass({
 		this.string = str.text;
 	},
 	$append$Ljava_lang_String_$Ljava_lang_StringBuffer_: function (str) {
-		this.string += str.text;
+		if (str !=  null) {
+			this.string += str.text;
+		} else {
+			this.string += 'null';
+		}
 		return this;
 	},
 	$append$J$Ljava_lang_StringBuffer_: function (l) {
@@ -53,6 +57,9 @@ js2me.createClass({
 	},
 	$ensureCapacity$I$V: function (capacity) {
 		this.capacity = capacity;
+	},
+	$insert$II$Ljava_lang_StringBuffer_: function (value, index) {
+		this.string = this.string.substr(0, index) + value.toString() + this.string.substr(index);
 	},
 	package: 'javaRoot.$java.$lang',
 	name: '$StringBuffer'

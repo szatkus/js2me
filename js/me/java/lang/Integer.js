@@ -26,5 +26,8 @@ js2me.createClass({
 	},
 	$valueOf$Ljava_lang_String_$Ljava_lang_Integer_: function (str) {
 		return new javaRoot.$java.$lang.$Integer(this.$parseInt$Ljava_lang_String_$I(str));
+	},
+	$intValue$$I: function () {
+		return this.value;
 	}
 });

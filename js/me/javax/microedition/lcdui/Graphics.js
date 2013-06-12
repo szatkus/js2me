@@ -78,6 +78,10 @@ js2me.createClass({
 		//TODO: maybe it isn't an arc...
 		this.context.strokeRect(x, y, width, height);
 	},
+	$fillArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
+		//TODO: maybe it isn't an arc...
+		this.context.fillRect(x, y, width, height);
+	},
 	$setFont$Ljavax_microedition_lcdui_Font_$V: function (font) {
 		this.context.font = font.getCSS();
 	},
@@ -115,13 +119,13 @@ js2me.createClass({
 		if (anchor & this.$BASELINEI) {
 			console.log('baseline,  what to do?');
 		}
-		if (anchor & this.$BOTTOMI) {
+		if (anchor & this.$RIGHTI) {
 			x -= img.element.width;
 		}
 		if (anchor & this.$HCENTERI) {
 			x -= img.element.width / 2;
 		}
-		if (anchor & this.$RIGHTI) {
+		if (anchor & this.$BOTTOMI) {
 			y -= img.element.height;
 		}
 		this.context.drawImage(img.element, x, y);
@@ -139,7 +143,7 @@ js2me.createClass({
 		this.context.save();
 		this.context.beginPath();
 		this.context.rect(x, y, width, height);
-		//this.context.clip();
+		this.context.clip();
 		this.context.closePath();
 	},
 	$getClipX$$I: function () {
@@ -167,13 +171,13 @@ js2me.createClass({
 		if (anchor & this.$BASELINEI) {
 			console.log('baseline,  what to do?');
 		}
-		if (anchor & this.$BOTTOMI) {
+		if (anchor & this.$RIGHTI) {
 			dx -= dw;
 		}
 		if (anchor & this.$HCENTERI) {
 			dx -= dw / 2;
 		}
-		if (anchor & this.$RIGHTI) {
+		if (anchor & this.$BOTTOMI) {
 			dy -= dh;
 		}
 		this.context.save();
@@ -188,15 +192,13 @@ js2me.createClass({
 		if (transform == sprite.$TRANS_ROT270I || transform == sprite.$TRANS_MIRROR_ROT270I) {
 			this.context.rotate(3 * Math.PI / 2);
 		}
-		var tx = 1;
-		var ty = 1;
 		if (transform == sprite.$TRANS_MIRRORI || transform == sprite.$TRANS_MIRROR_ROT180I) {
-			tx = -1;
+			this.context.scale(-1, 1);
 		}
 		if (transform == sprite.$TRANS_MIRROR_ROT90I || transform == sprite.$TRANS_MIRROR_ROT270I) {
-			ty = -1;
+			this.context.scale(1, -1);
 		}
-		this.context.drawImage(src.element, sx, sy, width, height, -tx * dw / 2, -ty * dh / 2, tx * dw, ty * dh);
+		this.context.drawImage(src.element, sx, sy, width, height, -dw / 2, -dh / 2, dw, dh);
 		this.context.restore();
 	},
 	$getTranslateX$$I: function () {

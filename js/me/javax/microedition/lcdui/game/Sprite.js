@@ -6,6 +6,10 @@ js2me.createClass({
 	$TRANS_MIRRORI: 2,
 	$TRANS_MIRROR_ROT90I: 7,
 	$TRANS_MIRROR_ROT180I: 1,
-	$TRANS_MIRROR_ROT270I:  4
+	$TRANS_MIRROR_ROT270I:  4,
+	_init$Ljavax_microedition_lcdui_Image_$V: function (image) {
+		this.image = image;
+	},
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$game.$Layer'
 });
 

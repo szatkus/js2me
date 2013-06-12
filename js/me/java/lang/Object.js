@@ -28,7 +28,7 @@ js2me.createClass({
 		}
 	},
 	$wait$$V: function () {
-		
+		this.$wait$J$V(new js2me.Long(0, 0));
 	},
 	$hashCode$$I: function () {
 		

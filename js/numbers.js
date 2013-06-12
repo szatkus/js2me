@@ -252,10 +252,10 @@ js2me.checkOverflow = function (value, bits) {
 	for (var i = 0; i < bits - 1; i++) {
 		base *= 2;
 	}
-	if (value >= base) {
+	while (value >= base) {
 		value -= base * 2;
 	}
-	if (value < -base) {
+	while (value < -base) {
 		value += base * 2;
 	}
 	return value;

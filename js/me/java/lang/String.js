@@ -14,6 +14,15 @@ js2me.createClass({
 	_init$_BII$V: function (data, offset, length) {
 		this.text = js2me.UTF8ToString(data, offset, length);
 	},
+	_init$_C$V: function (data) {
+		if (data == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		this.text = '';
+		for (var i = 0; i < data.length; i++) {
+			this.text += String.fromCharCode(data[i]);
+		}
+	},
 	$equals$Ljava_lang_Object_$Z: function (obj) {
 		if (this.className == obj.className && this.text == obj.text) {
 			return 1;
@@ -30,6 +39,9 @@ js2me.createClass({
 	},
 	$valueOf$I$Ljava_lang_String_: function (value) {
 		return new javaRoot.$java.$lang.$String(value.toString());
+	},
+	$valueOf$C$Ljava_lang_String_: function (char) {
+		return new javaRoot.$java.$lang.$String(String.fromCharCode(char));
 	},
 	$compareTo$Ljava_lang_String_$I: function (str) {
 		if (str == null) {

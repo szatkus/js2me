@@ -185,6 +185,11 @@ js2me.convertClass = function (stream) {
 					name: resolveConstant(constant.nameAndTypeIndex).name,
 					type: resolveConstant(constant.nameAndTypeIndex).type
 				};
+				if (tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
+					var constant = constantPool[index];
+					var methodPath = constant.className + '->' + constant.name;
+					js2me.usedMethods[methodPath] = true;
+				}
 			}
 			if (tag == TAG_NAME_AND_TYPE) {
 				var name = resolveConstant(constant.nameIndex);

@@ -89,6 +89,13 @@ js2me.createClass({
 	sendEvent: function () {
 		//TODO
 	},
+	$setMediaTime$J$J: function (time) {
+		//TODO
+		return time;
+	},
+	$close$$V: function () {
+		//TODO
+	},
 	interfaces: ['javaRoot.$javax.$microedition.$media.$Player']
 });
 	

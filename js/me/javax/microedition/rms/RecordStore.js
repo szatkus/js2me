@@ -31,6 +31,9 @@ js2me.createClass({
 		localStorage.setItem(this.storageName + 'size', id);
 		this.$setRecord$I_BII$V(id, data, offset, numBytes);
 	},
+	$getNextRecordID$$I: function () {
+		return parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
+	},
 	$getRecord$I$_B: function (id) {
 		try {
 			var array = localStorage.getItem(this.storageName + id).split(',');

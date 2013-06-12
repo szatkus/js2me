@@ -8,8 +8,9 @@ js2me.createClass({
 	$flushGraphics$$V: function () {
 		//TODO: later...
 	},
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Canvas',
-	package: 'javaRoot.$javax.$microedition.$lcdui.$game',
-	name: '$GameCanvas'
+	$getKeyStates$$I: function () {
+		return 0;
+	},
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Canvas'
 });
 
