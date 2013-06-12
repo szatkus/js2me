@@ -1,5 +1,8 @@
 js2me.createClass({
 	_init$_B$V: function (buffer) {
+		if (buffer == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
 		this._init$_BII$V(buffer, 0, buffer.length);
 	},
 	_init$_BII$V: function (buffer, offset, length) {

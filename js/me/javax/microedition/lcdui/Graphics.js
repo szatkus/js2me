@@ -106,7 +106,24 @@ js2me.createClass({
 		this.context.fillText(str.text, x, y);
 	},
 	$drawImage$Ljavax_microedition_lcdui_Image_III$V: function (img, x, y, anchor) {
-		//TODO: anchor
+		if (anchor == 0) {
+			anchor = this.$TOPI | this.$LEFTI;
+		}
+		if (anchor & this.$VCENTERI) {
+			y -= img.element.height / 2;
+		}
+		if (anchor & this.$BASELINEI) {
+			console.log('baseline,  what to do?');
+		}
+		if (anchor & this.$BOTTOMI) {
+			x -= img.element.width;
+		}
+		if (anchor & this.$HCENTERI) {
+			x -= img.element.width / 2;
+		}
+		if (anchor & this.$RIGHTI) {
+			y -= img.element.height;
+		}
 		this.context.drawImage(img.element, x, y);
 	},
 	$clipRect$IIII$V: function (x, y, width, height) {
@@ -122,7 +139,7 @@ js2me.createClass({
 		this.context.save();
 		this.context.beginPath();
 		this.context.rect(x, y, width, height);
-		this.context.clip();
+		//this.context.clip();
 		this.context.closePath();
 	},
 	$getClipX$$I: function () {
@@ -138,8 +155,49 @@ js2me.createClass({
 		return this.clipHeight;
 	},
 	$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
-		//TODO: transformations and achor
-		this.context.drawImage(src.element, sx, sy, width, height, dx, dy, width, height);
+		var dw = width;
+		var dh = height;
+		if (transform >= 4) {
+			var dh = width;
+			var dw = height;
+		}
+		if (anchor & this.$VCENTERI) {
+			dy -= dh / 2;
+		}
+		if (anchor & this.$BASELINEI) {
+			console.log('baseline,  what to do?');
+		}
+		if (anchor & this.$BOTTOMI) {
+			dx -= dw;
+		}
+		if (anchor & this.$HCENTERI) {
+			dx -= dw / 2;
+		}
+		if (anchor & this.$RIGHTI) {
+			dy -= dh;
+		}
+		this.context.save();
+		this.context.translate(dx + dw / 2, dy + dh / 2);
+		var sprite = javaRoot.$javax.$microedition.$lcdui.$game.$Sprite.prototype;
+		if (transform == sprite.$TRANS_ROT90I || transform == sprite.$TRANS_MIRROR_ROT90I) {
+			this.context.rotate(Math.PI / 2);
+		}
+		if (transform == sprite.$TRANS_ROT180I || transform == sprite.$TRANS_MIRROR_ROT180I) {
+			this.context.rotate(Math.PI);
+		}
+		if (transform == sprite.$TRANS_ROT270I || transform == sprite.$TRANS_MIRROR_ROT270I) {
+			this.context.rotate(3 * Math.PI / 2);
+		}
+		var tx = 1;
+		var ty = 1;
+		if (transform == sprite.$TRANS_MIRRORI || transform == sprite.$TRANS_MIRROR_ROT180I) {
+			tx = -1;
+		}
+		if (transform == sprite.$TRANS_MIRROR_ROT90I || transform == sprite.$TRANS_MIRROR_ROT270I) {
+			ty = -1;
+		}
+		this.context.drawImage(src.element, sx, sy, width, height, -tx * dw / 2, -ty * dh / 2, tx * dw, ty * dh);
+		this.context.restore();
 	},
 	$getTranslateX$$I: function () {
 		return this.translateX;

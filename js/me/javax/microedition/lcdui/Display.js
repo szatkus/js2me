@@ -39,6 +39,10 @@ js2me.createClass({
 	$getCurrent$$Ljavax_microedition_lcdui_Displayable_: function () {
 		return this.current;
 	},
+	$vibrate$I$Z: function () {
+		console.log('*vibration*');
+		return 0;
+	},
 	package: 'javaRoot.$javax.$microedition.$lcdui',
 	name: '$Display'
 });

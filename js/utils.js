@@ -2,16 +2,24 @@
  * Converts given array into string.
  * @param {array} array Array of bytes which is correct UTF8 content.
  */
-js2me.UTF8ToString = function (array, offset, length) {
+js2me.UTF8ToString = function (sourceArray, offset, length) {
 	if (offset == null) {
 		offset = 0;
 	}
 	var i = offset;
 	if (length == null) {
-		length = array.length;
+		length = sourceArray.length;
+	}
+	var array = [];
+	for (var j = 0; j < length; j++) {
+		var code = sourceArray[offset + j];
+		if (code < 0) {
+			code += 256;
+		}
+		array[j] = code;
 	}
 	var result = '';
-	while(i < offset + length) {
+	while(i < length) {
 		if (array[i] < 0x80) {
 			var code = array[i];
 			i++;
