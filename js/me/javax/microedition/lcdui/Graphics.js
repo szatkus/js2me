@@ -131,10 +131,19 @@ js2me.createClass({
 		this.context.drawImage(img.element, x, y);
 	},
 	$clipRect$IIII$V: function (x, y, width, height) {
-		this.$setClip$IIII$V(Math.max(x, this.clipX), Math.max(y, this.clipY), 
-							Math.max(width, this.clipWidth), Math.max(height, this.clipHeight));
+		var clipX = Math.max(x, this.clipX);
+		var clipY = Math.max(y, this.clipY);
+		var clipWidth = Math.min(x + width, this.clipX + this.clipWidth) - clipX;
+		var clipHeight = Math.min(y + height, this.clipY + this.clipHeight) - clipY;
+		this.$setClip$IIII$V(clipX, clipY, clipWidth, clipHeight);
 	},
 	$setClip$IIII$V: function (x, y, width, height) {
+		if (width < 0) {
+			width = 0;
+		}
+		if (height < 0) {
+			height = 0;
+		}
 		this.clipX = x;
 		this.clipY = y;
 		this.clipWidth = width;

@@ -62,7 +62,7 @@ js2me.createClass({
 		return this.$stringWidth$Ljava_lang_String_$I(str);
 	},
 	getCSS: function () {
-		return this.style + (this.height * 0.75) + 'px/' + this.height + 'px ' + this.face;
+		return this.style + Math.floor(this.height * 0.75) + 'px' + this.face;
 	},
 	package: 'javaRoot.$javax.$microedition.$lcdui',
 	name: '$Font'

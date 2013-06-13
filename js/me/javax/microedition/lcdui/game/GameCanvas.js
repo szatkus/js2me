@@ -9,7 +9,9 @@ js2me.createClass({
 		//TODO: later...
 	},
 	$getKeyStates$$I: function () {
-		return 0;
+		var gameState = this.gameState;
+		this.gameState = 0;
+		return gameState;
 	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Canvas'
 });

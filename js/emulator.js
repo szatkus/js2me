@@ -31,7 +31,7 @@ window.onload = function () {
 		if (!isNaN(parseInt(value))) {
 			value = parseInt(value);
 		}
-		js2me.config[parts[i].split('=')[0].toLowerCase()] = value;
+		js2me.config[parts[i].split('=')[0]] = value;
 	}
 	var screen = document.getElementById('screen');
 	//screen.style.width = js2me.config.width + 'px';

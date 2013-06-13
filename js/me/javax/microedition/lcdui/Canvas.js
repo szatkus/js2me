@@ -4,7 +4,16 @@ js2me.createClass({
 		'-2': 6,
 		'-3': 2,
 		'-4': 5,
-		'-5': 8
+		'-5': 8,
+		'49': 9,
+		'50': 1,
+		'51': 10,
+		'52': 2,
+		'53': 8,
+		'54': 5,
+		'55': 11,
+		'56': 6,
+		'57': 12
 	},
 	$UPI: 1,
 	$DOWNI: 6,
@@ -45,6 +54,10 @@ js2me.createClass({
 			canvas.$hideNotify$$V();
 		});
 		this.keyPressListener = function (keyCode) {
+			var gameCode = canvas.gameActionMapping[keyCode];
+			if (gameCode == null) {
+				canvas.gameState = canvas.gameState | (1 << gameCode);
+			}
 			canvas.keysState[keyCode] = true;
 			canvas.$keyPressed$I$V(keyCode);
 		};
@@ -64,6 +77,7 @@ js2me.createClass({
 			}
 		};
 		this.keysState = [];
+		this.gameState = 0;
 		this.init();
 	},
 	$paint$Ljavax_microedition_lcdui_Graphics_$V: function () {

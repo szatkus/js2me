@@ -219,7 +219,7 @@ js2me.generateProgram = function (stream, constantPool) {
 	generators[0x5c] = function (context) {
 		var a = context.stack.pop();
 		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
-			
+			var b = context.stack.pop();
 			context.stack.push(b);
 			context.stack.push(a);
 			context.stack.push(b);
@@ -1178,8 +1178,9 @@ js2me.generateProgram = function (stream, constantPool) {
 		var field = constantPool[stream.readUint16()];
 		return function (context) {
 			var value = context.stack.pop();
-			var obj = js2me.findClass(field.className).prototype;
-			obj[field.name] = value;
+			var obj = js2me.findClass(field.className);
+			js2me.initializeClass(obj, function () {});
+			obj.prototype[field.name] = value;
 		};
 	}
 	// return
