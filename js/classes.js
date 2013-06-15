@@ -274,6 +274,7 @@
 			js2me.restoreStack = [];
 			js2me.kill = false;
 			js2me.usedMethods = {};
+			js2me.usedByteCodes = {};
 			javaRoot = {};
 			var standardClasses = [
 			'javaRoot.$java.$lang.$Object',

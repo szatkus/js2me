@@ -9,25 +9,42 @@ js2me.createClass({
 		this.$buf_B = buffer;
 		this.$posI = offset;
 		this.$countI = offset + length;
+		this.$markI = 0;
+	},
+	$available$$I: function () {
+		return this.$buf_B.length - this.$posI;
+	},
+	$mark$I$V: function () {
+		this.$markI = this.$posI;
+	},
+	$markSupported$$Z: function () {
+		return 1;
 	},
 	$read$$I: function () {
-		if (!this.$buf_B) {
-			throw new javaRoot.$java.$io.$IOException();
-		}
 		if (this.$posI >= this.$countI) {
 			return -1;
 		}
 		var value = this.$buf_B[this.$posI];
 		if (value < 0) {
-			value += 0xFFFF;
+			value += 256;
 		}
 		this.$posI++;
 		return value;
 	},
-	superClass: 'javaRoot.$java.$io.$InputStream',
-	name: '$ByteArrayInputStream',
-	package: 'javaRoot.$java.$io',
-	require: ['javaRoot.$java.$io.$IOException']
+	$reset$$V: function () {
+		this.$posI = this.$markI;
+	},
+	$skip$J$J: function (skip) {
+		if (this.$posI + skip.lo < this.$buf_B.length) {
+			var result = skip.lo;
+			this.$posI += skip.lo;
+		} else {
+			var result = this.$buf_B.length - this.$posI;
+			this.$posI = this.$buf_B.length;
+		}
+		return new js2me.Long(0, result);
+	},
+	superClass: 'javaRoot.$java.$io.$InputStream'
 });
 	
 

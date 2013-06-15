@@ -18,7 +18,9 @@ js2me.createClass({
 			}
 		}
 		
-	}, 
+	},
+	$deleteRecord$I$V: function () {
+	},
 	$getNumRecords$$I : function () {
 		return parseInt(localStorage.getItem(this.storageName + 'size'));
 	},

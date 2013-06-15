@@ -1,4 +1,8 @@
 js2me.createClass({
+	closed: false,
+	$close$$V: function () {
+		this.closed = true;
+	},
 	$read$_BII$I: function (buffer, offset, length) {
 		for (var i = 0; i < length; i++) {
 			var value = this.$read$$I();
@@ -16,9 +20,6 @@ js2me.createClass({
 	$read$_B$I: function (buffer) {
 		return this.$read$_BII$I(buffer, 0, buffer.length);
 	},
-	$close$$V: function () {
-		// for what?
-	},
 	getBytes: function () {
 		var bytes =  [];
 		var byte = -1;
@@ -29,8 +30,6 @@ js2me.createClass({
 			bytes.push(byte);
 		}
 		return bytes;
-	},
-	package: 'javaRoot.$java.$io',
-	name: '$InputStream'
+	}
 });
 

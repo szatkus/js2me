@@ -45,6 +45,18 @@ js2me.createClass({
 	$readUnsignedShort$$I: function () {
 		return (this.stream.$read$$I() << 8) + this.stream.$read$$I();
 	},
+	$readBoolean$$Z: function () {
+		var byte = this.stream.$read$$I();
+		if (byte == 0) {
+			return 0;
+		}
+		if (byte > 0) {
+			return 1;
+		}
+		if (byte < 0) {
+			throw new javaRoot.$java.$io.$EOFException();
+		}
+	},
 	$readLong$$J: function () {
 		var a = this.stream.$read$$I();
 		var b = this.stream.$read$$I();

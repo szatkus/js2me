@@ -126,6 +126,9 @@ js2me.createClass({
 		}
 		return -1;
 	},
+	$lastIndexOf$Ljava_lang_String_$I: function (str) {
+		return this.text.lastIndexOf(str.text);
+	},
 	$substring$II$Ljava_lang_String_: function (beginIndex, endIndex) {
 		if (beginIndex < 0 || endIndex > this.text.length || beginIndex > endIndex) {
 			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();

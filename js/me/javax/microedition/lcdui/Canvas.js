@@ -63,15 +63,17 @@ js2me.createClass({
 		};
 		this.keyReleasedListener = function (keyCode) {
 			if (keyCode != null) {
-				canvas.keysState[keyCode] = true;
+				canvas.keysState[keyCode] = false;
 				canvas.$keyReleased$I$V(keyCode);
 			} else {
 				for (var i in canvas.keysState) {
 					if (canvas.keysState[i]) {
 						canvas.keysState[i] = false;
-						setTimeout(function () {
-							canvas.$keyReleased$I$V(i);
-						}, 1);
+						(function (j) {
+							setTimeout(function () {
+								canvas.$keyReleased$I$V(j);
+							}, 1);
+						})(i);
 					}
 				}
 			}
@@ -109,6 +111,12 @@ js2me.createClass({
 		} else {
 			this.element.height = js2me.config.fullHeight;
 		}
+	},
+	$getWidth$$I: function () {
+		return this.element.width;
+	},
+	$getHeight$$I: function () {
+		return this.element.height;
 	},
 	$isDoubleBuffered$$Z: function () {
 		//TODO: let's think about this...

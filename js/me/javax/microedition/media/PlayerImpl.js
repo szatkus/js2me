@@ -94,7 +94,13 @@ js2me.createClass({
 		return time;
 	},
 	$close$$V: function () {
-		//TODO
+		this.state = this.$CLOSEDI;
+	},
+	$deallocate$$V: function () {
+		if (this.state == this.$CLOSEDI) {
+			throw new javaRoot.$java.$lang.$IllegalStateException();
+		}
+		this.element.pause();
 	},
 	interfaces: ['javaRoot.$javax.$microedition.$media.$Player']
 });

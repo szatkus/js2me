@@ -1246,6 +1246,7 @@ js2me.generateProgram = function (stream, constantPool) {
 	while (!stream.isEnd()) {
 		positionMapping[stream.index] = program.length;
 		var op = stream.readUint8();
+		js2me.usedByteCodes[op] = true;
 		if (generators[op]) {
 			var func = null;
 			try {
@@ -1258,7 +1259,6 @@ js2me.generateProgram = function (stream, constantPool) {
 			} else {
 				program.push(generators[op]);
 			}
-				
 		} else {
 			throw new Error('Op ' + op.toString(16) + ' not supported');
 		}

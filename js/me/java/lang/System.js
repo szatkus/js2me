@@ -1,6 +1,7 @@
 js2me.createClass({
 	$currentTimeMillis$$J: function () {
-		return new js2me.Long(0, (new Date()).getTime());
+		var time = (new Date()).getTime();
+		return new js2me.Long(Math.floor(time / 0x100000000), time % 0x100000000);
 	},
 	_clinit$$V: function (callback) {
 		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
