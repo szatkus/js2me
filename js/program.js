@@ -177,6 +177,36 @@ js2me.generateProgram = function (stream, constantPool) {
 		}
 		context.stack.push(value);
 	};
+	// dcmpg
+	generators[0x98] = function (context) {
+		//TODO: NaN
+		var b = context.stack.pop().double;
+		var a = context.stack.pop().double;
+		if (a > b) {
+			context.stack.push(1);
+		}
+		if (a === b) {
+			context.stack.push(0);
+		}
+		if (a < b) {
+			context.stack.push(-1);
+		}
+	};
+	// dcmpl
+	generators[0x97] = function (context) {
+		//TODO: NaN
+		var b = context.stack.pop().double;
+		var a = context.stack.pop().double;
+		if (a > b) {
+			context.stack.push(1);
+		}
+		if (a === b) {
+			context.stack.push(0);
+		}
+		if (a < b) {
+			context.stack.push(-1);
+		}
+	};
 	// dmul
 	generators[0x6b] = function (context) {
 		var b = context.stack.pop();
@@ -1210,7 +1240,7 @@ js2me.generateProgram = function (stream, constantPool) {
 	}
 	// sipush
 	generators[0x11] = function () {
-		var value = stream.readUint16();
+		var value = stream.readInt16();
 		return new Function('context', 'context.stack.push(' + value + ');');
 	}
 	// swap

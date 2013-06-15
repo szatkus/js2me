@@ -54,26 +54,7 @@ js2me.convertClass = function (stream) {
 			if (tag == TAG_FLOAT) {
 				constant.implemented = true;
 				var value = stream.readUint32();
-				var sign = (value & 0x80000000) != 0;
-				var exponent = ((value & 0x7f800000) >> 23) - 127;
-				var fraction = (value & 0x007fffff);
-				for (var j = 0; j < 23; j++) {
-					fraction /= 2;
-				}
-				fraction += 1;
-				while (exponent != 0) {
-					if (exponent > 0) {
-						fraction *= 2;
-						exponent--;
-					} else {
-						fraction /= 2;
-						exponent++;
-					}
-				}
-				if (sign) {
-					fraction *= -1;
-				}
-				constant.value = fraction;
+				constant.value = js2me.dataToFloat(value);
 			}
 			if (tag == TAG_LONG) {
 				constant.implemented = true;
@@ -83,29 +64,7 @@ js2me.convertClass = function (stream) {
 				constant.implemented = true;
 				var hiData = stream.readUint32();
 				var loData = stream.readUint32();
-				var sign = (hiData & 0x80000000) != 0;
-				var exponent = ((hiData & 0x7ff00000) >> 20) - 1023;
-				hiData = (hiData & 0x000fffff) * 0x100000000;
-				var fraction = 1;
-				for (var j = 0; j < 52; j++) {
-					hiData /= 2;
-					loData /= 2;
-				}
-				fraction += hiData;
-				fraction += loData;
-				while (exponent != 0) {
-					if (exponent > 0) {
-						fraction *= 2;
-						exponent--;
-					} else {
-						fraction /= 2;
-						exponent++;
-					}
-				}
-				if (sign) {
-					fraction *= -1;
-				}
-				constant.value = new js2me.Double(fraction);
+				constant.value = js2me.dataToDouble(hiData, loData);
 			}
 			if (tag == TAG_CLASS_INFO) {
 				constant.implemented = true;

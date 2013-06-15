@@ -260,3 +260,50 @@ js2me.checkOverflow = function (value, bits) {
 	}
 	return value;
 };
+js2me.dataToFloat = function (value) {
+	var sign = (value & 0x80000000) != 0;
+	var exponent = ((value & 0x7f800000) >> 23) - 127;
+	var fraction = (value & 0x007fffff);
+	for (var j = 0; j < 23; j++) {
+		fraction /= 2;
+	}
+	fraction += 1;
+	while (exponent != 0) {
+		if (exponent > 0) {
+			fraction *= 2;
+			exponent--;
+		} else {
+			fraction /= 2;
+			exponent++;
+		}
+	}
+	if (sign) {
+		fraction *= -1;
+	}
+	return fraction;
+};
+js2me.dataToDouble = function (hiData, loData) {
+	var sign = (hiData & 0x80000000) != 0;
+	var exponent = ((hiData & 0x7ff00000) >> 20) - 1023;
+	hiData = (hiData & 0x000fffff) * 0x100000000;
+	var fraction = 1;
+	for (var j = 0; j < 52; j++) {
+		hiData /= 2;
+		loData /= 2;
+	}
+	fraction += hiData;
+	fraction += loData;
+	while (exponent != 0) {
+		if (exponent > 0) {
+			fraction *= 2;
+			exponent--;
+		} else {
+			fraction /= 2;
+			exponent++;
+		}
+	}
+	if (sign) {
+		fraction *= -1;
+	}
+	return new js2me.Double(fraction);
+};
