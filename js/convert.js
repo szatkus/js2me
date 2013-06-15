@@ -39,14 +39,13 @@ js2me.convertClass = function (stream) {
 				implemented: false
 			};
 			if (tag == TAG_UTF8) {
-				//TODO: only ASCII :/
 				constant.implemented = true;
 				var length = stream.readUint16();
-				var value = '';
+				var bytes = [];
 				for (var j = 0; j < length; j++) {
-					value += String.fromCharCode(stream.readUint8());
+					bytes.push(stream.readUint8());
 				}
-				constant.value = value;
+				constant.value = js2me.UTF8ToString(bytes);
 			}
 			if (tag == TAG_INTEGER) {
 				constant.implemented = true;

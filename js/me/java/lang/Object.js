@@ -5,7 +5,7 @@ js2me.createClass({
 		return new javaRoot.$java.$lang.$Class(this.className);
 	},
 	$toString$$Ljava_lang_String_: function () {
-		var text = this.className + ':' + this.$hashCode__I();
+		var text = this.className + ':' + this.$hashCode$$I();
 		return new javaRoot.$java.$lang.$String(text);
 	},
 	$wait$J$V: function (timeout) {
