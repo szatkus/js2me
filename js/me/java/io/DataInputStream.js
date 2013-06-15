@@ -2,11 +2,29 @@ js2me.createClass({
 	_init$Ljava_io_InputStream_$V: function (stream) {
 		this.stream = stream;
 	},
+	$available$$I: function () {
+		return this.stream.$available$$I();
+	},
 	$mark$I$V: function (n) {
 		this.stream.$mark$I$V(n);
 	},
 	$markSupported$$Z: function () {
 		return this.stream.$markSupported$$Z();
+	},
+	$read$$I: function () {
+		return this.stream.$read$$I();
+	},
+	$readBoolean$$Z: function () {
+		var byte = this.stream.$read$$I();
+		if (byte == 0) {
+			return 0;
+		}
+		if (byte > 0) {
+			return 1;
+		}
+		if (byte < 0) {
+			throw new javaRoot.$java.$io.$EOFException();
+		}
 	},
 	$readByte$$B: function () {
 		var value = this.stream.$read$$I();
@@ -30,64 +48,6 @@ js2me.createClass({
 		var data = this.readUnsignedInt();
 		return js2me.dataToFloat(data);
 	},
-	$readShort$$S: function () {
-		var a = this.stream.$read$$I() 
-		var b = this.stream.$read$$I();
-		if (a == -1 || b == -1) {
-			throw new javaRoot.$java.$io.$EOFException();
-		}
-		var value = (a << 8) + b;
-		if (value >= 0x8000) {
-			value -= 0x10000;
-		}
-		return value;
-	},
-	$readInt$$I: function () {
-		var value = 0;
-		for (var i = 0; i < 4; i++) {
-			value = value << 8;
-			var byte = this.stream.$read$$I();
-			if (byte == -1) {
-				throw new javaRoot.$java.$io.$EOFException();
-			} 
-			value += byte;
-		}
-		if (value >= 0x80000000) {
-			value -= 0x100000000;
-		}
-		return value;
-	},
-	
-	$readUnsignedByte$$I: function () {
-		var value = this.stream.$read$$I();
-		if (value == -1) {
-			throw new javaRoot.$java.$io.$EOFException();
-		}
-		return value;
-	},
-	$readUnsignedShort$$I: function () {
-		var a = this.stream.$read$$I();
-		var b = this.stream.$read$$I();
-		if (a == -1 || b == -1) {
-			throw new javaRoot.$java.$io.$EOFException();
-		}
-		return (a << 8) + b;
-	},
-	$readBoolean$$Z: function () {
-		var byte = this.stream.$read$$I();
-		if (byte == 0) {
-			return 0;
-		}
-		if (byte > 0) {
-			return 1;
-		}
-		if (byte < 0) {
-			throw new javaRoot.$java.$io.$EOFException();
-		}
-	},
-	$readLong$$J: function () {
-		return new js2me.Long(this.readUnsignedInt(), this.readUnsignedInt());
-	},
 	$readFully$_B$V: function (buffer) {
 		if (buffer == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -104,6 +64,58 @@ js2me.createClass({
 		if (this.stream.$read$_BII$I(buffer, offset, length) < length) {
 			throw new javaRoot.$java.$io.$EOFException();
 		}
+	},
+	$readInt$$I: function () {
+		var value = 0;
+		for (var i = 0; i < 4; i++) {
+			value = value << 8;
+			var byte = this.stream.$read$$I();
+			if (byte == -1) {
+				throw new javaRoot.$java.$io.$EOFException();
+			} 
+			value += byte;
+		}
+		if (value >= 0x80000000) {
+			value -= 0x100000000;
+		}
+		return value;
+	},
+	$readLong$$J: function () {
+		return new js2me.Long(this.readUnsignedInt(), this.readUnsignedInt());
+	},
+	$readShort$$S: function () {
+		var a = this.stream.$read$$I() 
+		var b = this.stream.$read$$I();
+		if (a == -1 || b == -1) {
+			throw new javaRoot.$java.$io.$EOFException();
+		}
+		var value = (a << 8) + b;
+		if (value >= 0x8000) {
+			value -= 0x10000;
+		}
+		return value;
+	},
+	readUnsignedInt: function () {
+		var value = this.$readInt$$I();
+		if (value < 0) {
+			value += 0x100000000;
+		}
+		return value;
+	},
+	$readUnsignedByte$$I: function () {
+		var value = this.stream.$read$$I();
+		if (value == -1) {
+			throw new javaRoot.$java.$io.$EOFException();
+		}
+		return value;
+	},
+	$readUnsignedShort$$I: function () {
+		var a = this.stream.$read$$I();
+		var b = this.stream.$read$$I();
+		if (a == -1 || b == -1) {
+			throw new javaRoot.$java.$io.$EOFException();
+		}
+		return (a << 8) + b;
 	},
 	$readUTF$$Ljava_lang_String_: function () {
 		var length = this.$readUnsignedShort$$I();
@@ -126,19 +138,7 @@ js2me.createClass({
 	$skipBytes$I$I: function (n) {
 		return this.$skip$J$J(new js2me.Long(0, n)).lo;
 	},
-	$available$$I: function () {
-		return this.stream.$available$$I();
-	},
-	$read$$I: function () {
-		return this.stream.$read$$I();
-	},
-	readUnsignedInt: function () {
-		var value = this.$readInt$$I();
-		if (value < 0) {
-			value += 0x100000000;
-		}
-		return value;
-	},
-	superClass: 'javaRoot.$java.$io.$InputStream'
+	superClass: 'javaRoot.$java.$io.$InputStream',
+	interfaces: ['javaRoot.$java.$io.$DataInput']
 });
 

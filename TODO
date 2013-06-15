@@ -6,7 +6,6 @@ javaRoot.$java.$lang.$Integer
 javaRoot.$java.$lang.$Math
 javaRoot.$java.$lang.$NoClassDefFoundError
 javaRoot.$java.$lang.$Object
-javaRoot.$java.$lang.$Runtime
 javaRoot.$java.$lang.$String
 javaRoot.$java.$lang.$StringBuffer
 javaRoot.$java.$lang.$System
