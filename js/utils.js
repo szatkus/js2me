@@ -42,6 +42,25 @@ js2me.UTF8ToString = function (sourceArray, offset, length) {
 	}
 	return result;
 };
+js2me.stringToUTF8 = function (text) {
+	var result = [];
+	for (var i = 0; i < text.length; i++) {
+		var char = text.charCodeAt(i);
+		if (char >= 0x01 && char <= 0x007F) {
+			result.push(char);
+		}
+		if (char == 0 || (char >= 0x0080 && char <= 0x07FF)) {
+			result.push(0xC0 | (0x1F & (char >> 6)));
+			result.push(0x80 | (0x3F & char));
+		}
+		if (char >= 0x0800 && char <= 0xFFFF) {
+			result.push(0xE0 | (0x0F & (char >> 12)));
+			result.push(0x80 | (0x3F & (char >>  6)));
+			result.push(0x80 | (0x3F & char));
+		}
+	}
+	return result;
+};
 js2me.bytesToDataURI = function (bytes, offset, length, mime) {
 	var dataURI = 'data:' + mime + ',';
 	for (var j = offset; j < offset + length; j++) {

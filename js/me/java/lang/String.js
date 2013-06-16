@@ -63,23 +63,7 @@ js2me.createClass({
 		}
 	},
 	$getBytes$$_B: function () {
-		var result = [];
-		for (var i = 0; i < this.text.length; i++) {
-			var char = this.text.charCodeAt(i);
-			if (char >= 0x01 && char <= 0x007F) {
-				result.push(char);
-			}
-			if (char == 0 || (char >= 0x0080 && char <= 0x07FF)) {
-				result.push(0xC0 | (0x1F & (char >> 6)));
-				result.push(0x80 | (0x3F & char));
-			}
-			if (char >= 0x0800 && char <= 0xFFFF) {
-				result.push(0xE0 | (0x0F & (char >> 12)));
-				result.push(0x80 | (0x3F & (char >>  6)));
-				result.push(0x80 | (0x3F & char));
-			}
-		}
-		return result;
+		return js2me.stringToUTF8(this.text);
 	},
 	$toCharArray$$_C: function () {
 		var result = [];

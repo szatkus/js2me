@@ -8,10 +8,10 @@ js2me.createClass({
 			buffer: '',
 			$write$_B$V: function (b) {
 				for (var i in b) {
-					this.$write$B$V(b[i]);
+					this.$write$I$V(b[i]);
 				}
 			},
-			$write$B$V: function (b) {
+			$write$I$V: function (b) {
 				if (b == 10) {
 					console.log(this.buffer);
 					this.buffer = '';

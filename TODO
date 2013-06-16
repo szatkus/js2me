@@ -1,6 +1,3 @@
-javaRoot.$java.$io.$DataOutputStream
-javaRoot.$java.$io.$InputStream
-javaRoot.$java.$io.$PrintStream
 javaRoot.$java.$lang.$Class
 javaRoot.$java.$lang.$Math
 javaRoot.$java.$lang.$Object
