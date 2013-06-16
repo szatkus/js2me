@@ -12,6 +12,30 @@ public abstract class TestMidlet extends MIDlet {
 			System.out.println("Test " + tests + " failed");
 		}
 	}
+	public void compare(long a, long b) {
+		if (a == b) {
+			check(true);
+		} else {
+			check(false);
+			System.out.println(a + "!=" + b);
+		}
+	}
+	public void compare(double a, double b) {
+		if (a == b) {
+			check(true);
+		} else {
+			check(false);
+			System.out.println(a + "!=" + b);
+		}
+	}
+	public void compare(Object a, Object b) {
+		if (a.equals(b)) {
+			check(true);
+		} else {
+			check(false);
+			System.out.println(a + "!=" + b);
+		}
+	}
 	public void finish() {
 		System.out.println(passed + "/" + tests);
 	}

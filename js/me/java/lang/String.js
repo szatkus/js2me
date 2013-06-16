@@ -30,6 +30,9 @@ js2me.createClass({
 			return 0;
 		}
 	},
+	$toString$$Ljava_lang_String_: function () {
+		return this;
+	},
 	$valueOf$_CII$Ljava_lang_String_: function (data, offset, length) {
 		var text = '';
 		for (var i = 0; i < length; i++) {

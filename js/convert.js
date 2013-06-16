@@ -270,6 +270,9 @@ js2me.convertClass = function (stream) {
 					}
 					for (var i = 0; i < arguments.length; i++) {
 						locals.push(arguments[i]);
+						if (arguments[i].constructor == js2me.Double || arguments[i].constructor == js2me.Long) {
+							locals.push(arguments[i]);
+						}
 					}
 					var callback = null;
 					if (arguments.length > 0 && typeof arguments[arguments.length - 1] == 'function') {

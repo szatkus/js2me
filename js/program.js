@@ -207,6 +207,27 @@ js2me.generateProgram = function (stream, constantPool) {
 			context.stack.push(-1);
 		}
 	};
+	// dload
+	generators[0x18] = function () {
+		var index = stream.readUint8();
+		return generateLoad(index);
+	}
+	// dload_0
+	generators[0x26] = function () {
+		return generateLoad(0);
+	}
+	// dload_1
+	generators[0x27] = function () {
+		return generateLoad(1);
+	}
+	// dload_2
+	generators[0x28] = function () {
+		return generateLoad(2);
+	}
+	// dload_3
+	generators[0x29] = function () {
+		return generateLoad(3);
+	};
 	// dmul
 	generators[0x6b] = function (context) {
 		var b = context.stack.pop();
@@ -436,6 +457,11 @@ js2me.generateProgram = function (stream, constantPool) {
 	generators[0x8b] = function (context) {
 		var value = context.stack.pop();
 		context.stack.push(Math.floor(value));
+	};
+	// f2d
+	generators[0x8d] = function (context) {
+		var value = context.stack.pop();
+		context.stack.push(new js2me.Double(value));
 	};
 	// l2i
 	generators[0x88] = function (context) {

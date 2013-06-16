@@ -36,6 +36,10 @@ js2me.createClass({
 	$append$Ljava_lang_Object_$Ljava_lang_StringBuffer_: function (obj) {
 		return this.$append$Ljava_lang_String_$Ljava_lang_StringBuffer_(obj.$toString$$Ljava_lang_String_());
 	},
+	$append$D$Ljava_lang_StringBuffer_: function (value) {
+		this.string += value.double.toString();
+		return this;
+	},
 	$length$$I: function () {
 		return this.string.length;
 	},

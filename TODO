@@ -2,9 +2,7 @@ javaRoot.$java.$io.$DataOutputStream
 javaRoot.$java.$io.$InputStream
 javaRoot.$java.$io.$PrintStream
 javaRoot.$java.$lang.$Class
-javaRoot.$java.$lang.$Integer
 javaRoot.$java.$lang.$Math
-javaRoot.$java.$lang.$NoClassDefFoundError
 javaRoot.$java.$lang.$Object
 javaRoot.$java.$lang.$String
 javaRoot.$java.$lang.$StringBuffer
