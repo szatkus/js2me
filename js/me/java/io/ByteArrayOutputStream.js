@@ -18,7 +18,7 @@ js2me.createClass({
 		return this.$countI;
 	},
 	$toByteArray$$_B: function () {
-		return this.$buf_B;
+		return this.$buf_B.slice(0);
 	},
 	$toString$$Ljava_lang_String_: function () {
 		var text = js2me.UTF8ToString(this.$buf_B);

@@ -307,3 +307,34 @@ js2me.dataToDouble = function (hiData, loData) {
 	}
 	return new js2me.Double(fraction);
 };
+js2me.FPToBytes = function (value, exponentLength, fractionLength) {
+	var bytes = [];
+	bytes[0] = 0;
+	if (value < 0) {
+		bytes[0] += 128;
+		value =  -value;
+	}
+	var exp = 0;
+	while (value < 1) {
+		value *= 2;
+		exp--;
+	}
+	while (value >= 2) {
+		value /= 2;
+		exp++;
+	}
+	exp += Math.pow(2, exponentLength - 1) - 1;
+	bytes[1] = exp % Math.pow(2, exponentLength - 7);
+	bytes[0] += Math.floor(exp / Math.pow(2, exponentLength - 7));
+	value -= 1;
+	value *= Math.pow(2, 8 - ((1 + exponentLength) % 8));
+	bytes[1] += Math.floor(value);
+	value = value % 1;
+	var length = Math.floor((exponentLength  + fractionLength + 1) / 8)
+	for (var i = 2; i < length; i++) {
+		value *= 256;
+		bytes[i] = Math.floor(value);
+		value = value % 1;
+	}
+	return bytes;
+};
