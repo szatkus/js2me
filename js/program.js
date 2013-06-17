@@ -252,14 +252,14 @@ js2me.generateProgram = function (stream, constantPool) {
 	};
 	// dup_x2
 	generators[0x5b] = function (context) {
-		var b = context.stack.pop();
 		var a = context.stack.pop();
-		if (b.constructor != js2me.Long && b.constructor != js2me.Double) {
+		var b = context.stack.pop();
+		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
 			var c = context.stack.pop();
+			context.stack.push(a);
 			context.stack.push(c);
 			context.stack.push(b);
 			context.stack.push(a);
-			context.stack.push(c);
 		} else {
 			context.stack.push(a);
 			context.stack.push(b);
@@ -804,7 +804,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		'}\n' +
 		'args.reverse();\n';
 		if (static) {
-			body += 'var obj = window;\n';
+			body += 'var obj = ' + methodInfo.className + ';\n';
 		} else {
 			body += 'var obj = context.stack.pop();\n' +
 			'if (obj == null) {\n' +

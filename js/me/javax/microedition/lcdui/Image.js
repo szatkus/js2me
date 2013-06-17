@@ -26,6 +26,11 @@ js2me.createClass({
 		graphics.$drawImage$Ljavax_microedition_lcdui_Image_III$V(source, 0, 0, 0);
 		return image;
 	},
+	$createImage$Ljavax_microedition_lcdui_Image_IIIII$Ljavax_microedition_lcdui_Image_ : function (source, x, y, width, height, transform) {
+		var image = javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(width, height);
+		var graphics = image.$getGraphics$$Ljavax_microedition_lcdui_Graphics_();
+		graphics.$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V(source, x, y, width, height, transform, 0, 0, 0);
+	},
 	$createImage$_BII$Ljavax_microedition_lcdui_Image_: function (data, offset, length) {
 		if (data == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();

@@ -4,6 +4,7 @@ js2me.createClass({
 		this.context = canvas.getContext('2d');
 		this.context.textBaseline = 'top';
 		this.$setColor$III$V(0, 0, 0);
+		this.$setClip$IIII$V(0, 0, this.element.width, this.element.height);
 	},
 	$HCENTERI: 1,
 	$VCENTERI: 2,
@@ -43,6 +44,16 @@ js2me.createClass({
 		}
 		this.context.strokeRect(x, y, width, height);
 	},
+	$drawRoundRect$IIIIII$V: function (x, y, width, height, arcWidth, arcHeight) {
+		this.drawRoundRectPath(x, y, width, height, arcWidth, arcHeight);
+		this.context.stroke();
+		this.context.closePath();
+	},
+	$fillRoundRect$IIIIII$V: function (x, y, width, height, arcWidth, arcHeight) {
+		this.drawRoundRectPath(x, y, width, height, arcWidth, arcHeight);
+		this.context.fill();
+		this.context.closePath();
+	},
 	$drawLine$IIII$V: function (x1, y1, x2, y2) {
 		this.context.beginPath();
 		if (x1 > x2) {
@@ -75,17 +86,20 @@ js2me.createClass({
 		this.$drawString$Ljava_lang_String_III$V(str, x, y, anchor);
 	},
 	$drawArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
-		//TODO: maybe it isn't an arc...
-		this.context.strokeRect(x, y, width, height);
+		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
+		this.context.stroke();
+		this.context.closePath();
 	},
 	$fillArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
-		//TODO: maybe it isn't an arc...
-		this.context.fillRect(x, y, width, height);
+		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
+		this.context.fill();
+		this.context.closePath();
 	},
 	$setFont$Ljavax_microedition_lcdui_Font_$V: function (font) {
-		this.context.font = font.getCSS();
+		this.font = font;
 	},
 	$drawString$Ljava_lang_String_III$V: function (str, x, y, anchor) {
+		this.context.font = this.font.getCSS();
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;
 		}
@@ -228,6 +242,26 @@ js2me.createClass({
 			this.context.mozDash = null;
 		}	
 	},
-	package: 'javaRoot.$javax.$microedition.$lcdui', 
-	name: '$Graphics'
+	drawArcPath: function (x, y, width, height, startAngle, arcAngle) {
+		this.context.save();
+        this.context.beginPath();
+        this.context.translate(x - width / 2, y - height / 2);
+        if (width != 0 && height != 0) {
+			this.context.scale(width, height);
+		}
+        this.context.arc(1, 1, 1, (startAngle / 180) * Math.PI, ((startAngle + arcAngle) / 180) * Math.PI, true);
+        this.context.restore();
+	},
+	drawRoundRectPath: function (x, y, width, height, arcWidth, arcHeight) {
+		this.context.beginPath();
+		this.context.moveTo(x + arcWidth, y);
+		this.context.lineTo(x + width - arcWidth, y);
+		this.context.quadraticCurveTo(x + width, y, x + width, y + arcHeight);
+		this.context.lineTo(x +  width, y + height - arcHeight);
+		this.context.quadraticCurveTo(x + width, y + height, x + width - arcWidth, y + height);
+		this.context.lineTo(x + arcWidth, y + height);
+		this.context.quadraticCurveTo(x, y + height, x, y + height - arcHeight);
+		this.context.lineTo(x, y + arcHeight);
+		this.context.quadraticCurveTo(x, y, x + arcWidth, y);
+	}
 });

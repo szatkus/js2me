@@ -15,36 +15,35 @@ js2me.createClass({
 			javaRoot.$javax.$microedition.$lcdui.$Font.prototype.context = canvas.getContext('2d');
 		}
 		var font = new javaRoot.$javax.$microedition.$lcdui.$Font();
-		font.face = 'sans-serif';
-		font.height = 10;
+		font.face = 'arial';
+		font.height = 16;
 		font.style = '';
-		if (size & this.$SIZE_SMALLI) {
-			font.height = 8;
-		}
-		if (size & this.$SIZE_LARGEI) {
+		if (size & this.prototype.$SIZE_SMALLI) {
 			font.height = 12;
 		}
-		if (size & this.$FACE_MONOSPACEI) {
+		if (size & this.prototype.$SIZE_LARGEI) {
+			font.height = 20;
+		}
+		if (size & this.prototype.$FACE_MONOSPACEI) {
 			font.face = 'monospace';
 		}
-		if (size & this.$FACE_MONOSPACEI) {
+		if (size & this.prototype.$FACE_MONOSPACEI) {
 			font.face = 'monospace';
 		}
-		if (style & this.$SIZE_BOLDI) {
+		if (style & this.prototype.$SIZE_BOLDI) {
 			font.style += 'bold ';
 		}
-		if (style & this.$SIZE_ITALICI) {
+		if (style & this.prototype.$SIZE_ITALICI) {
 			font.style += 'italic ';
 		}
-		if (style & this.$SIZE_UNDERLINEDI) {
+		if (style & this.prototype.$SIZE_UNDERLINEDI) {
 			//TODO
 			console.log('underline unsupported');
 		}
 		return font;
 	},
 	$getBaselinePosition$$I: function () {
-		//TODO
-		return 10;
+		return Math.floor(this.height * 0.75);
 	},
 	$getHeight$$I: function () {
 		return this.height;
@@ -62,8 +61,6 @@ js2me.createClass({
 		return this.$stringWidth$Ljava_lang_String_$I(str);
 	},
 	getCSS: function () {
-		return this.style + Math.floor(this.height * 0.75) + 'px' + this.face;
-	},
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Font'
+		return this.style + ' ' + Math.floor(this.height * 0.75) + 'px ' + this.face;
+	}
 });

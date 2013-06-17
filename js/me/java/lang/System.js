@@ -43,9 +43,6 @@ js2me.createClass({
 		if (key.text == 'microedition.platform') {
 			return new javaRoot.$java.$lang.$String('js2me/m3');
 		}
-	},
-	require: ['javaRoot.$java.$io.$PrintStream'],
-	package: 'javaRoot.$java.$lang',
-	name: '$System'
+	}
 });
 

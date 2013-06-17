@@ -265,12 +265,12 @@ js2me.convertClass = function (stream) {
 				program.name = thisClass.className + '->' + name;
 				value = function () {
 					var locals = [];
-					if (this != window) {
+					if (this.constructor != Function) {
 						locals.push(this);
 					}
 					for (var i = 0; i < arguments.length; i++) {
 						locals.push(arguments[i]);
-						if (arguments[i].constructor == js2me.Double || arguments[i].constructor == js2me.Long) {
+						if (arguments[i] && (arguments[i].constructor == js2me.Double || arguments[i].constructor == js2me.Long)) {
 							locals.push(arguments[i]);
 						}
 					}

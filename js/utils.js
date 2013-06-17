@@ -6,7 +6,7 @@ js2me.UTF8ToString = function (sourceArray, offset, length) {
 	if (offset == null) {
 		offset = 0;
 	}
-	var i = offset;
+	var i = 0;
 	if (length == null) {
 		length = sourceArray.length;
 	}

@@ -40,7 +40,6 @@ js2me.createClass({
 		this.element = document.createElement('canvas');
 		this.element.width = js2me.config.width;
 		this.element.height = js2me.config.height;
-		this.graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		this.element.addEventListener('DOMNodeInserted', function () {
 			js2me.addEventListener('keypress', canvas.keyPressListener);
@@ -82,10 +81,20 @@ js2me.createClass({
 		this.gameState = 0;
 		this.init();
 	},
+	$keyPressed$I$V: function () {
+	},
+	$keyReleased$I$V: function () {
+	},
 	$paint$Ljavax_microedition_lcdui_Graphics_$V: function () {
 	},
 	$repaint$$V: function () {
+		if (this.graphics == null) {
+			this.graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
+		}
 		this.$paint$Ljavax_microedition_lcdui_Graphics_$V(this.graphics);
+		if (!js2me.suspendThread) {
+			this.graphics = null;
+		}
 	},
 	$getGameAction$I$I: function (keyCode) {
 		var gameAction = this.gameActionMapping[keyCode];

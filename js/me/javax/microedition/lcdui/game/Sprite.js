@@ -17,8 +17,8 @@ js2me.createClass({
 		this.transform = transform;
 	},
 	$getWidth$$I: function () {
-		if (this.tranform != this.$TRANS_ROT90I && this.tranform != this.$TRANS_ROT270I &&
-			this.tranform != this.$TRANS_MIRROR_ROT90I &&　this.tranform != this.$TRANS_MIRROR_ROT270I) {
+		if (this.transform != this.$TRANS_ROT90I && this.transform != this.$TRANS_ROT270I &&
+			this.transform != this.$TRANS_MIRROR_ROT90I && this.transform != this.$TRANS_MIRROR_ROT270I) {
 			return this.width;
 		} else {
 			return this.height;
