@@ -1,8 +1,20 @@
 js2me.Long = function (hi, lo) {
+	if (hi >= 0x80000000) {
+		hi = hi % 0x80000000
+	}
+	if (hi < -0x80000000) {
+		hi = hi % 0x80000000
+	}
 	if (hi < 0) {
 		hi += 4294967296;
 	}
 	this.hi = hi;
+	if (lo >= 0x80000000) {
+		lo = lo % 0x80000000
+	}
+	if (lo < -0x80000000) {
+		lo = lo % 0x80000000
+	}
 	if (lo < 0) {
 		lo += 4294967296;
 	}

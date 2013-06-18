@@ -24,7 +24,20 @@ js2me.createClass({
 		}
 	},
 	$equals$Ljava_lang_Object_$Z: function (obj) {
+		if (obj == null) {
+			return 0;
+		}
 		if (this.className == obj.className && this.text == obj.text) {
+			return 1;
+		} else {
+			return 0;
+		}
+	},
+	$equalsIgnoreCase$Ljava_lang_String_$Z: function (str) {
+		if (str == null) {
+			return 0;
+		}
+		if (this.text.toLowerCase() == str.text.toLowerCase()) {
 			return 1;
 		} else {
 			return 0;

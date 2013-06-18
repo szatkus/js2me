@@ -1,4 +1,7 @@
 js2me.createClass({
+	$abs$D$D: function (value) {
+		return new js2me.Double(Math.abs(value.double));
+	},
 	$abs$I$I: Math.abs,
 	$min$II$I: Math.min,
 	$max$II$I: Math.max,
@@ -9,6 +12,10 @@ js2me.createClass({
 			return b;
 		}
 	},
-	package: 'javaRoot.$java.$lang',
-	name: '$Math'
+	$sin$D$D: function (value) {
+		return new js2me.Double(Math.sin(value.double));
+	},
+	$sqrt$D$D: function (value) {
+		return new js2me.Double(value.double, value.double);
+	}
 });

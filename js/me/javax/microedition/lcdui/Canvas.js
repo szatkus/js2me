@@ -88,13 +88,8 @@ js2me.createClass({
 	$paint$Ljavax_microedition_lcdui_Graphics_$V: function () {
 	},
 	$repaint$$V: function () {
-		if (this.graphics == null) {
-			this.graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
-		}
-		this.$paint$Ljavax_microedition_lcdui_Graphics_$V(this.graphics);
-		if (!js2me.suspendThread) {
-			this.graphics = null;
-		}
+		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
+		this.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
 	},
 	$getGameAction$I$I: function (keyCode) {
 		var gameAction = this.gameActionMapping[keyCode];
