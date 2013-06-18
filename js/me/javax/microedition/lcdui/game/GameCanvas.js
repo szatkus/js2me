@@ -3,7 +3,8 @@ js2me.createClass({
 		javaRoot.$javax.$microedition.$lcdui.$Canvas.prototype._init$$V.apply(this);
 	},
 	$getGraphics$$Ljavax_microedition_lcdui_Graphics_: function () {
-		return this.graphics;
+		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
+		return graphics;
 	},
 	$flushGraphics$$V: function () {
 		//TODO: later...

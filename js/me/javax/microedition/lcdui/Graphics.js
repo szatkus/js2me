@@ -5,6 +5,8 @@ js2me.createClass({
 		this.context.textBaseline = 'top';
 		this.$setColor$III$V(0, 0, 0);
 		this.$setClip$IIII$V(0, 0, this.element.width, this.element.height);
+		this.translateX = 0;
+		this.translateY = 0;
 	},
 	$HCENTERI: 1,
 	$VCENTERI: 2,
@@ -17,8 +19,6 @@ js2me.createClass({
 	$DOTTEDI: 1,
 	$setColor$III$V: function (r, g, b) {
 		this.color = 'rgb(' + r + ', ' + g + ', ' + b + ')';
-		this.context.fillStyle = this.color;
-		this.context.strokeStyle = this.color;
 	},
 	$setColor$I$V: function (rgb) {
 		var red = (rgb & 0xff0000) >> 16;
@@ -27,6 +27,7 @@ js2me.createClass({
 		this.$setColor$III$V(red, green, blue);
 	},
 	$fillRect$IIII$V: function (x, y, width, height) {
+		this.loadContext();
 		if (width == 0) {
 			width = 1;
 		}
@@ -34,8 +35,10 @@ js2me.createClass({
 			height = 1;
 		}
 		this.context.fillRect(x, y, width, height);
+		this.context.restore();
 	},
 	$drawRect$IIII$V: function (x, y, width, height) {
+		this.loadContext();
 		if (width == 0) {
 			width = 1;
 		}
@@ -43,18 +46,24 @@ js2me.createClass({
 			height = 1;
 		}
 		this.context.strokeRect(x, y, width, height);
+		this.context.restore();
 	},
 	$drawRoundRect$IIIIII$V: function (x, y, width, height, arcWidth, arcHeight) {
+		this.loadContext();
 		this.drawRoundRectPath(x, y, width, height, arcWidth, arcHeight);
 		this.context.stroke();
 		this.context.closePath();
+		this.context.restore();
 	},
 	$fillRoundRect$IIIIII$V: function (x, y, width, height, arcWidth, arcHeight) {
+		this.loadContext();
 		this.drawRoundRectPath(x, y, width, height, arcWidth, arcHeight);
 		this.context.fill();
 		this.context.closePath();
+		this.context.restore();
 	},
 	$drawLine$IIII$V: function (x1, y1, x2, y2) {
+		this.loadContext();
 		this.context.beginPath();
 		if (x1 > x2) {
 			x1++;
@@ -76,6 +85,7 @@ js2me.createClass({
 		this.context.lineTo(x2, y2);
 		this.context.stroke();
 		this.context.closePath();
+		this.context.restore();
 	},
 	$drawChar$CIII$V: function (char, x, y, anchor) {
 		var str = new javaRoot.$java.$lang.$String(String.fromCharCode(char));
@@ -86,20 +96,24 @@ js2me.createClass({
 		this.$drawString$Ljava_lang_String_III$V(str, x, y, anchor);
 	},
 	$drawArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
+		this.loadContext();
 		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
 		this.context.stroke();
 		this.context.closePath();
+		this.context.restore();
 	},
 	$fillArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
+		this.loadContext();
 		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
 		this.context.fill();
 		this.context.closePath();
+		this.context.restore();
 	},
 	$setFont$Ljavax_microedition_lcdui_Font_$V: function (font) {
-		this.font = font;
+		this.font = font.getCSS();;
 	},
 	$drawString$Ljava_lang_String_III$V: function (str, x, y, anchor) {
-		this.context.font = this.font.getCSS();
+		this.loadContext();
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;
 		}
@@ -122,8 +136,10 @@ js2me.createClass({
 			x -= this.context.measureText(str.text).width;
 		}
 		this.context.fillText(str.text, x, y);
+		this.context.restore();
 	},
 	$drawImage$Ljavax_microedition_lcdui_Image_III$V: function (img, x, y, anchor) {
+		this.loadContext();
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;
 		}
@@ -143,6 +159,7 @@ js2me.createClass({
 			y -= img.element.height;
 		}
 		this.context.drawImage(img.element, x, y);
+		this.context.restore();
 	},
 	$clipRect$IIII$V: function (x, y, width, height) {
 		var clipX = Math.max(x, this.clipX);
@@ -164,16 +181,18 @@ js2me.createClass({
 		this.clipHeight = height;
 		this.context.restore();
 		this.context.save();
+		this.context.translate(this.translateX, this.translateY);
 		this.context.beginPath();
 		this.context.rect(x, y, width, height);
 		this.context.clip();
 		this.context.closePath();
+		this.context.translate(-this.translateX, -this.translateY);
 	},
 	$getClipX$$I: function () {
-		return this.clipX;
+		return this.clipX + this.translateX;
 	},
 	$getClipY$$I: function () {
-		return this.clipY;
+		return this.clipY + this.translateY;
 	},
 	$getClipWidth$$I: function () {
 		return this.clipWidth;
@@ -182,6 +201,7 @@ js2me.createClass({
 		return this.clipHeight;
 	},
 	$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
+		this.loadContext();
 		var dw = width;
 		var dh = height;
 		if (transform >= 4) {
@@ -203,7 +223,6 @@ js2me.createClass({
 		if (anchor & this.$BOTTOMI) {
 			dy -= dh;
 		}
-		this.context.save();
 		this.context.translate(dx + dw / 2, dy + dh / 2);
 		var sprite = javaRoot.$javax.$microedition.$lcdui.$game.$Sprite.prototype;
 		if (transform == sprite.$TRANS_ROT90I || transform == sprite.$TRANS_MIRROR_ROT90I) {
@@ -231,26 +250,32 @@ js2me.createClass({
 		return this.translateY;
 	},
 	$translate$II$V: function (x, y) {
-		this.translateX = x;
-		this.translateY = y;
-		this.context.translate(x, y);
+		this.translateX += x;
+		this.translateY += y;
 	},
 	$setStrokeStyle$I$V: function (style) {
-		if (style == this.$DOTTEDI) {
+		this.style = style;
+	},
+	// FML, it only exists because of stupid canvas clip
+	loadContext: function () {
+		this.context.save();
+		if (this.style == this.$DOTTEDI) {
 			this.context.mozDash = [2];
 		} else {
 			this.context.mozDash = null;
-		}	
+		}
+		this.context.fillStyle = this.color;
+		this.context.strokeStyle = this.color;
+		this.context.font = this.font;
+		this.context.translate(this.translateX, this.translateY);
 	},
 	drawArcPath: function (x, y, width, height, startAngle, arcAngle) {
-		this.context.save();
         this.context.beginPath();
         this.context.translate(x - width / 2, y - height / 2);
         if (width != 0 && height != 0) {
 			this.context.scale(width, height);
 		}
         this.context.arc(1, 1, 1, (startAngle / 180) * Math.PI, ((startAngle + arcAngle) / 180) * Math.PI, true);
-        this.context.restore();
 	},
 	drawRoundRectPath: function (x, y, width, height, arcWidth, arcHeight) {
 		this.context.beginPath();
