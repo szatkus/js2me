@@ -31,7 +31,5 @@ js2me.createClass({
 		}
 		this.items.pop();
 	},
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Screen',
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Form'
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Screen'
 });

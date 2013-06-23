@@ -558,8 +558,9 @@ js2me.generateProgram = function (stream, constantPool) {
 		var field = constantPool[stream.readUint16()];
 		return function (context) {
 			var obj = js2me.findClass(field.className);
-			js2me.initializeClass(obj, function () {});
-			context.stack.push(obj.prototype[field.name]);
+			js2me.initializeClass(obj, function () {
+				context.stack.push(obj.prototype[field.name]);
+			});
 		};
 	};
 	// goto
@@ -1211,7 +1212,15 @@ js2me.generateProgram = function (stream, constantPool) {
 	generators[0x7b] = function (context) {
 		var shift = context.stack.pop() % 64;
 		var value = context.stack.pop();
-		context.stack.push(value.shr(shift));
+		var sign = value.sign();
+		if (sign) {
+			value = value.neg();
+		}
+		var result = value.shr(shift);
+		if (sign) {
+			result = result.neg();
+		}
+		context.stack.push(result);
 	};
 	// lstore
 	generators[0x37] = function () {
@@ -1240,6 +1249,13 @@ js2me.generateProgram = function (stream, constantPool) {
 		var a = context.stack.pop();
 		context.stack.push(a.sub(b));
 	};
+	// lushr
+	generators[0x7d] = function (context) {
+		var shift = context.stack.pop() % 64;
+		var value = context.stack.pop();
+		var result = value.shr(shift);
+		context.stack.push(result);
+	};
 	// monitoenter
 	generators[0xc2] = function (context) {
 		var obj = context.stack.pop();
@@ -1254,9 +1270,8 @@ js2me.generateProgram = function (stream, constantPool) {
 		} else {
 			obj.monitorQueue.push(js2me.currentThread)
 			js2me.suspendThread = true;
-			finish = true;
-			stream.index -= 2;
-			suspendCall(false);
+			context.finish = true;
+			context.saveResult = false;
 		}
 	};
 	// monitoexit
@@ -1439,6 +1454,22 @@ js2me.generateProgram = function (stream, constantPool) {
 			var offset = table[index] || def;
 			context.position = positionMapping[offset];
 		}
+	}
+	// wide
+	generators[0xc4] = function (context) {
+		var op = stream.readUint8();
+		var index = stream.readUint16();
+		if (op >= 21 && op <= 25) {
+			return new Function('context', 'context.push(context.locals[' + index + ']);'); 
+		}
+		if (op >= 54 && op <= 58) {
+			return new Function('context', 'context.locals[' + index + '] = context.pop();'); 
+		}
+		if (op == 0x84) {
+			var value = stream.readInt16();
+			return new Function('context', 'context.locals[' + index + '] += ' + value + ';'); 
+		}
+		throw new Error('wide: unkown op ' + index);
 	}
 	var program = [];
 	var positionMapping = [];

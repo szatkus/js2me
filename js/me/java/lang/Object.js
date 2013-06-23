@@ -1,8 +1,14 @@
 js2me.createClass({
 	_init$$V: function () {
 	},
+	classCache: [],
 	$getClass$$Ljava_lang_Class_: function () {
-		return new javaRoot.$java.$lang.$Class(this.className);
+		var cls = this.classCache[this.className];
+		if (cls == null) {
+			cls = new javaRoot.$java.$lang.$Class(this.className);
+			this.classCache[this.className] = cls;
+		}
+		return cls;
 	},
 	$toString$$Ljava_lang_String_: function () {
 		var text = this.className + ':' + this.$hashCode$$I();

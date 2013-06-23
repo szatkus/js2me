@@ -4,6 +4,7 @@
  * @param {function} callback Function to execute when loading is over.
  */
 js2me.loadJAR = function (filename, callback) {
+	console.log('Opening ' + filename);
 	js2me.setupJVM(function () {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';

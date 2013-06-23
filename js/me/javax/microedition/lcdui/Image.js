@@ -21,7 +21,7 @@ js2me.createClass({
 		if (source == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
-		var image = this.$createImage$II$Ljavax_microedition_lcdui_Image_(source.$getWidth$$I(), source.$getHeight$$I());
+		var image = this.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(source.$getWidth$$I(), source.$getHeight$$I());
 		var graphics = image.$getGraphics$$Ljavax_microedition_lcdui_Graphics_();
 		graphics.$drawImage$Ljavax_microedition_lcdui_Image_III$V(source, 0, 0, 0);
 		return image;
@@ -73,6 +73,34 @@ js2me.createClass({
 		}];
 		return image;
 	},
+	$createRGBImage$_IIIZ$Ljavax_microedition_lcdui_Image_: function (rgb, width, height, alphaProcessing) {
+		var image = new this.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(width, height);
+		var context = image.element.getContext('2d');
+		var imageData = context.getImageData(0, 0, width, height);
+		for (var i = 0; i < width * height; i++) {
+			var value = rgb[i];
+			if (value < 0) {
+				value += 0x100000000;
+			}
+			var blue = value % 256;
+			value = Math.floor(value / 256);
+			var green = value % 256;
+			value = Math.floor(value / 256);
+			var red = value % 256;
+			value = Math.floor(value / 256);
+			var alpha = value % 256;
+			imageData.data[i * 4] = red;
+			imageData.data[i * 4 + 1] = green;
+			imageData.data[i * 4 + 2] = blue;
+			if (alphaProcessing) {
+				imageData.data[i * 4 + 3] = alpha;
+			} else {
+				imageData.data[i * 4 + 3] = 255;
+			}
+		}
+		context.putImageData(imageData, 0, 0);
+		return image;
+	},
 	$getGraphics$$Ljavax_microedition_lcdui_Graphics_: function () {
 		return new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 	},
@@ -81,8 +109,5 @@ js2me.createClass({
 	},
 	$getHeight$$I: function () {
 		return this.element.height;
-	},
-	require: ['javaRoot.$javax.$microedition.$lcdui.$Graphics', 'javaRoot.$java.$lang.$Class', 'javaRoot.$java.$io.$IOException'],
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Image'
+	}
 });

@@ -261,8 +261,8 @@ js2me.convertClass = function (stream) {
 					};
 				}
 				readAttributes();
-				var program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool);
-				program.name = thisClass.className + '->' + name;
+				var program = null;
+				var methodName = thisClass.className + '->' + name;
 				value = function () {
 					var locals = [];
 					if (this.constructor != Function) {
@@ -277,6 +277,11 @@ js2me.convertClass = function (stream) {
 					var callback = null;
 					if (arguments.length > 0 && typeof arguments[arguments.length - 1] == 'function') {
 						callback = arguments[arguments.length - 1];
+					}
+					if (program == null) {
+						program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool);
+						program.name = methodName;
+						console.log('Generating method ' + methodName);
 					}
 					var result = js2me.execute(program, locals, constantPool, exceptions, null, callback);
 					return result;
@@ -346,6 +351,7 @@ js2me.convertClass = function (stream) {
 	}
 	var thisClass = constantPool[stream.readUint16()];
 	newClass.prototype.className = thisClass.className;
+	console.log('Loading class ' + thisClass.className);
 	readSuperClass();
 	readInterfaces();
 	readFields();

@@ -110,7 +110,7 @@ js2me.createClass({
 		this.context.restore();
 	},
 	$setFont$Ljavax_microedition_lcdui_Font_$V: function (font) {
-		this.font = font.getCSS();;
+		this.font = font;
 	},
 	$drawString$Ljava_lang_String_III$V: function (str, x, y, anchor) {
 		this.loadContext();
@@ -200,6 +200,13 @@ js2me.createClass({
 	$getClipHeight$$I: function () {
 		return this.clipHeight;
 	},
+	$getFont$$Ljavax_microedition_lcdui_Font_: function () {
+		return this.font;
+	},
+	$drawSubstring$Ljava_lang_String_IIIII$V: function (str, offset, length, x, y, anchor) {
+		var substring = str.$substring$II$Ljava_lang_String_(offset, offset + length);
+		this.$drawString$Ljava_lang_String_III$V(substring, x, y, anchor);
+	},
 	$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
 		this.loadContext();
 		var dw = width;
@@ -266,7 +273,9 @@ js2me.createClass({
 		}
 		this.context.fillStyle = this.color;
 		this.context.strokeStyle = this.color;
-		this.context.font = this.font;
+		if (this.font) {
+			this.context.font = this.font.getCSS();
+		}
 		this.context.translate(this.translateX, this.translateY);
 	},
 	drawArcPath: function (x, y, width, height, startAngle, arcAngle) {

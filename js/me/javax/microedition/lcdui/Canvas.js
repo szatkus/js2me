@@ -89,7 +89,8 @@ js2me.createClass({
 	},
 	$repaint$$V: function () {
 		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
-		this.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
+		var canvas = this;
+		canvas.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
 	},
 	$getGameAction$I$I: function (keyCode) {
 		var gameAction = this.gameActionMapping[keyCode];
@@ -114,6 +115,10 @@ js2me.createClass({
 			this.element.height = js2me.config.height;
 		} else {
 			this.element.height = js2me.config.fullHeight;
+		}
+		this.fullscreen = (mode != 0);
+		if (this.active) {
+			js2me.setFullscreen(this.fullscreen);
 		}
 	},
 	$getWidth$$I: function () {

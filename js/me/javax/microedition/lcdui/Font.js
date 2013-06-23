@@ -9,6 +9,9 @@ js2me.createClass({
 	$SIZE_SMALLI: 8,
 	$SIZE_MEDIUMI: 0,
 	$SIZE_LARGEI: 16,
+	$getDefaultFont$$Ljavax_microedition_lcdui_Font_: function () {
+		return this.prototype.$getFont$III$Ljavax_microedition_lcdui_Font_.apply(this, [0, 0, 0]);
+	},
 	$getFont$III$Ljavax_microedition_lcdui_Font_: function (face, style, size) {
 		if (this.context == null) {
 			var canvas = document.createElement('canvas');
@@ -49,8 +52,18 @@ js2me.createClass({
 		return this.height;
 	},
 	$stringWidth$Ljava_lang_String_$I: function (str) {
+		if (str == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
 		this.context.font = this.getCSS();
 		return this.context.measureText(str.text).width;
+	},
+	$substringWidth$Ljava_lang_String_II$I: function (str, offset, length) {
+		if (str == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		this.context.font = this.getCSS();
+		return this.context.measureText(str.text.substr(offset, length)).width;
 	},
 	$charWidth$C$I: function (char) {
 		this.context.font = this.getCSS();

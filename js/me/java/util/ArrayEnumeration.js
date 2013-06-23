@@ -7,18 +7,16 @@ js2me.createClass({
 		this.array = array;
 		this.index = 0;
 	},
-	$hasMoreElements__Z: function () {
+	$hasMoreElements$$Z: function () {
 		if (this.index < this.keys.length) {
 			return 1;
 		} else {
 			return 0;
 		}
 	},
-	$nextElement__Ljava_lang_Object_: function () {
+	$nextElement$$Ljava_lang_Object_: function () {
 		var key = this.keys[this.index++];
 		return this.array[key];
 	},
-	interfaces: ['javaRoot.$java.$util.$Enumeration'],
-	name: '$ArrayEnumeration',
-	package: 'javaRoot.$java.$util'
+	interfaces: ['javaRoot.$java.$util.$Enumeration']
 });

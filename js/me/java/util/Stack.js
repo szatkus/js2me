@@ -1,5 +1,3 @@
 js2me.createClass({
-	superClass: 'javaRoot.$java.$util.$Vector',
-	name: '$Stack',
-	package: 'javaRoot.$java.$util'
+	superClass: 'javaRoot.$java.$util.$Vector'
 });

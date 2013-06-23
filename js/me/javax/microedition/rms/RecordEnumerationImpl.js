@@ -2,17 +2,61 @@ js2me.createClass({
 	construct: function (store) {
 		this.store = store;
 		this.result = [];
-		for (var i = 0; i < this.store.$getNumRecords__I(); i++) {
+		for (var i = 0; i < this.store.$getNumRecords$$I(); i++) {
 			try {
-				this.result.push(this.store.$getRecord_I__B(i));
+				this.result.push({
+					id: i,
+					data: this.store.$getRecord$I$_B(i)
+				});
 			} catch (e) {
 			}
 		}
+		this.position = 0;
 	},
-	$numRecords__I: function () {
+	$destroy$$V: function () {
+		this.destroyed = true;
+	},
+	$hasNextElement$$Z: function () {
+		if (this.destroyed) {
+			throw new javaRoot.$java.$lang.$IllegalStateException();
+		}
+		if (this.position < this.result.length) {
+			return 1;
+		} else {
+			return 0;
+		}
+	},
+	$nextRecord$$_B: function () {
+		if (this.destroyed) {
+			throw new javaRoot.$java.$lang.$IllegalStateException();
+		}
+		if (this.position >= this.result.length) {
+			throw new javaRoot.$javax.$microedition.$rms.InvalidRecordIDException();
+		}
+		return this.result[this.position].data;
+		this.position++;
+	},
+	$nextRecordId$$I: function () {
+		if (this.destroyed) {
+			throw new javaRoot.$java.$lang.$IllegalStateException();
+		}
+		if (this.position >= this.result.length) {
+			throw new javaRoot.$javax.$microedition.$rms.InvalidRecordIDException();
+		}
+		return this.result[this.position].id;
+		this.position++;
+	},
+	$numRecords$$I: function () {
+		if (this.destroyed) {
+			throw new javaRoot.$java.$lang.$IllegalStateException();
+		}
 		return this.result.length;
 	},
-	interfaces: ['javaRoot.$javax.$microedition.$rms.$RecordEnumeration'],
-	package: 'javaRoot.$javax.$microedition.$rms',
-	name: '$RecordEnumerationImpl'
+	$reset$$V: function () {
+		if (this.destroyed) {
+			throw new javaRoot.$java.$lang.$IllegalStateException();
+		}
+		this.position = 0;
+	},
+	interfaces: ['javaRoot.$javax.$microedition.$rms.$RecordEnumeration']
 });

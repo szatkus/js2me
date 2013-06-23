@@ -15,15 +15,14 @@ js2me.createClass({
 		this.element.appendChild(this.label);
 		this.element.appendChild(this.content);
 	},
-	$setLabel$Ljava_lang_String_$V: function (str) {
-		if (str != null) {
-			this.label.innerHTML = str.text;
-		} else {
-			this.label.innerHTML = '';
-		}
+	$addCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
+		this.command = command;
 	},
 	$getLabel$$Ljava_lang_String_: function (str) {
 		return new javaRoot.$java.$lang.$String(this.label.innerHTML);
+	},
+	$setItemCommandListener$Ljavax_microedition_lcdui_ItemCommandListener_$V: function (listener) {
+		this.itemListener = listener;
 	},
 	$setLayout$I$V: function (layout) {
 		if (layout == this.$LAYOUT_RIGHTI) {
@@ -33,8 +32,13 @@ js2me.createClass({
 			this.content.style.textAlign = 'center';
 		}
 	},
-	name: '$Item',
-	package: 'javaRoot.$javax.$microedition.$lcdui'
+	$setLabel$Ljava_lang_String_$V: function (str) {
+		if (str != null) {
+			this.label.innerHTML = str.text;
+		} else {
+			this.label.innerHTML = '';
+		}
+	}
 });
 	
 

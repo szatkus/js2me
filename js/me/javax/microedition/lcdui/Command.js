@@ -12,7 +12,8 @@ js2me.createClass({
 		this.commandType = commandType;
 		this.priority = priority;
 	},
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Command'
+	$getPriority$$I: function () {
+		return this.priority;
+	}
 });
 

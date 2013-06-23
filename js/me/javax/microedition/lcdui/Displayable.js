@@ -80,8 +80,8 @@ js2me.createClass({
 		}
 		this.choiceCommands = [];
 		this.backCommands = [];
-		this.choiceButton.innerHTML = '';
-		this.backButton.innerHTML = '';
+		this.choiceButton.innerHTML = '&nbsp;';
+		this.backButton.innerHTML = '&nbsp;';
 		for (var i in this.commands) {
 			var command = this.commands[i];
 			if (command.commandType == command.$BACKI || command.commandType == command.$EXITI ||
@@ -104,8 +104,5 @@ js2me.createClass({
 		if (this.backCommands.length > 1) {
 			this.backButton.innerHTML = 'More...';
 		}
-	},
-	require: ['javaRoot.$javax.$microedition.$lcdui.$List'],
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Displayable'
+	}
 });

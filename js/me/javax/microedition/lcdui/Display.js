@@ -27,6 +27,7 @@ js2me.createClass({
 				screen.appendChild(displayable.element);
 				displayable.active = true;
 				displayable.refreshCommands();
+				js2me.setFullscreen(displayable.fullscreen);
 			}
 		}, 1);
 	},
@@ -42,7 +43,5 @@ js2me.createClass({
 	$vibrate$I$Z: function () {
 		console.log('*vibration*');
 		return 0;
-	},
-	package: 'javaRoot.$javax.$microedition.$lcdui',
-	name: '$Display'
+	}
 });

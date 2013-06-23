@@ -14,6 +14,9 @@ js2me.createClass({
 	_init$_BII$V: function (data, offset, length) {
 		this.text = js2me.UTF8ToString(data, offset, length);
 	},
+	_init$_BIILjava_lang_String_$V: function (data, offset, length) {
+		this._init$_BII$V(data, offset, length);
+	},
 	_init$_C$V: function (data) {
 		if (data == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -58,6 +61,12 @@ js2me.createClass({
 	},
 	$valueOf$C$Ljava_lang_String_: function (char) {
 		return new javaRoot.$java.$lang.$String(String.fromCharCode(char));
+	},
+	$valueOf$Ljava_lang_Object_$Ljava_lang_String_: function (obj) {
+		if (obj == null) {
+			return new javaRoot.$java.$lang.$String('null');
+		}
+		return obj.$toString$$Ljava_lang_String_();
 	},
 	$compareTo$Ljava_lang_String_$I: function (str) {
 		if (str == null) {
@@ -159,14 +168,23 @@ js2me.createClass({
 		}
 		return hashCode;
 	},
+	$replace$CC$Ljava_lang_String_: function (oldChar, newChar) {
+		return new javaRoot.$java.$lang.$String(this.text.replace(String.fromCharCode(oldChar), String.fromCharCode(newChar)));
+	},
+	$toLowerCase$$Ljava_lang_String_: function () {
+		new javaRoot.$java.$lang.$String(this.text.toLowerCase());
+	},
 	$toUpperCase$$Ljava_lang_String_: function () {
 		return new javaRoot.$java.$lang.$String(this.text.toUpperCase());
 	},
 	$indexOf$Ljava_lang_String_$I: function (str) {
+		return this.$indexOf$Ljava_lang_String_I$I(str, 0);
+	},
+	$indexOf$Ljava_lang_String_I$I: function (str, start) {
 		if (str == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
-		return this.text.indexOf(str.text);
+		return this.text.indexOf(str.text, start);
 	},
 	$startsWith$Ljava_lang_String_$Z: function (str) {
 		if (this.text.indexOf(str.text) == 0) {

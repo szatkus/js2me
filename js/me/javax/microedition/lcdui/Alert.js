@@ -1,6 +1,6 @@
 js2me.createClass({
 	_init$Ljava_lang_String_$V: function (str) {
-		this.$setTitle_Ljava_lang_String$$V(str);
+		this.$setTitle$Ljava_lang_String_$V(str);
 	},
 	_init$Ljava_lang_String_Ljava_lang_String_Ljavax_microedition_lcdui_Image_Ljavax_microedition_lcdui_AlertType_$V: function (title, text, image, type) {
 		this.$setTitle$Ljava_lang_String_$V(title);

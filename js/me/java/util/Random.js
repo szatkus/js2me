@@ -11,6 +11,7 @@ js2me.createClass({
 	$nextInt$$I: function () {
 		return this.$nextInt$I$I(4294967296) - 2147483648;
 	},
-	package: 'javaRoot.$java.$util',
-	name: '$Random'
+	$setSeed$J$V: function () {
+		// no
+	}
 });

@@ -36,10 +36,18 @@
 			js2me.config[parts[i].split('=')[0]] = value;
 		}
 		var screen = document.getElementById('screen');
-		//screen.style.width = js2me.config.width + 'px';
-		//screen.style.height = js2me.config.height + 'px';
+		screen.style.width = js2me.config.width + 'px';
+		screen.style.height = js2me.config.height + 'px';
 		js2me.loadJAR(js2me.config['src'], function () {
 			js2me.launchMidlet(1);
 		});
+	};
+	js2me.setFullscreen = function (enabled) {
+		var screen = document.getElementById('screen');
+		if (enabled) {
+			screen.style.height = js2me.config.fullHeight + 'px';
+		} else {
+			screen.style.height = js2me.config.height + 'px';
+		}
 	};
 })();
