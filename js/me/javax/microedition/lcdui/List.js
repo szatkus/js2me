@@ -83,10 +83,11 @@ js2me.createClass({
 		return this.items.length;
 	},
 	refreshItem: function (item) {
-		item.element.innerHTML = item.stringPart.text;
+		item.element.innerHTML = '';
 		if (item.imagePart) {
 			item.element.appendChild(item.imagePart.element);
 		}
+		item.element.innerHTML += item.stringPart.text;
 	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
 });

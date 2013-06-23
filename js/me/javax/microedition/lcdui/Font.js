@@ -45,6 +45,9 @@ js2me.createClass({
 		}
 		return font;
 	},
+	$getFont$I$Ljavax_microedition_lcdui_Font_: function () {
+		return this.prototype.$getDefaultFont$$Ljavax_microedition_lcdui_Font_.apply(this);
+	},
 	$getBaselinePosition$$I: function () {
 		return Math.floor(this.height * 0.75);
 	},

@@ -22,3 +22,16 @@ js2me.restoreThread = function (threadId) {
 		}
 	}
 };
+/**
+ * Launch new thread.
+ * @param {function} func Action to be executed.
+ */
+js2me.launchThread = function (func) {
+	var threadId = -js2me.lastThread;
+	js2me.lastThread++;
+	setTimeout(function () {
+		js2me.currentThread = threadId;
+		func();
+	}, 1);
+};
+js2me.lastThread = 1;

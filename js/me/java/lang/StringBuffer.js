@@ -40,6 +40,14 @@ js2me.createClass({
 		this.string += value.double.toString();
 		return this;
 	},
+	$append$Z$Ljava_lang_StringBuffer_: function (value) {
+		if (value != 1) {
+			this.strings += 'true';
+		} else {
+			this.strings += 'false';
+		}
+		return this;
+	},
 	$length$$I: function () {
 		return this.string.length;
 	},

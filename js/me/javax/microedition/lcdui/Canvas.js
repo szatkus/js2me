@@ -90,7 +90,16 @@ js2me.createClass({
 	$repaint$$V: function () {
 		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
-		canvas.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
+		js2me.launchThread(function () {
+			canvas.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
+		});
+	},
+	$getKeyCode$I$I: function (gameAction) {
+		for (var i in this.gameActionMapping) {
+			if (this.gameActionMapping[i] == gameAction) {
+				return parseInt(i);
+			}
+		}
 	},
 	$getGameAction$I$I: function (keyCode) {
 		var gameAction = this.gameActionMapping[keyCode];

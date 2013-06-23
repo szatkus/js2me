@@ -17,8 +17,12 @@ js2me.createClass({
 	$BASELINEI: 64,
 	$SOLIDI: 0,
 	$DOTTEDI: 1,
+	$getColor$$I: function () {
+		return this.colorValue;
+	},
 	$setColor$III$V: function (r, g, b) {
 		this.color = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+		this.colorValue = r * 0x10000 + g * 0x100 + b;
 	},
 	$setColor$I$V: function (rgb) {
 		var red = (rgb & 0xff0000) >> 16;
@@ -35,6 +39,17 @@ js2me.createClass({
 			height = 1;
 		}
 		this.context.fillRect(x, y, width, height);
+		this.context.restore();
+	},
+	$fillTriangle$IIIIII$V: function (x1, y1, x2, y2, x3, y3) {
+		this.loadContext();
+		this.context.beginPath();
+		this.context.moveTo(x1, y1);
+		this.context.lineTo(x2, y2);
+		this.context.lineTo(x3, y3);
+		this.context.lineTo(x1, y1);
+		this.context.fill();
+		this.context.closePath();
 		this.context.restore();
 	},
 	$drawRect$IIII$V: function (x, y, width, height) {
