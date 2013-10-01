@@ -36,6 +36,9 @@ js2me.createClass({
 	$KEY_NUM9I: 57,
 	$KEY_STARI: 42,
 	$KEY_POUNDI: 35,
+	/*
+	 * protected Canvas()
+	 */
 	_init$$V: function () {
 		this.element = document.createElement('canvas');
 		this.element.width = js2me.config.width;
@@ -81,12 +84,24 @@ js2me.createClass({
 		this.gameState = 0;
 		this.init();
 	},
+	/*
+	 * protected void keyPressed(int keyCode)
+	 */
 	$keyPressed$I$V: function () {
 	},
+	/*
+	 * protected void keyReleased(int keyCode)
+	 */
 	$keyReleased$I$V: function () {
 	},
+	/*
+	 * public final void repaint(int x, int y, int width, int height)
+	 */
 	$paint$Ljavax_microedition_lcdui_Graphics_$V: function () {
 	},
+	/*
+	 * public final void repaint(int x, int y, int width, int height)
+	 */
 	$repaint$$V: function () {
 		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
@@ -94,6 +109,9 @@ js2me.createClass({
 			canvas.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
 		});
 	},
+	/*
+	 * public int getKeyCode(int gameAction)
+	 */
 	$getKeyCode$I$I: function (gameAction) {
 		for (var i in this.gameActionMapping) {
 			if (this.gameActionMapping[i] == gameAction) {
@@ -101,6 +119,9 @@ js2me.createClass({
 			}
 		}
 	},
+	/*
+	 * public int getGameAction(int keyCode)
+	 */
 	$getGameAction$I$I: function (keyCode) {
 		var gameAction = this.gameActionMapping[keyCode];
 		if (gameAction != null) {
@@ -109,16 +130,28 @@ js2me.createClass({
 			return keyCode;
 		}
 	},
+	/*
+	 * public final void serviceRepaints()
+	 */
 	$serviceRepaints$$V: function () {
 		//TODO: is it ok?
 		//this.$repaint__V();
 	},
+	/*
+	 * protected void showNotify()
+	 */
 	$showNotify$$V: function () {
 		
 	},
+	/*
+	 * protected void hideNotify()
+	 */
 	$hideNotify$$V: function () {
 		
 	},
+	/*
+	 * public void setFullScreenMode(boolean mode)
+	 */
 	$setFullScreenMode$Z$V: function (mode) {
 		if (mode == 0) {
 			this.element.height = js2me.config.height;
@@ -130,22 +163,40 @@ js2me.createClass({
 			js2me.setFullscreen(this.fullscreen);
 		}
 	},
+	/*
+	 * 
+	 */
 	$getWidth$$I: function () {
 		return this.element.width;
 	},
+	/*
+	 * 
+	 */
 	$getHeight$$I: function () {
 		return this.element.height;
 	},
+	/*
+	 * public boolean isDoubleBuffered()
+	 */
 	$isDoubleBuffered$$Z: function () {
 		//TODO: let's think about this...
 		return 0;
 	},
+	/*
+	 * public boolean hasPointerEvents()
+	 */
 	$hasPointerEvents$$Z: function () {
 		return 1;
 	},
+	/*
+	 * public boolean hasPointerMotionEvents()
+	 */
 	$hasPointerMotionEvents$$Z: function () {
 		return 1;
 	},
+	/*
+	 * public String getKeyName(int keyCode)
+	 */
 	$getKeyName$I$Ljava_lang_String_: function () {
 		//TODO
 		return new javaRoot.$java.$lang.$String('pomidor');

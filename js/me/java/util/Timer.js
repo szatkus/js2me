@@ -1,9 +1,15 @@
 js2me.createClass({
+	/*
+	 * public Timer()
+	 */
 	_init$$V: function () {
 		this.threadId = js2me.threads.length;
 		js2me.threads.push(this);
 		this.timers = [];
 	},
+	/*
+	 * public void schedule(TimerTask task, long delay)
+	 */
 	$schedule$Ljava_util_TimerTask_J$V: function (task, delay) {
 		task.executing = true;
 		var timer = this;
@@ -13,6 +19,9 @@ js2me.createClass({
 		}, delay.toInt());
 		this.timers.push(task.timer);
 	},
+	/*
+	 * public void schedule(TimerTask task, long delay)
+	 */
 	$schedule$Ljava_util_TimerTask_JJ$V: function (task, delay, interval) {
 		task.executing = true;
 		var timer = this;
@@ -36,6 +45,9 @@ js2me.createClass({
 		}, delay.toInt());
 		this.timers.push(task.timer);
 	},
+	/*
+	 * public void cancel()
+	 */
 	$cancel$$V: function () {
 		for (var i = 0; i < this.timers.length; i++) {
 			clearTimeout(this.timers[i]);

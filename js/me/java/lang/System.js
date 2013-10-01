@@ -1,16 +1,28 @@
 js2me.createClass({
+	/*
+	 * public static long currentTimeMillis()
+	 */
 	$currentTimeMillis$$J: function () {
 		var time = (new Date()).getTime();
 		return new js2me.Long(Math.floor(time / 0x100000000), time % 0x100000000);
 	},
+	/*
+	 * public static long currentTimeMillis()
+	 */
 	_clinit$$V: function (callback) {
 		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
+	/*
+	 * 
+	 */
 			$write$_B$V: function (b) {
 				for (var i in b) {
 					this.$write$I$V(b[i]);
 				}
 			},
+	/*
+	 * 
+	 */
 			$write$I$V: function (b) {
 				if (b == 10) {
 					console.log(this.buffer);
@@ -27,9 +39,15 @@ js2me.createClass({
 		});
 		callback();
 	},
+	/*
+	 * public static void gc()
+	 */
 	$gc$$V: function () {
 		javaRoot.$java.$lang.$Runtime.prototype.$getRuntime$$Ljava_lang_Runtime_().$gc$$V();
 	},
+	/*
+	 * public static void arraycopy(Object src, int src_position, Object dst, int dst_position, int length)
+	 */
 	$arraycopy$Ljava_lang_Object_ILjava_lang_Object_II$V: function (src, srcPosition, dst, dstPosition, length) {
 		if (src == null || dst == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException;
@@ -38,6 +56,9 @@ js2me.createClass({
 			dst[dstPosition + i] = src[srcPosition + i];
 		}
 	},
+	/*
+	 * public static String getProperty(String key)
+	 */
 	$getProperty$Ljava_lang_String_$Ljava_lang_String_: function (key) {
 		console.log('Asking for property ' + key.text);
 		if (key.text == 'microedition.platform') {

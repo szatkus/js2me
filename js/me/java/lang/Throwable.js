@@ -9,15 +9,27 @@ js2me.createClass({
 			this.message = new javaRoot.$java.$lang.$String(message);
 		}
 	},
+	/*
+	 * public Throwable()
+	 */
 	_init$Ljava_lang_String_$V: function (message) {
 		this.message = message;
 	},
+	/*
+	 * public String getMessage()
+	 */
 	$getMessage$$Ljava_lang_String_: function () {
 		return this.message;
 	},
+	/*
+	 * public void printStackTrace()
+	 */
 	$printStackTrace$$V: function () {
 		console.log(this);
 	},
+	/*
+	 * public String toString()
+	 */
 	$toString$$Ljava_lang_String_: function () {
 		var text = this.className;
 		if (this.message) {

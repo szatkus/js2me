@@ -9,6 +9,9 @@ js2me.createClass({
 		var displayable = this;
 		displayable.currentCommands = [];
 		var moreMenuListener = {
+	/*
+	 * 
+	 */
 			$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V: function () {
 				var command = displayable.currentCommands[displayable.moreList.$getSelectedIndex$$I()];
 				displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable);
@@ -42,21 +45,36 @@ js2me.createClass({
 			}
 		});
 	},
+	/*
+	 * public void setTitle(String s)
+	 */
 	$setTitle$Ljava_lang_String_$V: function (s) {
 		this.title = s;
 	},
+	/*
+	 * public int getWidth()
+	 */
 	$getWidth$$I: function () {
 		return js2me.config.width;
 	},
+	/*
+	 * public int getHeight()
+	 */
 	$getHeight$$I: function () {
 		return js2me.config.height;
 	},
+	/*
+	 * public void addCommand(Command cmd)
+	 */
 	$addCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
 		if (this.commands.indexOf(command) == -1) {
 			this.commands.push(command);
 			this.refreshCommands();
 		}
 	},
+	/*
+	 * public void removeCommand(Command cmd)
+	 */
 	$removeCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
 		var index = this.commands.indexOf(command);
 		if (index != -1) {
@@ -67,9 +85,15 @@ js2me.createClass({
 			this.refreshCommands();
 		}
 	},
+	/*
+	 * public void setCommandListener(CommandListener l)
+	 */
 	$setCommandListener$Ljavax_microedition_lcdui_CommandListener_$V: function (commandListener) {
 		this.commandListener = commandListener;
 	},
+	/*
+	 * public boolean isShown()
+	 */
 	$isShown$$Z: function () {
 		return this.element.parentNode != null;
 	},

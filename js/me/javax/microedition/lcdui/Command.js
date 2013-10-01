@@ -7,11 +7,17 @@ js2me.createClass({
 	$STOPI: 6,
 	$EXITI: 7,
 	$ITEMI: 8,
+	/*
+	 * public Command(String label, int commandType, int priority)
+	 */
 	_init$Ljava_lang_String_II$V: function (label, commandType, priority) {
 		this.label = label;
 		this.commandType = commandType;
 		this.priority = priority;
 	},
+	/*
+	 * public int getPriority()
+	 */
 	$getPriority$$I: function () {
 		return this.priority;
 	}

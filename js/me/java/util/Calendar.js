@@ -11,12 +11,21 @@ js2me.createClass({
 	construct: function () {
 		this.date = new Date();
 	},
+	/*
+	 * public static Calendar getInstance()
+	 */
 	$getInstance$$Ljava_util_Calendar_: function () {
 		return new javaRoot.$java.$util.$Calendar();
 	},
+	/*
+	 * public final void setTime(Date date)
+	 */
 	$setTime$Ljava_util_Date_$V: function (date) {
 		this.date = date.date;
 	},
+	/*
+	 * public final Date getTime()
+	 */
 	$get$I$I: function (field) {
 		if (field == this.$YEARI) {
 			return this.date.getFullYear();

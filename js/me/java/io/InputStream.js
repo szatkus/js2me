@@ -1,8 +1,14 @@
 js2me.createClass({
 	closed: false,
+	/*
+	 * 
+	 */
 	$close$$V: function () {
 		this.closed = true;
 	},
+	/*
+	 * public void mark(int readlimit)
+	 */
 	$read$_BII$I: function (buffer, offset, length) {
 		for (var i = 0; i < length; i++) {
 			var value = this.$read$$I();
@@ -17,6 +23,9 @@ js2me.createClass({
 		}
 		return length;
 	},
+	/*
+	 * public void mark(int readlimit)
+	 */
 	$read$_B$I: function (buffer) {
 		return this.$read$_BII$I(buffer, 0, buffer.length);
 	},

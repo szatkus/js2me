@@ -1,4 +1,7 @@
 js2me.createClass({
+	/*
+	 * public Gauge(String label, boolean interactive, int maxValue, int initialValue)
+	 */
 	_init$Ljava_lang_String_ZII$V: function (label, interactive, maxValue, initialValue) {
 		if (maxValue < 0) {
 			throw new javaRoot.$java.$lang.IllegalArgumentException();
@@ -13,6 +16,9 @@ js2me.createClass({
 		this.$setValue$I$V(initialValue);
 		this.content.appendChild(this.gauge);
 	},
+	/*
+	 * public void setValue(int value)
+	 */
 	$setValue$I$V: function (value) {
 		this.gauge.value = value;
 	},

@@ -1,4 +1,7 @@
 js2me.createClass({
+	/*
+	 * public static Image createImage(int width, int height)
+	 */
 	$createImage$II$Ljavax_microedition_lcdui_Image_: function (width, height) {
 		var image = new javaRoot.$javax.$microedition.$lcdui.$Image();
 		image.element = document.createElement('canvas');
@@ -6,6 +9,9 @@ js2me.createClass({
 		image.element.height = height;
 		return image;
 	},
+	/*
+	 * public static Image createImage(int width, int height)
+	 */
 	$createImage$Ljava_lang_String_$Ljavax_microedition_lcdui_Image_: function (name) {
 		if (name == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -17,6 +23,9 @@ js2me.createClass({
 		var data = new Int8Array(input.stream.array);
 		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
 	},
+	/*
+	 * public static Image createImage(int width, int height)
+	 */
 	$createImage$Ljavax_microedition_lcdui_Image_$Ljavax_microedition_lcdui_Image_: function (source) {
 		if (source == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -26,11 +35,17 @@ js2me.createClass({
 		graphics.$drawImage$Ljavax_microedition_lcdui_Image_III$V(source, 0, 0, 0);
 		return image;
 	},
+	/*
+	 * public static Image createImage(int width, int height)
+	 */
 	$createImage$Ljavax_microedition_lcdui_Image_IIIII$Ljavax_microedition_lcdui_Image_ : function (source, x, y, width, height, transform) {
 		var image = javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(width, height);
 		var graphics = image.$getGraphics$$Ljavax_microedition_lcdui_Graphics_();
 		graphics.$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V(source, x, y, width, height, transform, 0, 0, 0);
 	},
+	/*
+	 * public static Image createImage(int width, int height)
+	 */
 	$createImage$_BII$Ljavax_microedition_lcdui_Image_: function (data, offset, length) {
 		if (data == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -73,6 +88,9 @@ js2me.createClass({
 		}];
 		return image;
 	},
+	/*
+	 * public static Image createRGBImage(int[] rgb, int width, int height, boolean processAlpha)
+	 */
 	$createRGBImage$_IIIZ$Ljavax_microedition_lcdui_Image_: function (rgb, width, height, alphaProcessing) {
 		var image = new this.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(width, height);
 		var context = image.element.getContext('2d');
@@ -101,12 +119,21 @@ js2me.createClass({
 		context.putImageData(imageData, 0, 0);
 		return image;
 	},
+	/*
+	 * public Graphics getGraphics()
+	 */
 	$getGraphics$$Ljavax_microedition_lcdui_Graphics_: function () {
 		return new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 	},
+	/*
+	 * public int getWidth()
+	 */
 	$getWidth$$I: function () {
 		return this.element.width;
 	},
+	/*
+	 * public int getHeight()
+	 */
 	$getHeight$$I: function () {
 		return this.element.height;
 	}

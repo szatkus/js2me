@@ -2,6 +2,9 @@ js2me.createClass({
 	construct: function (player) {
 		this.player = player;
 	},
+	/*
+	 * 
+	 */
 	$setLevel$I$I: function (volume) {
 		if (volume < 0) {
 			volume = 0;

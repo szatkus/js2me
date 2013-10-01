@@ -2,9 +2,15 @@ js2me.createClass({
 	construct: function (double) {
 		this.double = double;
 	},
+	/*
+	 * public double doubleValue()
+	 */
 	$doubleValue$$D: function () {
 		return this.double;
 	},
+	/*
+	 * 
+	 */
 	$valueOf$Ljava_lang_String_$Ljava_lang_Double_: function (str) {
 		if (str == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();

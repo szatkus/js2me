@@ -13,9 +13,15 @@ js2me.createClass({
 		}
 		this.position = 0;
 	},
+	/*
+	 * 
+	 */
 	$destroy$$V: function () {
 		this.destroyed = true;
 	},
+	/*
+	 * 
+	 */
 	$hasNextElement$$Z: function () {
 		if (this.destroyed) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
@@ -26,6 +32,9 @@ js2me.createClass({
 			return 0;
 		}
 	},
+	/*
+	 * 
+	 */
 	$nextRecord$$_B: function () {
 		if (this.destroyed) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
@@ -36,6 +45,9 @@ js2me.createClass({
 		return this.result[this.position].data;
 		this.position++;
 	},
+	/*
+	 * 
+	 */
 	$nextRecordId$$I: function () {
 		if (this.destroyed) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
@@ -46,12 +58,18 @@ js2me.createClass({
 		return this.result[this.position].id;
 		this.position++;
 	},
+	/*
+	 * 
+	 */
 	$numRecords$$I: function () {
 		if (this.destroyed) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
 		}
 		return this.result.length;
 	},
+	/*
+	 * 
+	 */
 	$reset$$V: function () {
 		if (this.destroyed) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();

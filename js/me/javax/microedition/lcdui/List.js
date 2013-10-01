@@ -5,12 +5,18 @@ js2me.createClass({
 		this.items = [];
 		this.init();
 	},
+	/*
+	 * public List(String title, int listType)
+	 */
 	_init$Ljava_lang_String_I$V: function (title, listType) {
 		this.$setTitle$Ljava_lang_String_$V(title);
 		if (listType != 3) {
 			throw new Error('List: only IMPLICIT type');
 		}
 	},
+	/*
+	 * public List(String title, int listType)
+	 */
 	_init$Ljava_lang_String_I_Ljava_lang_String__Ljavax_microedition_lcdui_Image_$V: function (title, listType, strings, images) {
 		if (strings == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -26,6 +32,9 @@ js2me.createClass({
 			this.$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I(strings[i], image);
 		}
 	},
+	/*
+	 * public int append(String stringPart, Image imagePart)
+	 */
 	$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I: function (stringPart, imagePart) {
 		if (stringPart == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -49,18 +58,30 @@ js2me.createClass({
 		this.refreshItem(newItem);
 		this.items.push(newItem);
 	},
+	/*
+	 * public void deleteAll()
+	 */
 	$deleteAll$$V: function () {
 		this.element.innerHTML = '';
 	},
+	/*
+	 * public int getSelectedIndex()
+	 */
 	$getSelectedIndex$$I: function () {
 		return this.selectedItem;
 	},
+	/*
+	 * public String getString(int elementNum)
+	 */
 	$getString$I$Ljava_lang_String_: function (index) {
 		if (index < 0 || index >= this.items.length) {
 			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
 		}
 		return this.items[index].stringPart;
 	},
+	/*
+	 * public void setTicker(Ticker ticker)
+	 */
 	$set$ILjava_lang_String_Ljavax_microedition_lcdui_Image_$V: function (index, stringPart, imagePart) {
 		if (stringPart == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -73,12 +94,21 @@ js2me.createClass({
 		item.imagePart = imagePart;
 		this.refreshItem(item);
 	},
+	/*
+	 * public void setSelectCommand(Command command)
+	 */
 	$setSelectCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
 		this.command = command;
 	},
+	/*
+	 * public void setFitPolicy(int fitPolicy)
+	 */
 	$setFitPolicy$I$V: function () {
 		//TODO
 	},
+	/*
+	 * public int size()
+	 */
 	$size$$I: function () {
 		return this.items.length;
 	},

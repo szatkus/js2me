@@ -1,7 +1,13 @@
 js2me.createClass({
+	/*
+	 * public Object()
+	 */
 	_init$$V: function () {
 	},
 	classCache: [],
+	/*
+	 * public final Class getClass()
+	 */
 	$getClass$$Ljava_lang_Class_: function () {
 		var cls = this.classCache[this.className];
 		if (cls == null) {
@@ -10,10 +16,16 @@ js2me.createClass({
 		}
 		return cls;
 	},
+	/*
+	 * public String toString()
+	 */
 	$toString$$Ljava_lang_String_: function () {
 		var text = this.className + ':' + this.$hashCode$$I();
 		return new javaRoot.$java.$lang.$String(text);
 	},
+	/*
+	 * 
+	 */
 	$wait$J$V: function (timeout) {
 		var threadId = js2me.currentThread;
 		if (this.waiting == null) {
@@ -33,9 +45,15 @@ js2me.createClass({
 			}, timeout.lo);
 		}
 	},
+	/*
+	 * 
+	 */
 	$wait$$V: function () {
 		this.$wait$J$V(new js2me.Long(0, 0));
 	},
+	/*
+	 * public int hashCode()
+	 */
 	$hashCode$$I: function () {
 		
 		if (js2me.lastHash == null) {
@@ -47,12 +65,18 @@ js2me.createClass({
 		}
 		return this.hashCode;
 	},
+	/*
+	 * public final void notify()
+	 */
 	$notify$$V: function () {
 		var threadId = this.waiting.pop();
 		setTimeout(function () {
 			js2me.restoreThread(threadId);
 		}, 1);
 	},
+	/*
+	 * public boolean equals(Object obj)
+	 */
 	$equals$Ljava_lang_Object_$Z: function (obj) {
 		if (this == obj) {
 			return 1;

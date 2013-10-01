@@ -1,4 +1,7 @@
 js2me.createClass({
+	/*
+	 * public TiledLayer(int columns, int rows, Image image, int tileWidth, int tileHeight)
+	 */
 	_init$IILjavax_microedition_lcdui_Image_II$V: function (columns, rows, image, tileWidth, tileHeight) {
 		if (image == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
@@ -22,12 +25,18 @@ js2me.createClass({
 			}
 		}
 	},
+	/*
+	 * public void setCell(int col, int row, int tileIndex)
+	 */
 	$setCell$III$V: function (column, row, index) {
 		if (column >= this.columns || row >= this.rows || index > this.tilesCount) {
 			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
 		}
 		this.map[column][row] = index;
 	},
+	/*
+	 * public final void paint(Graphics g)
+	 */
 	$paint$Ljavax_microedition_lcdui_Graphics_$V: function (graphics) {
 		for (var i = 0; i < this.columns; i++) {
 			for (var j = 0; j < this.rows; j++) {

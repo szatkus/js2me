@@ -37,16 +37,25 @@ js2me.createClass({
 	$REALIZEDI: 100,
 	$PREFETCHEDI: 300,
 	$STARTEDI: 400,
+	/*
+	 * 
+	 */
 	$addPlayerListener$Ljavax_microedition_media_PlayerListener_$V: function (listener) {
 		this.listeners.push(listener);
 		console.log('Player listener: ' + listener.className);
 	},
+	/*
+	 * 
+	 */
 	$prefetch$$V: function () {
 		if (this.state == this.$CLOSEDI) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
 		}
 		this.state = this.$PREFETCHEDI;
 	},
+	/*
+	 * 
+	 */
 	$realize$$V: function () {
 		if (this.state == this.$CLOSEDI) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
@@ -55,6 +64,9 @@ js2me.createClass({
 			this.state = this.$PREFETCHEDI;
 		}
 	},
+	/*
+	 * 
+	 */
 	$setLoopCount$I$V: function (countLoop) {
 		if (this.state == this.$CLOSEDI || this.state == this.$STAREDI) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
@@ -65,9 +77,15 @@ js2me.createClass({
 		this.countLoop = countLoop;
 		this.element.loop = countLoop == -1;
 	},
+	/*
+	 * 
+	 */
 	$getControl$Ljava_lang_String_$Ljavax_microedition_media_Control_: function () {
 		return this.control;
 	},
+	/*
+	 * 
+	 */
 	$start$$V: function () {
 		if (this.state == this.$CLOSEDI) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
@@ -76,9 +94,15 @@ js2me.createClass({
 		this.repeated = 0;
 		this.element.play();
 	},
+	/*
+	 * 
+	 */
 	$getState$$I: function () {
 		return this.state;
 	},
+	/*
+	 * 
+	 */
 	$stop$$V: function () {
 		if (this.state == this.$CLOSEDI) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();
@@ -89,13 +113,22 @@ js2me.createClass({
 	sendEvent: function () {
 		//TODO
 	},
+	/*
+	 * 
+	 */
 	$setMediaTime$J$J: function (time) {
 		//TODO
 		return time;
 	},
+	/*
+	 * 
+	 */
 	$close$$V: function () {
 		this.state = this.$CLOSEDI;
 	},
+	/*
+	 * 
+	 */
 	$deallocate$$V: function () {
 		if (this.state == this.$CLOSEDI) {
 			throw new javaRoot.$java.$lang.$IllegalStateException();

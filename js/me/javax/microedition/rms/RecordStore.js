@@ -2,6 +2,9 @@ js2me.createClass({
 	construct: function(storageName) {
 		this.storageName = storageName;
 	},
+	/*
+	 * 
+	 */
 	$openRecordStore$Ljava_lang_String_Z$Ljavax_microedition_rms_RecordStore_: function (recordStoreName, createIfNecessary) {
 		var vendorName = js2me.manifest['midlet-vendor'];
 		var suiteName = js2me.manifest['midlet-name'];
@@ -19,23 +22,41 @@ js2me.createClass({
 		}
 		
 	},
+	/*
+	 * 
+	 */
 	$deleteRecord$I$V: function () {
 	},
+	/*
+	 * 
+	 */
 	$getNumRecords$$I : function () {
 		return parseInt(localStorage.getItem(this.storageName + 'size'));
 	},
+	/*
+	 * 
+	 */
 	$getLastModified$$J: function () {
 		var time = parseInt(localStorage.getItem(this.storageName + 'lastModified'));
 		return new js2me.Long(0, time);
 	},
+	/*
+	 * public void addRecordListener(RecordListener listener)
+	 */
 	$addRecord$_BII$I: function (data, offset, numBytes) {
 		var id = parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
 		localStorage.setItem(this.storageName + 'size', id);
 		this.$setRecord$I_BII$V(id, data, offset, numBytes);
 	},
+	/*
+	 * 
+	 */
 	$getNextRecordID$$I: function () {
 		return parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
 	},
+	/*
+	 * 
+	 */
 	$getRecord$I$_B: function (id) {
 		try {
 			var array = localStorage.getItem(this.storageName + id).split(',');
@@ -48,6 +69,9 @@ js2me.createClass({
 		}
 		return result;
 	},
+	/*
+	 * 
+	 */
 	$enumerateRecords$Ljavax_microedition_rms_RecordFilter_Ljavax_microedition_rms_RecordComparator_Z$Ljavax_microedition_rms_RecordEnumeration_: function(filter, comparator, keepUpdated) {
 		if (filter || comparator || keepUpdated) {
 			throw new Error('RecordStore: filter and comparator not supported');
@@ -55,8 +79,14 @@ js2me.createClass({
 		var enumeration = new javaRoot.$javax.$microedition.$rms.$RecordEnumerationImpl(this);
 		return enumeration;
 	},
+	/*
+	 * 
+	 */
 	$closeRecordStore$$V: function () {
 	},
+	/*
+	 * public static String[] listRecordStores()
+	 */
 	$listRecordStores$$_Ljava_lang_String_: function () {
 		var vendorName = js2me.manifest['midlet-vendor'];
 		var suiteName = js2me.manifest['midlet-name'];
@@ -69,6 +99,9 @@ js2me.createClass({
 			}
 		}
 	},
+	/*
+	 * 
+	 */
 	$deleteRecordStore$Ljava_lang_String_$V: function (storageName) {
 		var size = localStorage.getItem(storageName + 'size')
 		localStorage.removeItem(storageName + 'size');
@@ -77,6 +110,9 @@ js2me.createClass({
 			localStorage.removeItem(storageName + i);
 		}
 	},
+	/*
+	 * 
+	 */
 	$setRecord$I_BII$V: function (id, data, offset, numBytes) {
 		var str = '';
 		if (data) {

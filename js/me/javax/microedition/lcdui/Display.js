@@ -1,4 +1,7 @@
 js2me.createClass({
+	/*
+	 * public static Display getDisplay(MIDlet m)
+	 */
 	$getDisplay$Ljavax_microedition_midlet_MIDlet_$Ljavax_microedition_lcdui_Display_: function (midlet) {
 		if (!midlet.display) {
 			midlet.display = new javaRoot.$javax.$microedition.$lcdui.$Display();
@@ -7,6 +10,9 @@ js2me.createClass({
 		}
 		return midlet.display;
 	},
+	/*
+	 * public void setCurrent(Displayable nextDisplayable)
+	 */
 	$setCurrent$Ljavax_microedition_lcdui_Displayable_$V: function (displayable) {
 		clearTimeout(this.timeout);
 		var screen = this.element;
@@ -31,15 +37,24 @@ js2me.createClass({
 			}
 		}, 1);
 	},
+	/*
+	 * public void callSerially(Runnable r)
+	 */
 	$callSerially$Ljava_lang_Runnable_$V: function (r) {
 		a = 1;
 		setTimeout(function () {
 			r.$run$$V();
 		}, 1);
 	},
+	/*
+	 * public Displayable getCurrent()
+	 */
 	$getCurrent$$Ljavax_microedition_lcdui_Displayable_: function () {
 		return this.current;
 	},
+	/*
+	 * public boolean vibrate(int duration)
+	 */
 	$vibrate$I$Z: function () {
 		console.log('*vibration*');
 		return 0;
