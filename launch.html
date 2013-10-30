@@ -1,7 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <head>
 	<title>JS2ME</title>
 	<link rel="stylesheet" type="text/css" href="css/emulator.css">
+	<meta charset="utf-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<script type="text/javascript" src="js/zip/zip.js"></script>
 	<script type="text/javascript" src="js/zip/inflate.js"></script>
 	<script type="text/javascript" src="js/zip/zip-ext.js"></script>
@@ -23,7 +25,17 @@
 </head>
 <body onmouseup="js2me.sendKeyReleasedEvent()">
 	<div id="frame">
-		<div id="title"></div>
+		<a class="topbutton" id="show" onmousedown="document.getElementById('top').style.display = ''">
+				&gt;
+		</a>
+		<div id="top">
+			<a class="topbutton" id="hide" onmousedown="document.getElementById('top').style.display = 'none'">
+				&lt;
+			</a><div id="title">
+			</div><a class="topbutton" id="exit" onmousedown="location.href='index.html'">
+				X
+			</a>
+		</div>
 		<div id="screen"></div>
 		<div id="keypad">
 			

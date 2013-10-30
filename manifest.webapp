@@ -1,5 +1,9 @@
 {
-    "version": "1",
-    "name": "JS2ME",
-    "launch_path": "/index.html"
+    "version": "0.3",
+    "name": "JayME",
+    "launch_path": "/index.html",
+    "type": "privileged",
+    "permissions": {
+		"device-storage:sdcard": { "access": "readonly" }
+	}
 }

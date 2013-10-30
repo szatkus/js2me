@@ -2,29 +2,55 @@
 	font-family: Miso;
 	src: url('miso-bold.ttf');
 } 
+
+html, body {
+	margin: 0px;
+	overflow: hidden;
+	height: 100%;
+	font-family: Miso;
+}
+
+.topbutton {
+	width: 10mm;
+	height: 10mm;
+	display: inline-block;
+	background: white;
+	vertical-align: middle;
+	font-size: 10mm;
+	line-height: 10mm;
+	font-family: Miso;
+	color: #eee;
+	background-color: #444;
+	cursor: pointer;
+}
+
 #title {
-	border: 1px solid black;
 	text-align: center;
-	height: 44px;
+	height: 10mm;
 	background-color: #aaa;
+	line-height: 10mm;
+	font-size: 10mm;
+	width: calc(100% - 10mm * 2 - 1px);
+	display: inline-block;
+	vertical-align: middle;
 }
 #keypad {
 	text-align: center;
-	height: 240px;
 }
-.key, .softkey {
+.key, .softkey, #joypad {
 	display: inline-block;
 	border: 1px solid black;
 	background-color: #444;
-	font-family: Miso;
 	font-size: 9mm;
 	color: #eee;
 	cursor: pointer;
 	margin: 1px;
+	height: 10mm;
+	line-height: 10mm;
+	vertical-align: middle;
 }
 .softkey {
 	width: 30%;
-	height: 18%;
 	background: #333;
 }
 .key:hover, .softkey:hover {
@@ -33,28 +59,48 @@
 #joypad {
 	display: inline-block;
 	width: 30%;
-	height: 18%;
 }
 .num {
 	width: 30%;
-	height: 18%;
 	padding-top: 1px;
 }
 #frame {
 	display: inline-block;
-	border: 1px solid black;
 	overflow: hidden;
-	width: 320px;
-	height: 600px;
+	width: 100%;
+	height: 100%;
 	text-align: center;
 	background-color: #111;
 }
+
 #screen {
 	border: 1px solid black;
 	display: inline-block;
 	background-color: #fff;
-	font-size: 10px;
+	font-size: 10mm;
+	width: calc(100% - 10mm * 2);
+	height: calc(100% - (10mm) * 5 - 30px);
+	padding: 0 10mm;
 }
+
+#screen canvas {
+	height: 100%;
+	max-width: 100%;
+}
+
 .item {
 	text-align: left;
+}
+
+#top {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+}
+
+#show {
+	position: absolute;
+	top: 0px;
+	left: 0px;
 }

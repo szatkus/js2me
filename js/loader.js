@@ -5,10 +5,10 @@
  */
 js2me.loadJAR = function (filename, callback) {
 	console.log('Opening ' + filename);
-	js2me.setupJVM(function () {
+	
+	function loadReader(reader) {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
-		var reader = new zip.HttpReader(filename);
 		zip.createReader(reader, function(zipReader) {
 			zipReader.getEntries(function (entries) {
 				js2me.loadResources(entries, function () {
@@ -25,5 +25,15 @@ js2me.loadJAR = function (filename, callback) {
 				});
 			});
 		});
+	}
+	
+	js2me.setupJVM(function () {
+		if (navigator.getDeviceStorage) {
+			navigator.getDeviceStorage('sdcard').get(filename).onsuccess = function () {
+				loadReader(new zip.BlobReader(this.result));
+			};
+		} else {
+			loadReader(new zip.HttpReader(filename));
+		}
 	});
 }

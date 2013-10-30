@@ -3,9 +3,9 @@ var js2me = {
 	JAVA_ROOT: 'javaRoot',
 	debug: false,
 	config: {
-		width: 176,
-		height: 176,
-		fullHeight: 220,
+		width: 240,
+		height: 266,
+		fullHeight: 320,
 		src: 'jars/asteroids.jar'
 	}
 };
