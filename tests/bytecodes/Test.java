@@ -2,7 +2,7 @@ public class Test extends TestMidlet {
 	public void startApp() {
 		String s = null;
 		check(s == null);
-		int i = -1;
+		int i = (new Integer(-1)).intValue();
 		check(i == -1);
 		i = 0;
 		check(i == 0);
@@ -55,6 +55,8 @@ public class Test extends TestMidlet {
 			check(ss[j].length() - 1 == ss[j].lastIndexOf("s"));
 		}
 		//37
+		check(i >> 2 == 1);
+		check(i << 2 == 20);
 		finish();
 	}
 }

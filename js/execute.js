@@ -5,7 +5,8 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		locals: locals,
 		position: 0,
 		finish: false,
-		saveResult: false
+		saveResult: false,
+		constantPool: constantPool
 	};
 	if (js2me.debug) {
 		console.log(program.name + ' called ');

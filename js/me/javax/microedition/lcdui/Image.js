@@ -30,7 +30,7 @@ js2me.createClass({
 		if (source == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
-		var image = this.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(source.$getWidth$$I(), source.$getHeight$$I());
+		var image = javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(source.$getWidth$$I(), source.$getHeight$$I());
 		var graphics = image.$getGraphics$$Ljavax_microedition_lcdui_Graphics_();
 		graphics.$drawImage$Ljavax_microedition_lcdui_Image_III$V(source, 0, 0, 0);
 		return image;

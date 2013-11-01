@@ -28,7 +28,7 @@ js2me.loadJAR = function (filename, callback) {
 	}
 	
 	js2me.setupJVM(function () {
-		if (navigator.getDeviceStorage) {
+		if (navigator.getDeviceStorage && navigator.getDeviceStorage('sdcard')) {
 			navigator.getDeviceStorage('sdcard').get(filename).onsuccess = function () {
 				loadReader(new zip.BlobReader(this.result));
 			};
