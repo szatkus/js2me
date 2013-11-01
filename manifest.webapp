@@ -1,9 +1,20 @@
 {
-    "version": "0.3",
+    "version": "0.5",
     "name": "JayME",
+    "description": "Java Mobile Edition emulator for Firefox OS.",
     "launch_path": "/index.html",
+    "icons": {
+		"128": "/img/icon128.png"
+	},
+	"developer": {
+		"name": "Tomasz Szatkowski",
+		"url": "http://www.szatkus.pl"
+	},
     "type": "privileged",
     "permissions": {
-		"device-storage:sdcard": { "access": "readonly" }
+		"device-storage:sdcard": { 
+			"access": "readonly",
+			"description": "Required for loading jars"
+		}
 	}
 }

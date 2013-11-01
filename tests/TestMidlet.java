@@ -3,6 +3,7 @@ import javax.microedition.midlet.MIDlet;
 public abstract class TestMidlet extends MIDlet {
 	int tests = 0;
 	int passed = 0;
+	long time = 0;
 	public void check(boolean result) {
 		tests++;
 		if (result) {
@@ -35,6 +36,12 @@ public abstract class TestMidlet extends MIDlet {
 			check(false);
 			System.out.println(a + "!=" + b);
 		}
+	}
+	public void start() {
+		time = System.currentTimeMillis();
+	}
+	public void stop() {
+		System.out.println(System.currentTimeMillis() - time + "ms");
 	}
 	public void finish() {
 		System.out.println(passed + "/" + tests);

@@ -1,31 +1,4 @@
-(function () {
-	// from http://stackoverflow.com/questions/1517924/javascript-mapping-touch-events-to-mouse-events
-	function touchHandler(event)
-	{
-		var touches = event.changedTouches,
-			first = touches[0],
-			type = "";
-			 switch(event.type)
-		{
-			case "touchstart": type = "mousedown"; break;
-			case "touchmove":  type="mousemove"; break;        
-			case "touchend":   type="mouseup"; break;
-			default: return;
-		}
-
-		var simulatedEvent = document.createEvent("MouseEvent");
-		simulatedEvent.initMouseEvent(type, true, true, window, 1, 
-								  first.screenX, first.screenY, 
-								  first.clientX, first.clientY, false, 
-								  false, false, false, 0/*left*/, null);
-
-																					 first.target.dispatchEvent(simulatedEvent);
-		event.preventDefault();
-	}
-	document.addEventListener("touchstart", touchHandler, true);
-    document.addEventListener("touchmove", touchHandler, true);
-    document.addEventListener("touchend", touchHandler, true);
-    document.addEventListener("touchcancel", touchHandler, true);   
+(function () {    
 	var mapping = [];
 	mapping[38] = -1;
 	mapping[37] = -3;
@@ -54,10 +27,51 @@
 		}
 	};
 	window.onload = function () {
+		window.addEventListener('keyup', function () {
+			js2me.sendKeyReleasedEvent();
+		});
+		var buttonsMapping = {
+			choice: -6,
+			back: -1,
+			num1: 49,
+			num2: 50,
+			num3: 51,
+			num4: 52,
+			num5: 53,
+			num6: 54,
+			num7: 55,
+			num8: 56,
+			num9: 57,
+			num0: 48,
+		};
+		var keypad = document.getElementById('keypad');
+		for (var i in buttonsMapping) {
+			(function (key) {
+				var button = keypad.querySelector('#' + i);
+				button.addEventListener('mousedown', function() {
+					js2me.sendKeyPressEvent(key);
+				});
+				button.addEventListener('touchstart', function() {
+					js2me.sendKeyPressEvent(key);
+				});
+				button.addEventListener('touchend', function() {
+					js2me.sendKeyReleasedEvent(key);
+				});
+			})(buttonsMapping[i]);
+		}
 		document.getElementById('top').style.display = 'none';
+		document.querySelector('#show.topbutton').addEventListener('touchstart', function () {
+			document.getElementById('top').style.display = '';
+		});
+		document.querySelector('#hide.topbutton').addEventListener('touchstart', function () {
+			document.getElementById('top').style.display = 'none';
+		});
+		document.querySelector('#exit.topbutton').addEventListener('touchstart', function () {
+			location.href='index.html';
+		});
 		var parts = location.search.substr(1).split('&');
 		for (var i = 0; i < parts.length; i++) {
-			var value = parts[i].split('=')[1];
+			var value = decodeURIComponent(parts[i].split('=')[1]);
 			if (!isNaN(parseInt(value))) {
 				value = parseInt(value);
 			}

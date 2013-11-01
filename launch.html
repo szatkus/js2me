@@ -23,37 +23,37 @@
 	<script type="text/javascript" src="js/threads.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
 </head>
-<body onmouseup="js2me.sendKeyReleasedEvent()">
+<body>
 	<div id="frame">
-		<a class="topbutton" id="show" onmousedown="document.getElementById('top').style.display = ''">
+		<a class="topbutton" id="show" >
 				&gt;
 		</a>
 		<div id="top">
-			<a class="topbutton" id="hide" onmousedown="document.getElementById('top').style.display = 'none'">
+			<a class="topbutton" id="hide">
 				&lt;
 			</a><div id="title">
-			</div><a class="topbutton" id="exit" onmousedown="location.href='index.html'">
+			</div><a class="topbutton" id="exit">
 				X
 			</a>
 		</div>
 		<div id="screen"></div>
 		<div id="keypad">
 			
-			<a id="choice" class="softkey" onmousedown="js2me.sendKeyPressEvent(-6)">&nbsp;</a>
+			<a id="choice" class="softkey">&nbsp;</a>
 			<a id="joypad" class="key">&nbsp;</a>
-			<a id="back" class="softkey" onmousedown="js2me.sendKeyPressEvent(-7)">&nbsp;</a><br>
+			<a id="back" class="softkey">&nbsp;</a><br>
 			
-			<a id="num1" class="key num" onmousedown="js2me.sendKeyPressEvent(49)">1</a>
-			<a id="num2" class="key num" onmousedown="js2me.sendKeyPressEvent(50)">2</a>
-			<a id="num3" class="key num" onmousedown="js2me.sendKeyPressEvent(51)">3</a><br>
-			<a id="num4" class="key num" onmousedown="js2me.sendKeyPressEvent(52)">4</a>
-			<a id="num5" class="key num" onmousedown="js2me.sendKeyPressEvent(53)">5</a>
-			<a id="num6" class="key num" onmousedown="js2me.sendKeyPressEvent(54)">6</a><br>
-			<a id="num7" class="key num" onmousedown="js2me.sendKeyPressEvent(55)">7</a>
-			<a id="num8" class="key num" onmousedown="js2me.sendKeyPressEvent(56)">8</a>
-			<a id="num9" class="key num" onmousedown="js2me.sendKeyPressEvent(57)">9</a><br>
+			<a id="num1" class="key num">1</a>
+			<a id="num2" class="key num">2</a>
+			<a id="num3" class="key num">3</a><br>
+			<a id="num4" class="key num">4</a>
+			<a id="num5" class="key num">5</a>
+			<a id="num6" class="key num">6</a><br>
+			<a id="num7" class="key num">7</a>
+			<a id="num8" class="key num">8</a>
+			<a id="num9" class="key num">9</a><br>
 			<a id="star" class="key num">*</a>
-			<a id="num0" class="key num" onmousedown="js2me.sendKeyPressEvent(48)">0</a>
+			<a id="num0" class="key num">0</a>
 			<a id="pound" class="key num">#</a><br>
 		</div>
 	</div>
