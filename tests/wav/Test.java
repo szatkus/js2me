@@ -16,6 +16,7 @@ public class Test extends TestMidlet implements PlayerListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		finish();
 	}
 	public void playerUpdate(Player player, String event, Object eventData) {
 		System.out.println(event);

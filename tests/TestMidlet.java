@@ -44,7 +44,13 @@ public abstract class TestMidlet extends MIDlet {
 		System.out.println(System.currentTimeMillis() - time + "ms");
 	}
 	public void finish() {
-		System.out.println(passed + "/" + tests);
+		String result = "UNKNOWN";
+		if (passed == tests) {
+			result = "SUCCESS";
+		} else {
+			result = "FAIL";
+		}
+		System.out.println(result + " " + passed + "/" + tests);
 	}
 	public void pauseApp() {
 	}

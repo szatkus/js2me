@@ -15,6 +15,7 @@ public class Test extends TestMidlet {
 		Display d = Display.getDisplay(this);
 		Game g = new Game();
 		d.setCurrent(g);
+		finish();
 	}
 	
 }

@@ -16,5 +16,6 @@ public class Test extends TestMidlet {
 			display.setCurrent(form);
 		} catch (IOException e) {
 		}
+		finish();
 	}
 }

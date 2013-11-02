@@ -5,5 +5,6 @@ public class Test extends TestMidlet {
 		spectralnorm.main(args);
 		spectralnorm.main(args);
 		spectralnorm.main(args);
+		finish();
 	}
 }

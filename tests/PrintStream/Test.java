@@ -39,5 +39,6 @@ public class Test extends TestMidlet {
 			System.out.println(bb[i] + " ");
 		}
 		compare(test, out.toString());
+		finish();
 	}
 }
