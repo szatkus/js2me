@@ -71,15 +71,13 @@ js2me.generateProgram = function (stream, constantPool) {
 	// anewarray
 	generators[0xbd] = function () {
 		var type = constantPool[stream.readUint16()];
-		return function (context) {
-			var length = context.stack.pop();
-			if (length < 0) {
-				throw new javaRoot.$java.$lang.$NegativeArraySizeException();
-			}
-			var array = new Array(length);
-			array.className = type.className;
-			context.stack.push(array);
-		}
+		return 'var length = context.stack.pop();\n' +
+			'if (length < 0) {\n' +
+			'	throw new javaRoot.$java.$lang.$NegativeArraySizeException();\n' +
+			'}\n' +
+			'var array = new Array(length);\n' +
+			'array.className = "' + type.className + '";\n' +
+			'context.stack.push(array);\n';
 	};
 	// areturn
 	generators[0xb0] = function (context) {
@@ -130,7 +128,7 @@ js2me.generateProgram = function (stream, constantPool) {
 	// bipush
 	generators[0x10] = function () {
 		var value = stream.readInt8();
-		return new Function('context', 'context.stack.push(' + value + ');');
+		return 'context.stack.push(' + value + ');\n';
 	};
 	// caload
 	generators[0x34] = function (context) {
@@ -1465,6 +1463,29 @@ js2me.generateProgram = function (stream, constantPool) {
 			throw new Error('Op ' + op.toString(16) + ' not supported');
 		}
 	}
+	function reduceStackOperations(code) {
+		var start = 0;
+		var id = 0;
+		var position = 0;
+		var popTemplate = 'context.stack.pop()';
+		var pushTemplate = 'context.stack.push';
+		while ((position = code.indexOf(popTemplate, start)) != -1) {
+			var pushPosition = code.substring(0, position).lastIndexOf(pushTemplate);
+			if (pushPosition != -1) {
+				var newCode = code.substring(0, pushPosition);
+				newCode += 'var tmp' + id +' = ';
+				newCode += code.substring(pushPosition + pushTemplate.length, position);
+				newCode += 'tmp' + id;
+				start = newCode.length;
+				newCode += code.substring(position + popTemplate.length);
+				id++;
+				code = newCode;
+			} else {
+				start = position + popTemplate.length;
+			}
+		}
+		return code;
+	}
 	// first phase of optimizations
 	for (var i = 0; i < program.length; i++) {
 		if (program[i].constructor === String) {
@@ -1474,6 +1495,7 @@ js2me.generateProgram = function (stream, constantPool) {
 				program.splice(i + 1, 1);
 				reversedMapping.splice(i + 1, 1);
 			}
+			program[i] = reduceStackOperations(program[i]);
 			program[i] = new Function('context', program[i]);
 		}
 	}
