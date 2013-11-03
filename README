@@ -9,7 +9,13 @@ Milestone 2.5 - Play around... (done)
 Milestone 3 - Run FPC benchmark (http://www.dpsoftware.org/) (done)
 Milestone 4 - Optimizations (done)
 Milestone 5 - Firefox OS application (pending)
-
+Milestone 6 - v. 0.6
+ - performance
+ - code quality
+ - tests
+ - more?
+Milestone X
+ - Building blocks
 
 Zip.js from https://github.com/gildas-lormeau/zip.js
 Asteroids.jar from http://jfdoue.free.fr/index.html

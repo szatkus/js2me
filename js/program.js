@@ -571,100 +571,76 @@ js2me.generateProgram = function (stream, constantPool) {
 	// i2l
 	generators[0x85] = function () {
 		return 'var value = context.stack.pop();\n' +
+			'var result;\n' +
 			'if (value >= 0) {\n' +
-			'context.stack.push(new js2me.Long(0, value));\n' +
+			'	result = new js2me.Long(0, value);\n' +
 			'} else {\n' +
-			'	context.stack.push(new js2me.Long(0xffffffff, value + 4294967296));\n' +
-			'}\n';
+			'	result = new js2me.Long(0xffffffff, value + 4294967296);\n' +
+			'}\n' +
+			'context.stack.push(result);\n';
 	};
 	// i2f
-	generators[0x86] = function () {
-		return '\n';
-	};
+	generators[0x86] = '\n';
 	// i2d
-	generators[0x87] = function (context) {
-		var value = context.stack.pop();
-		context.stack.push(new js2me.Double(value));
-	};
+	generators[0x87] = 'var value = context.stack.pop();\n' +
+		'context.stack.push(new js2me.Double(value));\n';
 	// f2i
-	generators[0x8b] = function (context) {
-		var value = context.stack.pop();
-		context.stack.push(Math.floor(value));
-	};
+	generators[0x8b] = 'var value = context.stack.pop();\n' +
+		'context.stack.push(Math.floor(value));\n';
 	// f2d
-	generators[0x8d] = function (context) {
-		var value = context.stack.pop();
-		context.stack.push(new js2me.Double(value));
-	};
+	generators[0x8d] = 'var value = context.stack.pop();\n' +
+		'context.stack.push(new js2me.Double(value));\n';
 	// i2b
-	generators[0x91] = function (context) {
-		var value = context.stack.pop();
-		value = (value + 2147483648) % 256;
-		if (value > 127) {
-			context.stack.push(value - 256);
-		} else {
-			context.stack.push(value);
-		}
-	};
+	generators[0x91] = 'var value = context.stack.pop();\n' +
+		'value = (value + 2147483648) % 256;\n' +
+		'var result;\n' +
+		'if (value > 127) {\n' +
+		'	result = value - 256;\n' +
+		'} else {\n' +
+		'	result = value;\n' +
+		'}\n' +
+		'context.stack.push(result)\n';
 	// i2c
-	generators[0x92] = function (context) {
-		var value = context.stack.pop();
-		context.stack.push(value);
-	};
+	generators[0x92] = 'var value = context.stack.pop();\n' +
+		'context.stack.push(value);\n';
 	// i2s
-	generators[0x93] = function (context) {
-		var value = context.stack.pop();
-		value = (value + 2147483648) % 65536;
-		if (value > 32767) {
-			context.stack.push(value - 65536);
-		} else {
-			context.stack.push(value);
-		}
-	};
+	generators[0x93] = 'var value = context.stack.pop();\n' +
+		'value = (value + 2147483648) % 65536;\n' +
+		'var result;\n' +
+		'if (value > 32767) {\n' +
+		'	result = value - 65536;\n' +
+		'} else {\n' +
+		'	result = value;\n' +
+		'}\n' +
+		'context.stack.push(result)\n';
 	// iadd
 	generators[0x60] = generateAB('context.stack.push(js2me.checkOverflow(a + b, 32));\n');
 	// iand
 	generators[0x7e] = generateAB('context.stack.push(a & b);\n');
 	// iaload
-	generators[0x2e] = generateAB('context.stack.push(b[a]);\n');
+	generators[0x2e] = generateAB('context.stack.push(a[b]);\n');
 	// iastore
-	generators[0x4f] = function (context) {
-		var value = context.stack.pop();
-		var index = context.stack.pop();
-		var array = context.stack.pop();
-		array[index] = value;
-	};
+	generators[0x4f] = 'var value = context.stack.pop();\n' +
+		'var index = context.stack.pop();\n' +
+		'var array = context.stack.pop();\n' +
+		'array[index] = value;\n';
 	function generateConst(constant) {
 		return 'context.stack.push(' + constant + ');\n';
 	}
 	// iconst_m1
-	generators[0x02] = function () {
-		return generateConst(-1);
-	};
+	generators[0x02] = generateConst(-1);
 	// iconst_0
-	generators[0x03] = function () {
-		return generateConst(0);
-	}
+	generators[0x03] = generateConst(0);
 	// iconst_1
-	generators[0x04] = function () {
-		return generateConst(1);
-	}
+	generators[0x04] = generateConst(1);
 	// iconst_2
-	generators[0x05] = function () {
-		return generateConst(2);
-	}
+	generators[0x05] = generateConst(2);
 	// iconst_3
-	generators[0x06] = function () {
-		return generateConst(3);
-	};
+	generators[0x06] = generateConst(3);
 	// iconst_4
-	generators[0x07] = function () {
-		return generateConst(4);
-	};
+	generators[0x07] = generateConst(4);
 	// iconst_5
-	generators[0x08] = function () {
-		return generateConst(5);
-	};
+	generators[0x08] = generateConst(5);
 	// idiv
 	generators[0x6c] = generateAB('context.stack.push(js2me.checkOverflow(Math.floor(a / b), 32));\n');
 	// if_acmpeq
@@ -1458,7 +1434,9 @@ js2me.generateProgram = function (stream, constantPool) {
 			} else {
 				program.push(generators[op]);
 			}
-			
+			if (program[program.length - 1].constructor === String) {
+				program[program.length - 1] = '//0x'+ op.toString(16) +'\n' + program[program.length - 1];
+			}
 		} else {
 			throw new Error('Op ' + op.toString(16) + ' not supported');
 		}
@@ -1496,7 +1474,12 @@ js2me.generateProgram = function (stream, constantPool) {
 				reversedMapping.splice(i + 1, 1);
 			}
 			program[i] = reduceStackOperations(program[i]);
-			program[i] = new Function('context', program[i]);
+			try {
+				program[i] = new Function('context', program[i]);
+			} catch(e) {
+				console.error(e.message);
+				console.error(program[i]);
+			}
 		}
 	}
 	/*for (var i = 0; i < program.length; i++) {

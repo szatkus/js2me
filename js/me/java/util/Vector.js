@@ -1,12 +1,12 @@
 js2me.createClass({
 	/*
-	 * public Vector(int initialCapacity, int capacityIncrement)
+	 * public Vector()
 	 */
 	_init$$V: function () {
 		this.array = [];
 	},
 	/*
-	 * public Vector(int initialCapacity, int capacityIncrement)
+	 * public Vector(int initialCapacity)
 	 */
 	_init$I$V: function () {
 		this._init$$V();
@@ -24,21 +24,6 @@ js2me.createClass({
 		this.array.push(obj);
 	},
 	/*
-	 * public int size()
-	 */
-	$size$$I: function () {
-		return this.array.length;
-	},
-	/*
-	 * public Object elementAt(int index)
-	 */
-	$elementAt$I$Ljava_lang_Object_: function (index) {
-		if (index >= this.array.length) {
-			throw new javaRoot.$java.$util.$NoSuchElementException();
-		}
-		return this.array[index];
-	},
-	/*
 	 * public boolean contains(Object elem)
 	 */
 	$contains$Ljava_lang_Object_$Z: function (obj) {
@@ -50,11 +35,36 @@ js2me.createClass({
 		return 0;
 	},
 	/*
+	 * public void copyInto(Object[] anArray)
+	 */
+	$copyInto$_Ljava_lang_Object_$V: function (array) {
+		var index = 0;
+		for (var i in this.array) {
+			array[index] = this.array[i];
+			index++;
+		}
+	},
+	/*
+	 * public Object elementAt(int index)
+	 */
+	$elementAt$I$Ljava_lang_Object_: function (index) {
+		if (index >= this.array.length) {
+			throw new javaRoot.$java.$util.$NoSuchElementException();
+		}
+		return this.array[index];
+	},
+	/*
 	 * public Enumeration elements()
 	 */
 	$elements$$Ljava_util_Enumeration_: function () {
 		var enumeration = new javaRoot.$java.$util.$ArrayEnumeration(this.array);
 		return enumeration;
+	},
+	/*
+	 * public Object firstElement()
+	 */
+	$firstElement$$Ljava_lang_Object_: function () {
+		return this.$elementAt$I$Ljava_lang_Object_(0);
 	},
 	/*
 	 * public void insertElementAt(Object obj, int index)
@@ -115,14 +125,10 @@ js2me.createClass({
 		this.array[index] = obj;
 	},
 	/*
-	 * public void copyInto(Object[] anArray)
+	 * public int size()
 	 */
-	$copyInto$_Ljava_lang_Object_$V: function (array) {
-		var index = 0;
-		for (var i in this.array) {
-			array[index] = this.array[i];
-			index++;
-		}
+	$size$$I: function () {
+		return this.array.length;
 	}
 });
 
