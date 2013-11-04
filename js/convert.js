@@ -281,7 +281,7 @@ js2me.convertClass = function (stream) {
 					}
 					if (program == null) {
 						console.log('Generating method ' + methodName);
-						program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool);
+						program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool, exceptions);
 						program.name = methodName;
 						arguments.callee.data = program;
 					}

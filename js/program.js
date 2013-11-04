@@ -1,5 +1,5 @@
 "use strict";
-js2me.generateProgram = function (stream, constantPool) {
+js2me.generateProgram = function (stream, constantPool, exceptions) {
 	var generators = [];
 	
 	
@@ -661,7 +661,8 @@ js2me.generateProgram = function (stream, constantPool) {
 	// iconst_5
 	generators[0x08] = generateConst(5);
 	// idiv
-	generators[0x6c] = generateAB('context.stack.push(js2me.checkOverflow(Math.floor(a / b), 32));\n');
+	generators[0x6c] = generateAB('if (b === 0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
+		'context.stack.push(js2me.checkOverflow(Math.floor(a / b), 32));\n');
 	// if_acmpeq
 	generators[0xa5] = function () {
 		var index = stream.index + stream.readInt16() - 1;
@@ -960,7 +961,8 @@ js2me.generateProgram = function (stream, constantPool) {
 	// ior
 	generators[0x80] = generateAB('context.stack.push(a | b);\n');
 	// irem
-	generators[0x70] = generateAB('context.stack.push(a % b);\n');
+	generators[0x70] = generateAB('if (b === 0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
+		'context.stack.push(a % b);\n');
 	// ireturn
 	generators[0xac] = function (context) {
 		var value = context.stack.pop();
@@ -1087,11 +1089,8 @@ js2me.generateProgram = function (stream, constantPool) {
 		return 'context.stack.push(context.constantPool[' + index + ']);\n';
 	};
 	// ldiv
-	generators[0x6d] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(a.div(b).div);
-	};
+	generators[0x6d] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
+		'context.stack.push(a.div(b).div);\n');
 	// lload
 	generators[0x16] = function () {
 		var index = stream.readUint8();
@@ -1152,11 +1151,8 @@ js2me.generateProgram = function (stream, constantPool) {
 		context.stack.push(new js2me.Long(a.hi | b.hi, a.lo | b.lo));
 	};
 	// lrem
-	generators[0x71] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(a.div(b).rem);
-	};
+	generators[0x71] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' +
+		'context.stack.push(a.div(b).rem);\n');
 	// lreturn
 	generators[0xad] = function (context) {
 		var value = context.stack.pop();
@@ -1439,6 +1435,14 @@ js2me.generateProgram = function (stream, constantPool) {
 	var reversedMapping = [];
 	var require = [];
 	var jumpTo = [];
+	var jumpFrom = [];
+	
+	for (var i = 0; i < exceptions.length; i++) {
+		jumpTo[exceptions[i].startPc] = true;
+		jumpFrom[exceptions[i].endPc] = true;
+		jumpTo[exceptions[i].handler] = true;
+	}
+	
 	while (!stream.isEnd()) {
 		reversedMapping[program.length] = stream.index;
 		var op = stream.readUint8();
@@ -1493,7 +1497,10 @@ js2me.generateProgram = function (stream, constantPool) {
 		if (program[i].constructor === String) {
 			// merge functions
 			while (i + 1 < program.length && program[i + 1].constructor === String &&
-				!jumpTo[reversedMapping[i + 1]]) {
+				!jumpTo[reversedMapping[i + 1]] && !jumpFrom[reversedMapping[i]]) {
+				if (jumpFrom[reversedMapping[i + 1]]) {
+					jumpFrom[reversedMapping[i]] =  true;
+				}
 				program[i] += program[i + 1];
 				program.splice(i + 1, 1);
 				reversedMapping.splice(i + 1, 1);
