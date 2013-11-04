@@ -11,15 +11,20 @@ js2me.loadResources = function (entries, callback) {
 			callback();
 		}
 	}
+	var i = 0;
 	function addResource(entry) {
 		entry.getData(new zip.ArrayBufferWriter(), function (content) {
-			document.getElementById('screen').innerHTML = 'Loading ' + entry.filename + ' (' + (entries.length - remain) + '/' + remain + ')';
+			document.getElementById('screen').innerHTML = 'Loading ' + entry.filename + ' (' + (i + 1) + '/' + entries.length + ')';
 			js2me.resources[entry.filename] = new Uint8Array(content);
 			finish();
+			if (remain > 0) {
+				setTimeout(function () {
+					i++;
+					addResource(entries[i]);
+				}, 1);
+			}
 		});
 	}
 	js2me.resources = {};
-	for (var i in entries) {
-		addResource(entries[i]);
-	}
+	addResource(entries[i]);
 };

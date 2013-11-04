@@ -4,7 +4,7 @@ public class Test extends TestMidlet {
 		System.out.println(r.freeMemory());
 		System.out.println(r.totalMemory());
 		r.gc();
-		r.exit(99);
 		finish();
+		r.exit(99);
 	}
 }

@@ -80,7 +80,8 @@ html, body {
 	font-size: 10mm;
 	width: calc(100% - 10mm * 2);
 	height: calc(100% - (10mm) * 5 - 30px);
-	padding: 0 10mm;
+	margin: 0 10mm;
+	overflow: scroll;
 }
 
 #screen canvas {

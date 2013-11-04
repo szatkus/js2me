@@ -31,11 +31,11 @@ js2me.createClass({
 	 * public String toString()
 	 */
 	$toString$$Ljava_lang_String_: function () {
-		var text = this.className;
+		var str = this.$getClass$$Ljava_lang_Class_().$getName$$Ljava_lang_String_();
 		if (this.message) {
-			text += ': ' + this.message.text;
+			str.text += ': ' + this.message.text;
 		}
-		return new javaRoot.$java.$lang.$String(text);
+		return str;
 	},
 	toString: function () {
 		return this.$toString$$Ljava_lang_String_().text + '\n' + this.stack;

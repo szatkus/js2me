@@ -49,6 +49,9 @@ js2me.createClass({
 		while (b > 127) {
 			b -= 256;
 		}
+		while (b < -128) {
+			b += 256;
+		}
 		this.$buf_B.push(b);
 		this.$countI = this.$buf_B.length;
 	},

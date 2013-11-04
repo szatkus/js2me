@@ -3,9 +3,10 @@
 source ./config
 
 for i in out/*.jar; do
-	phantomjs runTest.js $HOST/launch.html?src=$i > __tmp
+	echo -n "$i"
+	phantomjs runTest.js "$HOST/launch.html?src=$i" > __tmp
 	if cat __tmp | grep -q SUCCESS; then
-		echo "$i - OK"
+		 echo " - OK"
 	else
 		cat __tmp
 	fi
