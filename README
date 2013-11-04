@@ -7,6 +7,7 @@ Launch parameters:
 src - path to jar file
 width, height - size of display
 fullHeight - height of fullscreen display
+app=[anything] - app mode (disables System.out.print)
 example: /launch.html?src=out/test.jar&width=320&height=240
 
 Milestone 1 - Hello world (test.jar) works (done)
@@ -17,15 +18,16 @@ Milestone 4 - Optimizations (done)
 Milestone 5 - Firefox OS application (pending)
 Milestone 6 - v. 0.6
  - performance (done, much better than expected!)
- - code quality
  - tests
- - loading screen
- - scroll
+ - loading screen (done)
+ - scroll (done)
+ - sample app
  - more?
 Milestone X
- - Building blocks
+ - Building Blocks
  - MIDI support
  - M3G
+ - pass Microemu unit tests
 
 Zip.js from https://github.com/gildas-lormeau/zip.js
 Asteroids.jar from http://jfdoue.free.fr/index.html
