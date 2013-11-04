@@ -1,4 +1,4 @@
-					doppio		m6		m5
-mandelbrot 50		5181ms		346ms	2570ms
-nbody 500			1803ms		64ms	1728ms
-spectralnorm 100	42705ms		12597ms	76665ms
+                 doppio  m6	     m5      js
+mandelbrot 50    5181ms  346ms   2570ms  X
+nbody 500        1803ms  64ms    1728ms  6ms
+spectralnorm 100 42705ms 12597ms 76665ms 13ms
