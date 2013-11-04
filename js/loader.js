@@ -5,7 +5,7 @@
  */
 js2me.loadJAR = function (filename, callback) {
 	console.log('Opening ' + filename);
-	
+	document.getElementById('screen').innerHTML = 'Loading ' + filename;
 	function loadReader(reader) {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';

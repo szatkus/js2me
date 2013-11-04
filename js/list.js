@@ -19,7 +19,7 @@ window.addEventListener('load', function() {
 						slashPosition = 0;
 					}
 					var filename = this.result.name.substr(slashPosition);
-					var path = '/launch.html?src=' + encodeURIComponent(this.result.name);
+					var path = '/launch.html?src=' + encodeURIComponent(this.result.name) + '&app=1';
 					var element = $('<li><a>' + filename + '</a></li>');
 					
 					list.append(element);

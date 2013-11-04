@@ -32,7 +32,7 @@
 		});
 		var buttonsMapping = {
 			choice: -6,
-			back: -1,
+			back: -7,
 			num1: 49,
 			num2: 50,
 			num3: 51,
@@ -48,9 +48,9 @@
 		for (var i in buttonsMapping) {
 			(function (key) {
 				var button = keypad.querySelector('#' + i);
-				button.addEventListener('mousedown', function() {
+				/*button.addEventListener('mousedown', function() {
 					js2me.sendKeyPressEvent(key);
-				});
+				});*/
 				button.addEventListener('touchstart', function() {
 					js2me.sendKeyPressEvent(key);
 				});
@@ -78,8 +78,49 @@
 			js2me.config[parts[i].split('=')[0]] = value;
 		}
 		var buttons = document.getElementsByTagName('a');
+		
+		function drawCoverage(data) {
+			var source = document.createElement('pre');
+			source.className = 'source';
+			document.getElementById('blanket-main').appendChild(source);
+			for (var i in data.files) {
+				for (var j = 0; j < data.files[i].source.length; j++) {
+					var coverage = data.files[i][j + 1];
+					var line = data.files[i].source[j];
+					var lineElement = document.createElement('div');
+					if (coverage > 0) {
+						lineElement.className = 'good';
+					}
+					if (coverage == 0) {
+						lineElement.className = 'bad';
+					}
+					lineElement.innerHTML = line;
+					source.appendChild(lineElement);
+				}
+			}
+		}
+		
 		js2me.loadJAR(js2me.config['src'], function () {
-			js2me.launchMidlet(1);
+			document.getElementById('screen').innerHTML = '';
+			if (js2me.config.test) {
+				document.querySelector('script[src="' + js2me.config.test + '"]').setAttribute('data-cover');
+				var script = document.createElement('script');
+				script.src = 'js/blanket/blanket.js';
+				script.addEventListener('load', function () {
+					blanket._loadSourceFiles(function () {
+						js2me.launchMidlet(1);
+						//TODO: no better idea
+						setTimeout(function () {
+							var data = {};
+							blanket.report(data);
+							drawCoverage(data);
+						}, 5000);
+					});
+				});
+				document.head.appendChild(script);
+			} else {
+				js2me.launchMidlet(1);
+			}
 		});
 	};
 	js2me.setFullscreen = function (enabled) {

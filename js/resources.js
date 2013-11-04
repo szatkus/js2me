@@ -13,6 +13,7 @@ js2me.loadResources = function (entries, callback) {
 	}
 	function addResource(entry) {
 		entry.getData(new zip.ArrayBufferWriter(), function (content) {
+			document.getElementById('screen').innerHTML = 'Loading ' + entry.filename + ' (' + (entries.length - remain) + '/' + remain + ')';
 			js2me.resources[entry.filename] = new Uint8Array(content);
 			finish();
 		});

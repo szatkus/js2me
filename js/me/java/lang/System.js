@@ -7,22 +7,27 @@ js2me.createClass({
 		return new js2me.Long(Math.floor(time / 0x100000000), time % 0x100000000);
 	},
 	_clinit$$V: function (callback) {
+		// disable output in app
 		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
 			$write$_B$V: function (b) {
-				for (var i in b) {
-					this.$write$I$V(b[i]);
+				if (!js2me.config.app) {
+					for (var i in b) {
+						this.$write$I$V(b[i]);
+					}
 				}
 			},
 			$write$I$V: function (b) {
-				if (b == 10) {
-					console.log(this.buffer);
-					this.buffer = '';
-				} else {
-					if (typeof b == 'number') {
-						this.buffer += String.fromCharCode(b);
+				if (!js2me.config.app) {
+					if (b == 10) {
+						console.log(this.buffer);
+						this.buffer = '';
 					} else {
-						this.buffer += b;
+						if (typeof b == 'number') {
+							this.buffer += String.fromCharCode(b);
+						} else {
+							this.buffer += b;
+						}
 					}
 				}
 			}
