@@ -1,7 +1,13 @@
 JS2ME
 =============
 
-It's implementation of Java ME in JavaScript. I'm planning to use this as a part of J2ME for Firefox OS. To use it in browser you must host it on some HTTP server and open test.html
+It's implementation of Java ME in JavaScript. I'm planning to use this as a part of J2ME for Firefox OS. To use it in browser you must host it on some HTTP server and open launch.html.
+
+Launch parameters:
+src - path to jar file
+width, height - size of display
+fullHeight - height of fullscreen display
+example: /launch.html?src=out/test.jar&width=320&height=240
 
 Milestone 1 - Hello world (test.jar) works (done)
 Milestone 2 - Picross (picross.jar) works (done)
@@ -10,12 +16,16 @@ Milestone 3 - Run FPC benchmark (http://www.dpsoftware.org/) (done)
 Milestone 4 - Optimizations (done)
 Milestone 5 - Firefox OS application (pending)
 Milestone 6 - v. 0.6
- - performance
+ - performance (done, much better than expected!)
  - code quality
  - tests
+ - loading screen
+ - scroll
  - more?
 Milestone X
  - Building blocks
+ - MIDI support
+ - M3G
 
 Zip.js from https://github.com/gildas-lormeau/zip.js
 Asteroids.jar from http://jfdoue.free.fr/index.html
