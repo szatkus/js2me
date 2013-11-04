@@ -1,3 +1,4 @@
+"use strict";
 js2me.Long = function (hi, lo) {
 	if (hi < 0) {
 		hi += 4294967296;

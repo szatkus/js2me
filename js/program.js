@@ -1,3 +1,4 @@
+"use strict";
 js2me.generateProgram = function (stream, constantPool) {
 	var generators = [];
 	
@@ -553,19 +554,37 @@ js2me.generateProgram = function (stream, constantPool) {
 	// getstatic
 	generators[0xb2] = function () {
 		var field = constantPool[stream.readUint16()];
-		return function (context) {
-			var obj = js2me.findClass(field.className);
-			js2me.initializeClass(obj, function () {
-				context.stack.push(obj.prototype[field.name]);
-			});
-		};
+		var obj = js2me.findClass(field.className);
+		if (obj.prototype && obj.prototype.initialized) {
+			return 'context.stack.push(' + field.className + '.prototype["' + field.name + '"]);\n'
+		} else {
+			return function (context) {
+				var obj = js2me.findClass(field.className);
+				js2me.initializeClass(obj, function () {
+					context.stack.push(obj.prototype[field.name]);
+				});
+			};
+		}
 	};
+	function goto(context, index) {
+		context.position = positionMapping[index];
+		var now = +new Date;
+		if (!(now - js2me.lastStop < 1000)) {
+			js2me.lastStop = now;
+			context.saveResult = false;
+			var threadID = js2me.currentThread;
+			js2me.suspendThread = true;
+			setTimeout(function () {
+				js2me.restoreThread(threadID);
+			}, 1);
+		}
+	}
 	// goto
 	generators[0xa7] = function () {
 		var index = stream.index + stream.readInt16() - 1;
 		jumpTo[index] = true;
 		return function (context) {
-			context.position = positionMapping[index];
+			goto(context, index);
 		};
 	};
 	// i2l
@@ -651,7 +670,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a === b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -663,7 +682,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a !== b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -675,7 +694,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a === b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -688,7 +707,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a !== b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -700,7 +719,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a < b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -712,7 +731,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a >= b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -724,7 +743,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a > b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -736,7 +755,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
 			if (a <= b) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -747,7 +766,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value === 0) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -758,7 +777,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value !== 0) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -769,7 +788,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value < 0) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -780,7 +799,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value >= 0) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -791,7 +810,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value > 0) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -802,7 +821,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value <= 0) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -813,7 +832,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value != null) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -824,7 +843,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		return function (context) {
 			var value = context.stack.pop();
 			if (value == null) {
-				context.position = positionMapping[index];
+				goto(context, index);
 			}
 		};
 	};
@@ -885,9 +904,9 @@ js2me.generateProgram = function (stream, constantPool) {
 			}
 		};
 	}
-	function generateInvoke(static, virtual, garbage) {
+	function generateInvoke(isStatic, isVirtual, isGarbage) {
 		var methodInfo = constantPool[stream.readUint16()];
-		if (garbage) {
+		if (isGarbage) {
 			stream.readUint16();
 		}
 		var argumentsCount = methodInfo.type.argumentsTypes.length;
@@ -896,7 +915,7 @@ js2me.generateProgram = function (stream, constantPool) {
 		'	args.push(context.stack.pop());\n' +
 		'}\n' +
 		'args.reverse();\n';
-		if (static) {
+		if (isStatic) {
 			body += 'var obj = ' + methodInfo.className + ';\n';
 		} else {
 			body += 'var obj = context.stack.pop();\n' +
@@ -907,7 +926,7 @@ js2me.generateProgram = function (stream, constantPool) {
 			'	obj = new javaRoot.$java.$lang.$ArrayObject(obj);\n' +
 			'}\n';
 		}
-		if (virtual) {
+		if (isVirtual) {
 			body += 'var method = obj.' + methodInfo.name + ';\n';
 		} else {
 			body += 'var method = ' + methodInfo.className + '.prototype.' + methodInfo.name + ';\n';
@@ -1122,8 +1141,8 @@ js2me.generateProgram = function (stream, constantPool) {
 			jumpTo[value] = true;
 		}
 		return function (context) {
-			var offset = table[context.stack.pop()] || def;
-			context.position = positionMapping[offset];
+			var index = table[context.stack.pop()] || def;
+			goto(context, index);
 		};
 	}
 	// lor
@@ -1327,13 +1346,18 @@ js2me.generateProgram = function (stream, constantPool) {
 	// putstatic
 	generators[0xb3] = function () {
 		var field = constantPool[stream.readUint16()];
-		return function (context) {
-			var value = context.stack.pop();
-			var obj = js2me.findClass(field.className);
-			js2me.initializeClass(obj, function () {
-				obj.prototype[field.name] = value;
-			});
-		};
+		var obj = js2me.findClass(field.className);
+		if (obj.prototype && obj.prototype.initialized) {
+			return field.className + '.prototype["' + field.name + '"] = context.stack.pop();\n'
+		} else {
+			return function (context) {
+				var value = context.stack.pop();
+				var obj = js2me.findClass(field.className);
+				js2me.initializeClass(obj, function () {
+					obj.prototype[field.name] = value;
+				});
+			};
+		}
 	}
 	// return
 	generators[0xb1] = function () {
@@ -1389,9 +1413,9 @@ js2me.generateProgram = function (stream, constantPool) {
 			jumpTo[table[low + i]] = true;
 		}
 		return function (context) {
-			var index = context.stack.pop();
-			var offset = table[index] || def;
-			context.position = positionMapping[offset];
+			var pos = context.stack.pop();
+			var index = table[pos] || def;
+			goto(context, index);
 		}
 	}
 	// wide
@@ -1464,9 +1488,10 @@ js2me.generateProgram = function (stream, constantPool) {
 		}
 		return code;
 	}
-	// first phase of optimizations
+	// optimizations
 	for (var i = 0; i < program.length; i++) {
 		if (program[i].constructor === String) {
+			// merge functions
 			while (i + 1 < program.length && program[i + 1].constructor === String &&
 				!jumpTo[reversedMapping[i + 1]]) {
 				program[i] += program[i + 1];
@@ -1475,52 +1500,13 @@ js2me.generateProgram = function (stream, constantPool) {
 			}
 			program[i] = reduceStackOperations(program[i]);
 			try {
-				program[i] = new Function('context', program[i]);
+				program[i] = new Function('context', '"strict mode";\n' + program[i]);
 			} catch(e) {
 				console.error(e.message);
 				console.error(program[i]);
 			}
 		}
 	}
-	/*for (var i = 0; i < program.length; i++) {
-		if (!(program[i] instanceof Function) && 
-			program[i].input >= i &&
-			!jumpTo[reversedMapping[i]]) {
-			var newInput = [];
-			for (var j = 1; j <= program[i].input; j++) {
-				if (!(program[i - j] instanceof Function) &&
-					!program[i - j].input && 
-					(j < program[i].input || !jumpTo[reversedMapping[i - j]])) {
-					newInput.push(program[i - j]);
-				}
-			}
-			if (newInput.length == program[i].input) {
-				program[i].input = newInput;
-				i -= newInput.length;
-				program.splice(i, newInput.length);
-				reverseMapping.splice(i, newInput.length);
-			}
-		}
-	}
-	// unfold functions
-	var varId = 0;
-	function unfold(obj) {
-		var code = '';
-		if (obj.input.constructor == Number) {
-			for (var i = 0; i < obj.input; i++) {
-				code += 'var ' + varId++ + ' = context.stack.pop();\n';
-			}
-		} else {
-			for (var i = 0; i < obj.out.length; i++) {
-				code += 'var ' + varId++ + ' = context.stack.pop();\n';
-			}
-		}
-		for (var i = 0; i < obj.out.length; i++) {
-			
-		}
-	}
-	for (var i = 0; i < program.length; i++) {
-	}*/
 	for (var i = 0; i < reversedMapping.length; i++) {
 		positionMapping[reversedMapping[i]] = i;
 	}

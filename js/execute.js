@@ -73,8 +73,8 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	}
 	
 	
-	var limit = 0;
 	var lastPosition = -1;
+	var limit = 0;
 	while (context.position < program.content.length && !context.finish) {
 		if (js2me.debug) {
 			console.log(program.name + ':' + context.position);
@@ -90,16 +90,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		
 		if (js2me.suspendThread) {
 			suspendCall();
-		}
-		limit++;
-		if (limit > 100000 && !context.finish) {
-			context.saveResult = false;
-			suspendCall();
-			var threadID = js2me.currentThread;
-			js2me.suspendThread = true;
-			setTimeout(function () {
-				js2me.restoreThread(threadID);
-			}, 1);
 		}
 		
 	}

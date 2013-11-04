@@ -62,6 +62,7 @@
 		};
 		classObj.prototype = proto;
 		proto.type = 'class';
+		proto.initialized = false;
 		js2me.classBucket = classObj;
 	};
 	/**
@@ -147,8 +148,7 @@
 			function retry() {
 				js2me.initializeClass(classObj, callback);
 			}
-			if (classObj.prototype) {
-				classObj.prototype.initialized = true;
+			if (classObj.prototype && !classObj.prototype.initialized) {
 				if (!classObj.prototype.superClass && classObj != javaRoot.$java.$lang.$Object) {
 					classObj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
 				}
@@ -176,6 +176,7 @@
 				}
 				
 			}
+			classObj.prototype.initialized = true;
 			callback();
 		};
 		/**
@@ -263,7 +264,7 @@
 			}
 		};
 		
-		/*
+		/**
 		 * Prepares a JVM to usage. Basicaly loads some basic classes and sets initial state.
 		 * @param {function} callback Function to execute when machine is ready.
 		 */

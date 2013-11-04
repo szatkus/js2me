@@ -3,6 +3,7 @@
  * @param {number} threadId Id of some thread which is currently suspended.
  */
 js2me.restoreThread = function (threadId) {
+	js2me.lastStop = +new Date;
 	if (js2me.kill) {
 		return;
 	}

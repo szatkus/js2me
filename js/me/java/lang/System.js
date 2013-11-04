@@ -6,23 +6,14 @@ js2me.createClass({
 		var time = (new Date()).getTime();
 		return new js2me.Long(Math.floor(time / 0x100000000), time % 0x100000000);
 	},
-	/*
-	 * public static long currentTimeMillis()
-	 */
 	_clinit$$V: function (callback) {
 		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
-	/*
-	 * 
-	 */
 			$write$_B$V: function (b) {
 				for (var i in b) {
 					this.$write$I$V(b[i]);
 				}
 			},
-	/*
-	 * 
-	 */
 			$write$I$V: function (b) {
 				if (b == 10) {
 					console.log(this.buffer);

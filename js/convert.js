@@ -10,6 +10,7 @@ js2me.convertClass = function (stream) {
 	var constantPool = [];
 	newClass.prototype.pool = constantPool;
 	newClass.prototype.require = [];
+	newClass.prototype.initialized = false;
 	var TAG_UTF8 = 1;
 	var TAG_INTEGER = 3;
 	var TAG_FLOAT = 4;
@@ -279,14 +280,14 @@ js2me.convertClass = function (stream) {
 						callback = arguments[arguments.length - 1];
 					}
 					if (program == null) {
+						console.log('Generating method ' + methodName);
 						program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool);
 						program.name = methodName;
-						console.log('Generating method ' + methodName);
+						arguments.callee.data = program;
 					}
 					var result = js2me.execute(program, locals, constantPool, exceptions, null, callback);
 					return result;
 				};
-				value.data = program;
 			}
 			if (attributeName == 'Synthetic') {
 				value = true;
