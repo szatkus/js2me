@@ -8,6 +8,7 @@ html, body {
 	overflow: hidden;
 	height: 100%;
 	font-family: Miso;
+	-moz-user-select:none;
 }
 
 .topbutton {
