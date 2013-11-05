@@ -57,6 +57,58 @@ public class Test extends TestMidlet {
 		//37
 		check(i >> 2 == 1);
 		check(i << 2 == 20);
+		check(i >> 6 == 0);
+		//40
+		String[] as = new String[]{"abc", "smt", "123"};
+		check(as[1].equals("smt"));
+		try {
+			fail(as[4]);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			check(true);
+		}
+		as = null;
+		try {
+			fail(as[0]);
+		} catch (NullPointerException e) {
+			check(true);
+		}
+		try {
+			as[0] = "test";
+			check(false);
+		} catch (NullPointerException e) {
+			check(true);
+		}
+		as = new String[2];
+		as[0] = "test";
+		check(as[0].equals("test"));
+		Object x[]=new String[3];
+		x[0] = "test";
+		try {
+			x[1] = new Integer(0);
+			check(false);
+		} catch (ArrayStoreException e) {
+			check(true);
+		}
+		try {
+			as[-1] = "test";
+			check(false);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			check(true);
+		}
+		try {
+			as = new String[-1];
+			check(false);
+		} catch (NegativeArraySizeException e) {
+			check(true);
+		}
+		check(x.length == 3);
+		as = null;
+		try {
+			
+			fail(new Integer(as.length));
+		} catch (NullPointerException e) {
+			check(true);
+		}
 		finish();
 	}
 }

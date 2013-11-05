@@ -37,6 +37,9 @@ public abstract class TestMidlet extends MIDlet {
 			System.out.println(a + "!=" + b);
 		}
 	}
+	public void fail(Object a) {
+		tests++;
+	}
 	public void start() {
 		time = System.currentTimeMillis();
 	}
