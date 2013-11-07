@@ -952,11 +952,13 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 					'	throw new Error("Safe method ' + methodInfo.className + '->' + methodInfo.name + ' just suspended the thread!");\n' + 
 					'}\n';
 				result = body;
+				isSubfunctionSafe = true;
 			} else {
 				body += 'if (context.saveResult && !js2me.suspendThread) {\n' +
 					'	context.stack.push(result);\n' +
 					'}\n';
 				result = new Function('context', body);
+				isSubfunctionSafe = false;
 			}
 			return result;
 		}  catch (e) {
@@ -1300,7 +1302,13 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// new
 	generators[0xbb] = function () {
 		var classInfo = constantPool[stream.readUint16()];
+		var constructor = js2me.findClass(classInfo.className);
+		// probably useless...
 		require.push(classInfo.className);
+		if (constructor.prototype.initialized) {
+			return 'var instance = new ' + classInfo.className + '();\n' +
+				'context.stack.push(instance);\n';
+		}
 		return function (context) {
 			var constructor = js2me.findClass(classInfo.className);
 			
@@ -1534,6 +1542,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		}
 		i++;
 	}
+	console.log('Length: ' + program.length + ' Safe: ' + isSafe);
 	if (program.length > 1) {
 		isSafe = false;
 	}
@@ -1545,7 +1554,6 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			positionMapping[i] = positionMapping[i - 1];
 		}
 	}
-	//console.log('Length: ' + program.length);
 	/*for (var i = 0; i < program.length; i++) {
 		console.log(reversedMapping[i] + ': ' + program[i].toString());
 		console.error('************');
