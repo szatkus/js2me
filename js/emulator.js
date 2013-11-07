@@ -15,6 +15,8 @@
 	mapping[55] = 55;
 	mapping[56] = 56;
 	mapping[57] = 57;
+	mapping[88] = -7;
+	mapping[90] = -6;
 	document.onkeydown = function (e) {
 		//console.log(e.which);
 		if (mapping[e.which]) {

@@ -15,13 +15,16 @@ Milestone 2.5 - Play around... (done)
 Milestone 3 - Run FPC benchmark (http://www.dpsoftware.org/) (done)
 Milestone 4 - Optimizations (done)
 Milestone 5 - Firefox OS application (pending)
-Milestone 6 - v. 0.6
+Milestone 6 - v. 0.6 (done)
  - performance (done, much better than expected!)
- - code quality
- - tests
- - loading screen
- - scroll
- - more?
+ - tests (done)
+ - loading screen (done)
+ - scroll (done)
+v. 0.7
+ - more performance
+ - more tests
+ - native exceptions catching
+ - generators?
 Milestone X
  - Building blocks
  - MIDI support

@@ -10,21 +10,27 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
 			'}\n' +
 			'if (index < 0 || index >= array.length) {\n' +
-			'	throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();\n' +
+			'	throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException(index + "/" + array.length);\n' +
 			'}\n' +
 			'context.stack.push(array[index]);\n';
 	}
-	function generateArrayStore() {
-		return 'var value = context.stack.pop();\n' +
+	function generateArrayStore(isObject) {
+		var body = 'var value = context.stack.pop();\n' +
 			'var index = context.stack.pop();\n' +
 			'var array = context.stack.pop();\n' +
 			'if (array == null) {\n' +
 			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
 			'}\n' +
 			'if (index < 0 || index >= array.length) {\n' +
-			'	throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();\n' +
-			'}\n' +
-			'array[index] = value;\n';
+			'	throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException(index + "/" + array.length);\n' +
+			'}\n';
+		if (isObject) {
+			body += 'if (value && value.constructor !== Array && !value.isImplement(array.className)) {\n' +
+				'	throw new javaRoot.$java.$lang.$ArrayStoreException();\n' +
+				'}\n';
+		}
+		body += 'array[index] = value;\n';
+		return body;	
 	}
 	function generateAB(code) {
 		return function () {
@@ -33,13 +39,19 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 				code;
 		};
 	}
+	function generateReturn() {
+		jumpFrom[stream.index - 1] = true;
+		return 'functionResult = context.stack.pop();\n' +
+			'context.result = functionResult;\n' +
+			'context.finish = true;\n';
+	}
 	// aaload
 	generators[0x32] = function (context) {
 		return generateArrayLoad();
 	}
 	// aastore
 	generators[0x53] = function () {
-		return generateArrayStore();
+		return generateArrayStore(true);
 	}
 	// aconst_null
 	generators[0x01] = function (context) {
@@ -81,10 +93,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			'context.stack.push(array);\n';
 	};
 	// areturn
-	generators[0xb0] = function (context) {
-		context.result = context.stack.pop();
-		context.finish = true;
-	};
+	generators[0xb0] = generateReturn;
 	// arraylength
 	generators[0xbe] = function () {
 		return 'var array = context.stack.pop();\n' +
@@ -303,10 +312,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			'context.stack.push(new js2me.Double(a.double % b.double));';
 	};
 	// dreturn
-	generators[0xaf] = function (context) {
-		context.result = context.stack.pop();
-		context.finish = true;
-	};
+	generators[0xaf] = generateReturn;
 	// dstore
 	generators[0x39] = function () {
 		var index = stream.readUint8();
@@ -335,11 +341,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			'context.stack.push(new js2me.Double(a.double - b.double));\n';
 	};
 	// dup
-	generators[0x59] = function () {
-		return 'var tmp = context.stack.pop();\n' +
-			'context.stack.push(tmp);\n' +
-			'context.stack.push(tmp);\n';
-	};
+	generators[0x59] = 'var tmp = context.stack.pop();\n' +
+		'context.stack.push(tmp);\n' +
+		'context.stack.push(tmp);\n';
 	// dup_x1
 	generators[0x5a] = function (context) {
 		var a = context.stack.pop();
@@ -349,21 +353,24 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		context.stack.push(a);
 	};
 	// dup_x2
-	generators[0x5b] = function (context) {
-		var a = context.stack.pop();
-		var b = context.stack.pop();
-		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
-			var c = context.stack.pop();
-			context.stack.push(a);
-			context.stack.push(c);
-			context.stack.push(b);
-			context.stack.push(a);
-		} else {
-			context.stack.push(a);
-			context.stack.push(b);
-			context.stack.push(a);
-		}
-	};
+	generators[0x5b] = 'var a = context.stack.pop();\n' +
+		'var b = context.stack.pop();\n' +
+		'var c = context.stack.pop();\n' +
+		'if (a.constructor != js2me.Long && a.constructor != js2me.Double) {\n' +
+		'	var stack0 = a;\n' +
+		'	var stack1 = c;\n' +
+		'	var stack2 = b;\n' +
+		'	var stack3 = a;\n' +
+		'} else {\n' +
+		'	var stack0 = c;\n' +
+		'	var stack1 = a;\n' +
+		'	var stack2 = b;\n' +
+		'	var stack3 = a;\n' +
+		'}\n' +
+		'context.stack.push(stack0);\n' +
+		'context.stack.push(stack1);\n' +
+		'context.stack.push(stack2);\n' +
+		'context.stack.push(stack3);\n';
 	// dup2
 	generators[0x5c] = function (context) {
 		var a = context.stack.pop();
@@ -510,11 +517,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		context.stack.push(a % b);
 	};
 	// freturn
-	generators[0xae] = function (context) {
-		var value = context.stack.pop();
-		context.result = value;
-		context.finish = true;
-	};
+	generators[0xae] = generateReturn;
 	// fstore
 	generators[0x38] = function () {
 		var index = stream.readUint8();
@@ -906,41 +909,59 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		};
 	}
 	function generateInvoke(isStatic, isVirtual, isGarbage) {
-		var methodInfo = constantPool[stream.readUint16()];
-		if (isGarbage) {
-			stream.readUint16();
+		try {
+			var methodInfo = constantPool[stream.readUint16()];
+			if (isGarbage) {
+				stream.readUint16();
+			}
+			var argumentsCount = methodInfo.type.argumentsTypes.length;
+			var body = 'var args = new Array(' + argumentsCount + ')\n';
+			for (var i = argumentsCount - 1; i >= 0; i--) {
+				body += 'args[' + i + '] = context.stack.pop();\n';
+			}
+			//body += 'console.debug("'+methodInfo.className + '->' + methodInfo.name +'");console.debug(args);\n';
+			if (isStatic) {
+				body += 'var obj = ' + methodInfo.className + ';\n';
+			} else {
+				body += 'var obj = context.stack.pop();\n' +
+				'if (obj == null) {\n' +
+				'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
+				'}\n' +
+				'if (obj.constructor == Array) {\n' +
+				'	obj = new javaRoot.$java.$lang.$ArrayObject(obj);\n' +
+				'}\n';
+			}
+			if (isVirtual) {
+				body += 'var method = obj.' + methodInfo.name + ';\n';
+			} else {
+				body += 'var method = ' + methodInfo.className + '.prototype.' + methodInfo.name + ';\n';
+			}
+			var isSaveResult = (methodInfo.type.returnType != 'V');
+			body += 'if (!method) {\n' +
+				'	throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
+				'}\n' +
+				'context.saveResult = ' + isSaveResult + ';\n' +
+				'var result = method.apply(obj, args);\n';
+			var result;
+			var classObj = js2me.findClass(methodInfo.className);
+			if (classObj &&  classObj.prototype[methodInfo.name] && !classObj.prototype[methodInfo.name].isUnsafe) {
+				if (isSaveResult) {
+					body += 'context.stack.push(result);\n';
+				}
+				body +=	'if (js2me.suspendThread) {\n' +
+					'	throw new Error("Safe method ' + methodInfo.className + '->' + methodInfo.name + ' just suspended the thread!");\n' + 
+					'}\n';
+				result = body;
+			} else {
+				body += 'if (context.saveResult && !js2me.suspendThread) {\n' +
+					'	context.stack.push(result);\n' +
+					'}\n';
+				result = new Function('context', body);
+			}
+			return result;
+		}  catch (e) {
+			console.error(e.message);
 		}
-		var argumentsCount = methodInfo.type.argumentsTypes.length;
-		var body = 'var args = [];\n' +
-		'for (var i = 0; i < ' + argumentsCount + '; i++) {\n' +
-		'	args.push(context.stack.pop());\n' +
-		'}\n' +
-		'args.reverse();\n';
-		if (isStatic) {
-			body += 'var obj = ' + methodInfo.className + ';\n';
-		} else {
-			body += 'var obj = context.stack.pop();\n' +
-			'if (obj == null) {\n' +
-			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-			'}\n' +
-			'if (obj.constructor == Array) {\n' +
-			'	obj = new javaRoot.$java.$lang.$ArrayObject(obj);\n' +
-			'}\n';
-		}
-		if (isVirtual) {
-			body += 'var method = obj.' + methodInfo.name + ';\n';
-		} else {
-			body += 'var method = ' + methodInfo.className + '.prototype.' + methodInfo.name + ';\n';
-		}
-		body += 'if (!method) {\n' +
-		'	throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
-		'}' +
-		'context.saveResult = ' + (methodInfo.type.returnType != 'V') + ';\n' +
-		'var result = method.apply(obj, args);\n' + 
-		'if (context.saveResult && !js2me.suspendThread) {\n' +
-		'	context.stack.push(result);\n' +
-		'}\n';
-		return new Function('context', body);
 	}
 	// invokeinterface
 	generators[0xb9] = function () {
@@ -964,11 +985,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	generators[0x70] = generateAB('if (b === 0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
 		'context.stack.push(a % b);\n');
 	// ireturn
-	generators[0xac] = function (context) {
-		var value = context.stack.pop();
-		context.result = value;
-		context.finish = true;
-	};
+	generators[0xac] = generateReturn;
 	// ishl
 	generators[0x78] = generateAB('context.stack.push(a << (b % 32));\n');
 	// ishr
@@ -1031,14 +1048,12 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		context.stack.push(new js2me.Double(double));
 	};
 	// l2i
-	generators[0x88] = function (context) {
-		var value = context.stack.pop();
-		var int = value.lo;
-		if (int >= 0x80000000) {
-			int -= 0x100000000;
-		} 
-		context.stack.push(int);
-	};
+	generators[0x88] = 'var value = context.stack.pop();\n' +
+		'var int = value.lo;\n' +
+		'if (int >= 0x80000000) {\n' +
+		'	int -= 0x100000000;\n' +
+		'}\n' +
+		'context.stack.push(int);\n';
 	// land
 	generators[0x61] = function (context) {
 		var b = context.stack.pop();
@@ -1154,11 +1169,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	generators[0x71] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' +
 		'context.stack.push(a.div(b).rem);\n');
 	// lreturn
-	generators[0xad] = function (context) {
-		var value = context.stack.pop();
-		context.result = value;
-		context.finish = true;
-	};
+	generators[0xad] = generateReturn;
 	// lshl
 	generators[0x79] = function (context) {
 		var shift = context.stack.pop() % 64;
@@ -1166,19 +1177,17 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		context.stack.push(value.shl(shift));
 	};
 	// lshr
-	generators[0x7b] = function (context) {
-		var shift = context.stack.pop() % 64;
-		var value = context.stack.pop();
-		var sign = value.sign();
-		if (sign) {
-			value = value.neg();
-		}
-		var result = value.shr(shift);
-		if (sign) {
-			result = result.neg();
-		}
-		context.stack.push(result);
-	};
+	generators[0x7b] = 'var shift = context.stack.pop() % 64;\n' +
+		'var value = context.stack.pop();\n' +
+		'var sign = value.sign();\n' +
+		'if (sign) {\n' +
+		'	value = value.neg();\n' +
+		'}\n' +
+		'var result = value.shr(shift);\n' +
+		'if (sign) {\n' +
+		'	result = result.neg();\n' +
+		'}\n' +
+		'context.stack.push(result);\n';
 	// lstore
 	generators[0x37] = function () {
 		var index = stream.readUint8();
@@ -1356,11 +1365,11 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		}
 	}
 	// return
-	generators[0xb1] = function () {
-		return function (context) {
-			context.finish = true;
-		};
-	};
+	generators[0xb1] = function (context) {
+		jumpFrom[stream.index - 1] = true;
+		return 'context.finish = true;\n';
+	}
+	
 	// saload
 	generators[0x35] = function () {
 		return 'var index = context.stack.pop();\n' +
@@ -1431,11 +1440,12 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		throw new Error('wide: unkown op ' + index);
 	}
 	var program = [];
-	var positionMapping = [];
+	var positionMapping = new Array(stream.getRemaining());
 	var reversedMapping = [];
 	var require = [];
 	var jumpTo = [];
 	var jumpFrom = [];
+	var isSafe = true;
 	
 	for (var i = 0; i < exceptions.length; i++) {
 		jumpTo[exceptions[i].startPc] = true;
@@ -1443,6 +1453,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		jumpTo[exceptions[i].handler] = true;
 	}
 	
+	var isSubfunctionSafe;
 	while (!stream.isEnd()) {
 		reversedMapping[program.length] = stream.index;
 		var op = stream.readUint8();
@@ -1451,6 +1462,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		}
 		js2me.usedByteCodes[op]++;
 		if (generators[op]) {
+			isSubfunctionSafe = true;
 			var func = null;
 			try {
 				func = generators[op]();
@@ -1464,7 +1476,10 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			}
 			if (program[program.length - 1].constructor === String) {
 				program[program.length - 1] = '//0x'+ op.toString(16) +'\n' + program[program.length - 1];
+			} else {
+				isSubfunctionSafe = false;
 			}
+			isSafe = isSafe && isSubfunctionSafe;
 		} else {
 			throw new Error('Op ' + op.toString(16) + ' not supported');
 		}
@@ -1493,7 +1508,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		return code;
 	}
 	// optimizations
-	for (var i = 0; i < program.length; i++) {
+	var i = 0;
+	while (i < program.length) {
 		if (program[i].constructor === String) {
 			// merge functions
 			while (i + 1 < program.length && program[i + 1].constructor === String &&
@@ -1506,25 +1522,38 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 				reversedMapping.splice(i + 1, 1);
 			}
 			program[i] = reduceStackOperations(program[i]);
+			program[i] = 'var functionResult;\n' + program[i];
 			try {
-				program[i] = new Function('context', '"strict mode";\n' + program[i]);
+				if (program.length > 1 || !isSafe) {
+					program[i] = new Function('context', program[i]);
+				}
 			} catch(e) {
 				console.error(e.message);
 				console.error(program[i]);
 			}
 		}
+		i++;
+	}
+	if (program.length > 1) {
+		isSafe = false;
 	}
 	for (var i = 0; i < reversedMapping.length; i++) {
 		positionMapping[reversedMapping[i]] = i;
 	}
+	for (var i = 1; i < positionMapping.length; i++) {
+		if (positionMapping[i] == null) {
+			positionMapping[i] = positionMapping[i - 1];
+		}
+	}
+	//console.log('Length: ' + program.length);
 	/*for (var i = 0; i < program.length; i++) {
 		console.log(reversedMapping[i] + ': ' + program[i].toString());
 		console.error('************');
-	}
-	console.log(program.length);*/
+	}*/
 	return {
 		content: program,
 		mapping: positionMapping,
-		require: require
+		require: require,
+		isSafe: isSafe
 	};
 };

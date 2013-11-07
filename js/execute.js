@@ -43,7 +43,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	function tryCatchException(exception) {
 		var handler = -1;
 		for (var i = 0; i < exceptions.length && handler == -1; i++) {
-			if (program.mapping[exceptions[i].startPc] <= context.position && program.mapping[exceptions[i].endPc] >= context.position) {
+			if (program.mapping[exceptions[i].startPc] <= context.position - 1 && program.mapping[exceptions[i].endPc] >= context.position - 1) {
 				var obj = {__proto__: exception};
 				while (obj.__proto__.className) {
 					obj = obj.__proto__;

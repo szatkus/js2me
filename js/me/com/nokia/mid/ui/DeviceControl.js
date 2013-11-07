@@ -1,5 +1,9 @@
 js2me.createClass({
-	package: 'javaRoot.$com.$nokia.$mid.$ui',
-	name: '$DeviceControl'
+	/*
+	 * public static void setLights(int num, int level)
+	 */
+	$setLights$II$V: function (num, level) {
+		// Yeah, turning lights on!
+	}
 });
 

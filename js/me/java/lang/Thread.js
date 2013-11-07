@@ -31,20 +31,20 @@ js2me.createClass({
 	/*
 	 * 
 	 */
-	$sleep$J$V: function (miliseconds) {
+	$sleep$J$V: js2me.markUnsafe(function (miliseconds) {
 		js2me.suspendThread = true;
 		var threadId = js2me.currentThread;
 		setTimeout(function () {
 			js2me.restoreThread(threadId);
 		}, miliseconds.toInt());
-	},
+	}),
 	/*
 	 * public static void yield()
 	 */
-	$yield$$V: function () {
+	$yield$$V: js2me.markUnsafe(function () {
 		var currentThread = javaRoot.$java.$lang.$Thread.prototype.$currentThread$$Ljava_lang_Thread_()
 		currentThread.$sleep$J$V(new js2me.Long(0, 1));
-	},
+	}),
 	/*
 	 * public static Thread currentThread()
 	 */

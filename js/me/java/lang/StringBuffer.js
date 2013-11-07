@@ -19,6 +19,13 @@ js2me.createClass({
 	_init$Ljava_lang_String_$V: function (str) {
 		this.string = str.text;
 	},
+	insert: function (offset, value) {
+		if (offset < 0 || offset > this.string.length) {
+			throw new javaRoot.$java.$lang.$StringIndexOutOfBoundsException('String index out of range: ' + offset);
+		}
+		this.string = this.string.substr(0, offset) + value + this.string.substr(offset);
+		return this;
+	},
 	/*
 	 * public StringBuffer append(Object obj)
 	 */
@@ -108,7 +115,7 @@ js2me.createClass({
 	 */
 	$charAt$I$C: function (index) {
 		if (index < 0 || index >= this.string.length) {
-			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
+			throw new javaRoot.$java.$lang.$StringIndexOutOfBoundsException('String index out of range: ' + index);
 		}
 		return this.string.charCodeAt(index);
 	},
@@ -119,12 +126,43 @@ js2me.createClass({
 		this.capacity = capacity;
 	},
 	/*
-	 * public StringBuffer insert(int offset, Object obj)
+	 * public StringBuffer insert(int offset, char c)
 	 */
-	$insert$II$Ljava_lang_StringBuffer_: function (value, index) {
-		this.string = this.string.substr(0, index) + value.toString() + this.string.substr(index);
+	$insert$IC$Ljava_lang_StringBuffer_: function (offset, value) {
+		return this.insert(String.fromCharCode(value));
 	},
-	package: 'javaRoot.$java.$lang',
-	name: '$StringBuffer'
+	/*
+	 * public StringBuffer insert(int offset, int i)
+	 */
+	$insert$II$Ljava_lang_StringBuffer_: function (offset, value) {
+		return this.insert(value);
+	},
+	/*
+	 * public StringBuffer insert(int offset, String str)
+	 */
+	$insert$ILjava_lang_String_$Ljava_lang_StringBuffer_: function (offset, str) {
+		return this.insert(str.text);
+	},
+	/*
+	 * public void setCharAt(int index, char ch)
+	 */
+	$setCharAt$IC$V: function (index, char) {
+		if (index < 0 || index >= this.string.length) {
+			throw new javaRoot.$java.$lang.$StringIndexOutOfBoundsException('String index out of range: ' + index);
+		}
+		this.string = this.string.substr(0, index) + String.fromCharCode(char) + this.string.substr(index + 1);
+	},
+	/*
+	 * public void setLength(int newLength)
+	 */
+	$setLength$I$V: function (newLength) {
+		if (newLength < 0) {
+			throw new javaRoot.$java.$lang.$StringIndexOutOfBoundsException('String index out of range: ' + newLength);
+		}
+		if (newLength > this.string.length) {
+			throw new Error('setLength: not supported yet');
+		}
+		this.string = this.string.substr(0, newLength);
+	}
 });
 

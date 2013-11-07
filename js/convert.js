@@ -94,6 +94,7 @@ js2me.convertClass = function (stream) {
 			}
 		}
 	}
+	
 	function escapeName(name) {
 		name = '$' + name;
 		if (name == '$<init>') {
@@ -104,10 +105,42 @@ js2me.convertClass = function (stream) {
 		}
 		return name;
 	}
+	
 	function escapeType(typeName) {
 		typeName = typeName.replace(new RegExp('[\\[;/]', 'g'), '_').replace(new RegExp('[\\(\\)]', 'g'), '$');
 		return typeName;
 	}
+	
+	function getArguments(typeName) {
+		var args = typeName.slice(typeName.indexOf('(') + 1, typeName.indexOf(')'));
+		var FIELD_TYPE = 0;
+		var OBJECT_TYPE = 1;
+		var ARRAY_TYPE = 2;
+		var state = FIELD_TYPE;
+		var argumentsTypes = [];
+		var part = '';
+		for (var i = 0; i < args.length; i++) {
+			part += args[i];
+			if (state == FIELD_TYPE || state == ARRAY_TYPE) {
+				if (args[i] == 'L') {
+					state = OBJECT_TYPE;
+				} else if (args[i] == '[') {
+					state = ARRAY_TYPE;
+				} else {
+					argumentsTypes.push(part);
+					part = '';
+				}
+			} else if (state == OBJECT_TYPE) {
+				if (args[i] == ';') {
+					state = FIELD_TYPE;
+					argumentsTypes.push(part);
+					part = '';
+				}
+			}
+		}
+		return argumentsTypes;
+	}
+	
 	function resolveConstants() {
 		function resolveConstant(index) {
 			var constant = constantPool[index];
@@ -155,37 +188,11 @@ js2me.convertClass = function (stream) {
 				name = escapeName(name);
 				var typeName = resolveConstant(constant.descriptorIndex);
 				name += escapeType(typeName);
-				var args = typeName.slice(typeName.indexOf('(') + 1, typeName.indexOf(')'));
-				var FIELD_TYPE = 0;
-				var OBJECT_TYPE = 1;
-				var ARRAY_TYPE = 2;
-				var state = FIELD_TYPE;
-				var argumentsTypes = [];
-				var part = '';
-				for (var i = 0; i < args.length; i++) {
-					part += args[i];
-					if (state == FIELD_TYPE || state == ARRAY_TYPE) {
-						if (args[i] == 'L') {
-							state = OBJECT_TYPE;
-						} else if (args[i] == '[') {
-							state = ARRAY_TYPE;
-						} else {
-							argumentsTypes.push(part);
-							part = '';
-						}
-					} else if (state == OBJECT_TYPE) {
-						if (args[i] == ';') {
-							state = FIELD_TYPE;
-							argumentsTypes.push(part);
-							part = '';
-						}
-					}
-					
-				}
+				
 				constantPool[index] = {
 					name: name,
 					type: {
-						argumentsTypes: argumentsTypes,
+						argumentsTypes: getArguments(typeName),
 						returnType: typeName.slice(typeName.indexOf(')') + 1)
 					}
 				};
@@ -238,7 +245,7 @@ js2me.convertClass = function (stream) {
 			}
 		}
 	}
-	function readAttributes(name) {
+	function readAttributes(name, type) {
 		var count = stream.readUint16();
 		var attributes = {};
 		for (var i = 0; i < count; i++) {
@@ -263,7 +270,10 @@ js2me.convertClass = function (stream) {
 				}
 				readAttributes();
 				var program = null;
-				var methodName = thisClass.className + '->' + name;
+				var escapedName = escapeName(name) + escapeType(type);
+				var argumentsTypes = getArguments(type);
+				var methodName = thisClass.className + '->' + escapedName;
+				//TODO: move it somewhere else
 				value = function () {
 					var locals = [];
 					if (this.constructor != Function) {
@@ -279,15 +289,70 @@ js2me.convertClass = function (stream) {
 					if (arguments.length > 0 && typeof arguments[arguments.length - 1] == 'function') {
 						callback = arguments[arguments.length - 1];
 					}
+					var result;
 					if (program == null) {
 						console.log('Generating method ' + methodName);
 						program = js2me.generateProgram(new js2me.BufferStream(codeStream), constantPool, exceptions);
 						program.name = methodName;
 						arguments.callee.data = program;
+						// We can compile to native function!
+						if (program.isSafe) {
+							console.log(methodName + ' is safe! Compiling to native :)');
+							var methodBody = program.content[0];
+							var limit = 5000;
+							var args = [];
+							for (var i = 0; i < maxLocals; i++) {
+								var localName;
+								//locals[0] == this for non-static
+								if (this.constructor !== Function) {
+									if (i > 0) {
+										localName = 'local' + i;
+									} else {
+										localName = 'this';
+									}
+								} else  {
+									localName = 'local' + i;
+								}
+								methodBody = methodBody.replace(new RegExp('context\\.locals\\[' + i + '\\]', 'g'), localName);
+								if (localName != 'this' && args.length < argumentsTypes.length) {
+									args.push(localName);
+									if (argumentsTypes[args.length - 1] === 'D' || argumentsTypes[args.length - 1] === 'J') {
+										i++;
+									}
+								}
+							}
+							methodBody = methodBody.replace(new RegExp('context\\.result', 'g'), 'functionResult');
+							var returnStatement = 'if (callback && callback.constructor === Function) {\n' +
+								'	callback(functionResult);\n' +
+								'}\n' +
+								'return functionResult';
+							methodBody = methodBody.replace(new RegExp('context\\.finish = true', 'g'), returnStatement, 'g');
+							methodBody = methodBody.replace(new RegExp('context\\.saveResult', 'g'), 'var nothing', 'g');
+							methodBody = methodBody.replace(new RegExp('context\\.constantPool', 'g'), 'arguments.callee.constantPool', 'g');
+							args.push('callback');
+							args.push(methodBody);
+							try {
+								if(methodBody.indexOf('}\n}') != -1) {
+									console.log('lol');
+								}
+								var nativeMethod = Function.apply(null, args);
+							} catch (e) {
+								console.error(e);
+								console.log(methodBody);
+							}
+							nativeMethod.constantPool = constantPool;
+							newClass.prototype[escapedName] = nativeMethod;
+							var self = null;
+							if (this.constructor != Function) {
+								self = this;
+								locals.shift();
+							}
+							return nativeMethod.apply(self, locals);
+						}
 					}
-					var result = js2me.execute(program, locals, constantPool, exceptions, null, callback);
-					return result;
+					return js2me.execute(program, locals, constantPool, exceptions, null, callback);
 				};
+				value.isUnsafe = true;
 			}
 			if (attributeName == 'Synthetic') {
 				value = true;
@@ -335,7 +400,7 @@ js2me.convertClass = function (stream) {
 			var accessFlags = stream.readUint16();
 			var name = constantPool[stream.readUint16()];
 			var type = constantPool[stream.readUint16()];
-			var attributes = readAttributes(escapeName(name) + escapeType(type));
+			var attributes = readAttributes(name, type);
 			newClass.prototype[escapeName(name) + escapeType(type)] = attributes['Code'];
 		}
 	}

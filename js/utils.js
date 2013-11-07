@@ -77,3 +77,8 @@ js2me.bytesToDataURI = function (bytes, offset, length, mime) {
 	}
 	return dataURI;
 };
+
+js2me.markUnsafe = function (func) {
+	func.isUnsafe = true;
+	return func;
+};

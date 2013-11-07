@@ -71,6 +71,24 @@ js2me.createClass({
 		}
 	},
 	/*
+	 * public boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len)
+     */
+	$regionMatches$ZILjava_lang_String_II$Z: function (ignoreCase, toffset, other, ooffset, len) {
+		if (toffset < 0 || ooffset < 0) {
+			return 0;
+		}
+		if (toffset+len > this.text.length || ooffset+len > other.text.length) {
+			return 0;
+		}
+		if (ignoreCase && this.text.toLowerCase().substr(toffset, len) === other.text.toLowerCase().substr(ooffset, len)) {
+			return 1;
+		}
+		if (this.text.substr(toffset, len) === other.text.substr(ooffset, len)) {
+			return 1;
+		}
+		return 0;
+	},
+	/*
 	 * public String toString()
 	 */
 	$toString$$Ljava_lang_String_: function () {

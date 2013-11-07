@@ -171,6 +171,8 @@
 						}
 					}*/
 					classObj.prototype._clinit$$V = null;
+					// might need it later
+					classObj.prototype.clinit = clinit;
 					clinit(retry);
 					return;
 				}

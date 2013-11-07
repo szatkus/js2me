@@ -12,7 +12,7 @@ js2me.createClass({
 	/*
 	 * public static Image createImage(int width, int height)
 	 */
-	$createImage$Ljava_lang_String_$Ljavax_microedition_lcdui_Image_: function (name) {
+	$createImage$Ljava_lang_String_$Ljavax_microedition_lcdui_Image_: js2me.markUnsafe(function (name) {
 		if (name == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
@@ -22,7 +22,7 @@ js2me.createClass({
 		}
 		var data = new Int8Array(input.stream.array);
 		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
-	},
+	}),
 	/*
 	 * public static Image createImage(int width, int height)
 	 */
@@ -46,7 +46,7 @@ js2me.createClass({
 	/*
 	 * public static Image createImage(int width, int height)
 	 */
-	$createImage$_BII$Ljavax_microedition_lcdui_Image_: function (data, offset, length) {
+	$createImage$_BII$Ljavax_microedition_lcdui_Image_: js2me.markUnsafe(function (data, offset, length) {
 		if (data == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
@@ -87,7 +87,7 @@ js2me.createClass({
 			return image;
 		}];
 		return image;
-	},
+	}),
 	/*
 	 * public static Image createRGBImage(int[] rgb, int width, int height, boolean processAlpha)
 	 */
