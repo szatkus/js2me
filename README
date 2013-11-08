@@ -26,6 +26,9 @@ v. 0.7
  - more tests
  - native exceptions catching
  - detect loops
+ - error popup
+ - orientation
+ - remove hover
 Milestone X
  - Building Blocks
  - MIDI support
