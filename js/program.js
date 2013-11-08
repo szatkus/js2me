@@ -40,7 +40,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		};
 	}
 	function generateReturn() {
-		jumpFrom[stream.index - 1] = true;
+		jumpFrom[stream.index - 1]++;
 		return 'functionResult = context.stack.pop();\n' +
 			'context.result = functionResult;\n' +
 			'context.finish = true;\n';
@@ -585,7 +585,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// goto
 	generators[0xa7] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTo[index]++;
+		jumpTarget[currentOpIndex] = index;
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			goto(context, index);
 		};
@@ -669,7 +671,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_acmpeq
 	generators[0xa5] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTo[index]++;
+		jumpTarget[currentOpIndex] = [index];
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -681,7 +684,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_acmpne
 	generators[0xa6] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -693,7 +697,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_icmpeq
 	generators[0x9f] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -706,7 +711,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_icmpne
 	generators[0xa0] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -718,7 +724,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_icmplt
 	generators[0xa1] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -730,7 +737,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_icmpge
 	generators[0xa2] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = ['>=', index];
+		jumpTo[index]++;
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -742,7 +751,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_icmpgt
 	generators[0xa3] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -754,7 +764,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_icmple
 	generators[0xa4] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -766,7 +777,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifeq
 	generators[0x99] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value === 0) {
@@ -777,7 +789,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifne
 	generators[0x9a] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value !== 0) {
@@ -788,7 +801,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// iflt
 	generators[0x9b] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value < 0) {
@@ -799,7 +813,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifge
 	generators[0x9c] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value >= 0) {
@@ -810,7 +825,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifgt
 	generators[0x9d] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value > 0) {
@@ -821,7 +837,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifle
 	generators[0x9e] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value <= 0) {
@@ -832,7 +849,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifnonnull
 	generators[0xc7] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value != null) {
@@ -843,7 +861,8 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifnull
 	generators[0xc6] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index] = true;
+		jumpTarget[currentOpIndex] = [index];
+		jumpTo[index]++;;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value == null) {
@@ -1147,14 +1166,14 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			stream.readUint8();
 		}
 		var def = start + stream.readInt32();
-		jumpTo[def] = true;
+		jumpTo[def]++;
 		var count = stream.readInt32();
 		var table = [];
 		for (var i = 0; i < count; i++) {
 			var match = stream.readInt32();
 			var value = start + stream.readInt32();
 			table[match] = value;
-			jumpTo[value] = true;
+			jumpTo[value]++;
 		}
 		return function (context) {
 			var index = table[context.stack.pop()] || def;
@@ -1374,7 +1393,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	}
 	// return
 	generators[0xb1] = function (context) {
-		jumpFrom[stream.index - 1] = true;
+		jumpFrom[stream.index - 1]++;
 		return 'context.finish = true;\n';
 	}
 	
@@ -1416,14 +1435,14 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			stream.readUint8();
 		}
 		var def = start + stream.readInt32();
-		jumpTo[def] = true;
+		jumpTo[def]++;
 		var low = stream.readInt32();
 		var high = stream.readInt32();
 		var count = high - low + 1;
 		var table = [];
 		for (var i = 0; i < count; i++) {
 			table[low + i] = start + stream.readInt32();
-			jumpTo[table[low + i]] = true;
+			jumpTo[table[low + i]]++;
 		}
 		return function (context) {
 			var pos = context.stack.pop();
@@ -1451,19 +1470,22 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	var positionMapping = new Array(stream.getRemaining());
 	var reversedMapping = [];
 	var require = [];
-	var jumpTo = [];
-	var jumpFrom = [];
+	var jumpTo = new Int32Array(stream.getRemaining());
+	var jumpFrom = new Int32Array(stream.getRemaining());
+	var jumpTarget = [];
 	var isSafe = true;
+	var currentOpIndex = 0;
 	
 	for (var i = 0; i < exceptions.length; i++) {
-		jumpTo[exceptions[i].startPc] = true;
-		jumpFrom[exceptions[i].endPc] = true;
-		jumpTo[exceptions[i].handler] = true;
+		jumpTo[exceptions[i].startPc]++;
+		jumpFrom[exceptions[i].endPc]++;
+		jumpTo[exceptions[i].handler]++;
 	}
 	
 	var isSubfunctionSafe;
 	while (!stream.isEnd()) {
 		reversedMapping[program.length] = stream.index;
+		currentOpIndex = stream.index;
 		var op = stream.readUint8();
 		if (!js2me.usedByteCodes[op]) {
 			js2me.usedByteCodes[op] = 0;
@@ -1521,15 +1543,49 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		if (program[i].constructor === String) {
 			// merge functions
 			while (i + 1 < program.length && program[i + 1].constructor === String &&
-				!jumpTo[reversedMapping[i + 1]] && !jumpFrom[reversedMapping[i]]) {
-				if (jumpFrom[reversedMapping[i + 1]]) {
-					jumpFrom[reversedMapping[i]] =  true;
+				jumpTo[reversedMapping[i + 1]] === 0 && jumpFrom[reversedMapping[i]] === 0) {
+				if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
+					jumpFrom[reversedMapping[i]]++;
 				}
 				program[i] += program[i + 1];
 				program.splice(i + 1, 1);
 				reversedMapping.splice(i + 1, 1);
 			}
 			program[i] = reduceStackOperations(program[i]);
+			
+		}
+		i++;
+	}
+	function checkFragment(pos, constructor, toValue, fromValue)  {
+		var realPos = reversedMapping[pos];
+		return program[pos] != null && program[pos].constructor === constructor
+			&& jumpTo[realPos] === toValue && jumpFrom[realPos] === fromValue;
+	}
+	var i = 0;
+	while (i < program.length) {
+		// find loops
+		var startTarget = jumpTarget[reversedMapping[i]];
+		var endTarget = jumpTarget[reversedMapping[i + 2]];
+		if (checkFragment(i - 1, String, 1, 0) && checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
+			checkFragment(i + 2, Function, 0, 1) &&  startTarget != null && startTarget.length === 2 && 
+			startTarget[1] === reversedMapping[i + 3] && endTarget === reversedMapping[i - 1]) {
+			var body = program[i - 1];
+			// find better varnames...
+			body += 'var bb = context.stack.pop();\n' +
+				'var aa = context.stack.pop();\n' +
+				'while (!(aa ' + startTarget[0] + 'bb)) {\n';
+			body += program[i + 1] + program[i - 1];
+			body += 'bb = context.stack.pop();\n' +
+				'aa = context.stack.pop();\n}\n';
+			program[i - 1] = body;
+			program.splice(i, 3);
+			reversedMapping.splice(i, 3);
+			i--;
+		}
+		i++;
+	}
+	for (var i = 0; i < program.length; i++) {
+		if (program[i].constructor === String) {
 			program[i] = 'var functionResult;\n' + program[i];
 			try {
 				if (program.length > 1 || !isSafe) {
@@ -1540,7 +1596,6 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 				console.error(program[i]);
 			}
 		}
-		i++;
 	}
 	console.log('Length: ' + program.length + ' Safe: ' + isSafe);
 	if (program.length > 1) {

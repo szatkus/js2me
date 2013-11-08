@@ -99,10 +99,18 @@ js2me.createClass({
 	 */
 	$paint$Ljavax_microedition_lcdui_Graphics_$V: function () {
 	},
+	time: 0,
 	/*
 	 * public final void repaint(int x, int y, int width, int height)
 	 */
 	$repaint$$V: function () {
+		/*this.calls++;
+		var time = +new Date;
+		if (time - this.time > 1000) {
+			document.getElementById('title').innerHTML = this.calls;
+			this.time = time;
+			this.calls = 0;
+		}*/
 		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		js2me.launchThread(function () {
