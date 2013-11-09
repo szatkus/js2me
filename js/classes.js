@@ -109,25 +109,28 @@
 					(function (className) {
 						//console.log(className);
 						remain++;
-						var classPath = className.replace('javaRoot', 'me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
-						console.log(classPath);
-						importScripts(classPath);
-						if (js2me.classBucket == null) {
-							throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
-						}
-						var proto = js2me.classBucket.prototype;
-						proto.className = className;
-						var splitPoint = className.lastIndexOf('.');
-						proto.package = className.substring(0, splitPoint);
-						proto.name = className.substring(splitPoint + 1);
-						var package = js2me.findPackage(proto.package, window);
-						package[proto.name] = js2me.classBucket;
-						
-						js2me.classBucket = null;
-						remain--;
-						if (remain == 0) {
-							callback(true);
-						}
+						var classPath = className.replace(js2me.JAVA_ROOT, 'js/me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
+						var element = document.createElement('script');
+						element.src = classPath;
+						element.onload = function () {
+							if (js2me.classBucket == null) {
+								throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
+							}
+							var proto = js2me.classBucket.prototype;
+							proto.className = className;
+							var splitPoint = className.lastIndexOf('.');
+							proto.package = className.substring(0, splitPoint);
+							proto.name = className.substring(splitPoint + 1);
+							var package = js2me.findPackage(proto.package, window);
+							package[proto.name] = js2me.classBucket;
+							
+							js2me.classBucket = null;
+							remain--;
+							if (remain == 0) {
+								callback(true);
+							}
+						};
+						document.head.appendChild(element);
 					})(className);
 				}
 			}

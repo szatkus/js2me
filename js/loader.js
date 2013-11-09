@@ -12,20 +12,28 @@ js2me.loadJAR = function (filename, callback) {
 		zip.createReader(reader, function(zipReader) {
 			zipReader.getEntries(function (entries) {
 				js2me.loadResources(entries, function () {
-					js2me.transferResources();
-					js2me.worker.postMessage(['run']);
-					callback();
+					for (var name in js2me.resources) {
+						if (name.lastIndexOf('class') >= 0 && name.lastIndexOf('class') == name.length - 5) {
+							js2me.loadJavaClass(new js2me.BufferStream(js2me.resources[name]));
+						}
+						if (name == 'META-INF/MANIFEST.MF') {
+							var content = js2me.UTF8ToString(js2me.resources[name]);
+							js2me.manifest = js2me.parseManifest(content);
+						}
+					}
+					js2me.checkClasses(callback);
 				});
 			});
 		});
 	}
 	
-	if (navigator.getDeviceStorage && navigator.getDeviceStorage('sdcard')) {
-		navigator.getDeviceStorage('sdcard').get(filename).onsuccess = function () {
-			loadReader(new zip.BlobReader(this.result));
-		};
-	} else {
-		loadReader(new zip.HttpReader(filename));
-	}
-	
-};
+	js2me.setupJVM(function () {
+		if (navigator.getDeviceStorage && navigator.getDeviceStorage('sdcard')) {
+			navigator.getDeviceStorage('sdcard').get(filename).onsuccess = function () {
+				loadReader(new zip.BlobReader(this.result));
+			};
+		} else {
+			loadReader(new zip.HttpReader(filename));
+		}
+	});
+}
