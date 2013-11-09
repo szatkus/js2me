@@ -9,9 +9,6 @@ js2me.createClass({
 		var displayable = this;
 		displayable.currentCommands = [];
 		var moreMenuListener = {
-	/*
-	 * 
-	 */
 			$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V: function () {
 				var command = displayable.currentCommands[displayable.moreList.$getSelectedIndex$$I()];
 				displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable);

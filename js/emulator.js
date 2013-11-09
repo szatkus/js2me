@@ -102,6 +102,7 @@
 			}
 		}
 		
+		js2me.worker.postMessage(['setConfig', js2me.config]);
 		js2me.loadJAR(js2me.config['src'], function () {
 			document.getElementById('screen').innerHTML = '';
 			js2me.worker.postMessage(['launchMidlet', 1]);

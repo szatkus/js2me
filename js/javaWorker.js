@@ -9,13 +9,13 @@ var console = {
 
 var js2me = {
 	resources: {},
+	sharedId: 0,
 	addResource: function (name, content) {
 		js2me.resources[name] = new Uint8Array(content);
 		console.log(name);
 		console.log(js2me.resources[name].length);
 	},
 	run: function () {
-		console.log('res');
 		for (var name in js2me.resources) {
 			console.log(name);
 			if (name.lastIndexOf('class') >= 0 && name.lastIndexOf('class') == name.length - 5) {
@@ -28,15 +28,19 @@ var js2me = {
 		}
 		js2me.checkClasses(function() {
 			postMessage('ready');
-		});
+		}, 100);
+	},
+	setConfig: function (config) {
+		js2me.config = config;
 	}
 };
 
 var javaRoot = {};
-
 var window = this;
 
-importScripts('bufferStream.js', 'classes.js', 'convert.js', 'launcher.js', 'manifest.js', 'methodStub.js', 'numbers.js', 'utils.js');
+importScripts('bufferStream.js', 'classes.js', 'convert.js', 'execute.js',
+	'launcher.js', 'manifest.js', 'methodStub.js', 'numbers.js', 
+	'program.js', 'remote.js', 'utils.js');
 
 js2me.setupJVM(function () {});
 

@@ -158,7 +158,7 @@ js2me.convertClass = function (stream) {
 					}
 					className += '$' + nameElements[i];
 				}
-				className = js2me.JAVA_ROOT + '.' + className;
+				className = 'javaRoot' + '.' + className;
 				
 				if (className.indexOf('[') == -1 ) {
 					newClass.prototype.require.push(className);
@@ -169,7 +169,7 @@ js2me.convertClass = function (stream) {
 			}
 			if (tag == TAG_STRING) {
 				var text = resolveConstant(constant.stringIndex);
-				constantPool[index] = new window[js2me.JAVA_ROOT].$java.$lang.$String(text);
+				constantPool[index] = new window['javaRoot'].$java.$lang.$String(text);
 			}
 			if (tag == TAG_FIELDREF || tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 				constantPool[index] = {

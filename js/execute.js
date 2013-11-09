@@ -57,6 +57,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 			context.stack.push(exception);
 			context.position = program.mapping[handler];
 		} else {
+			console.error(exception.stack);
 			throw exception;
 		}
 	}
@@ -95,7 +96,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	}
 	if (context.regenerate) {
 		program.regenerate = true;
-		console.log(program);
 	}
 	if (js2me.debug) {
 		console.log(program.name + ' finished at ' + context.position);

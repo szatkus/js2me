@@ -104,13 +104,14 @@
 			}
 			for (var className in classes) {
 				try {
+					//console.log(className);
 					js2me.findClass(className);
 				} catch (e) {
 					(function (className) {
 						//console.log(className);
 						remain++;
 						var classPath = className.replace('javaRoot', 'me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
-						console.log(classPath);
+						//console.log(classPath);
 						importScripts(classPath);
 						if (js2me.classBucket == null) {
 							throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
@@ -189,10 +190,10 @@
 					callback();
 				}
 			}
-			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
+			iterateClasses(javaRoot, 'javaRoot', function (obj, name) {
 				remain++;
 			});
-			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
+			iterateClasses(javaRoot, 'javaRoot', function (obj, name) {
 				var classObj = js2me.findClass(name);
 				initializeClass(classObj, finish);
 			});
@@ -211,7 +212,7 @@
 				throw new Error('Dependencies cannot be satisfied.');
 			}
 			var classes = {};
-			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj) {
+			iterateClasses(javaRoot, 'javaRoot', function (obj) {
 				if (obj.prototype) {
 					if (obj.prototype.require == null) {
 						obj.prototype.require = [];
@@ -244,6 +245,7 @@
 					
 				}
 			});
+			//console.log(classes);
 			loadNativeClasses(classes, function (isNewClasses) {
 				if (isNewClasses) {
 					js2me.checkClasses(callback, limit - 1);
