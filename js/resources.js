@@ -15,7 +15,7 @@ js2me.loadResources = function (entries, callback) {
 	function addResource(entry) {
 		entry.getData(new zip.ArrayBufferWriter(), function (content) {
 			document.getElementById('screen').innerHTML = 'Loading ' + entry.filename + ' (' + (i + 1) + '/' + entries.length + ')';
-			js2me.resources[entry.filename] = new Uint8Array(content);
+			js2me.resources[entry.filename] = content;
 			finish();
 			if (remain > 0) {
 				setTimeout(function () {
@@ -27,4 +27,10 @@ js2me.loadResources = function (entries, callback) {
 	}
 	js2me.resources = {};
 	addResource(entries[i]);
+};
+
+js2me.transferResources = function () {
+	for (name in js2me.resources) {
+		this.worker.postMessage(['addResource', name, js2me.resources[name]], [js2me.resources[name]]);
+	}
 };

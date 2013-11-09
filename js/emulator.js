@@ -104,25 +104,7 @@
 		
 		js2me.loadJAR(js2me.config['src'], function () {
 			document.getElementById('screen').innerHTML = '';
-			if (js2me.config.test) {
-				document.querySelector('script[src="' + js2me.config.test + '"]').setAttribute('data-cover');
-				var script = document.createElement('script');
-				script.src = 'js/blanket/blanket.js';
-				script.addEventListener('load', function () {
-					blanket._loadSourceFiles(function () {
-						js2me.launchMidlet(1);
-						//TODO: no better idea
-						setTimeout(function () {
-							var data = {};
-							blanket.report(data);
-							drawCoverage(data);
-						}, 5000);
-					});
-				});
-				document.head.appendChild(script);
-			} else {
-				js2me.launchMidlet(1);
-			}
+			js2me.worker.postMessage(['launchMidlet', 1]);
 		});
 	};
 	js2me.setFullscreen = function (enabled) {
