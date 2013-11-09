@@ -2,11 +2,9 @@ public class Test extends TestMidlet {
 	public void startApp() {
 		
 		String[] args = new String[]{"500"};
-		nbody.main(args);
-		nbody.main(args);
-		nbody.main(args);
-		nbody.main(args);
-		nbody.main(args);
+		for (int i = 0; i < 10; i++) {
+			nbody.main(args);
+		}
 		finish();
 	}
 }

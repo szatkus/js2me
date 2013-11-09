@@ -44,10 +44,14 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 						localName = 'local' + i;
 					}
 					methodBody = methodBody.replace(new RegExp('context\\.locals\\[' + i + '\\]', 'g'), localName);
-					if (localName != 'this' && args.length < argumentsTypes.length) {
-						args.push(localName);
-						if (argumentsTypes[args.length - 1] === 'D' || argumentsTypes[args.length - 1] === 'J') {
-							i++;
+					if (localName != 'this') {
+						if (args.length < argumentsTypes.length) {
+							args.push(localName);
+							if (argumentsTypes[args.length - 1] === 'D' || argumentsTypes[args.length - 1] === 'J') {
+								i++;
+							}
+						} else {
+							methodBody = 'var ' + localName + ';\n' + methodBody;
 						}
 					}
 				}
