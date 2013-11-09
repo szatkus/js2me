@@ -5,6 +5,8 @@ public class Test extends TestMidlet {
 		nbody.main(args);
 		nbody.main(args);
 		nbody.main(args);
+		nbody.main(args);
+		nbody.main(args);
 		finish();
 	}
 }

@@ -28,6 +28,6 @@ js2me.createClass({
 	 * public static double sqrt(double a)
 	 */
 	$sqrt$D$D: function (value) {
-		return new js2me.Double(value.double, value.double);
+		return new js2me.Double(Math.sqrt(value.double));
 	}
 });

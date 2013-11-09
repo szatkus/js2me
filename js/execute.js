@@ -93,6 +93,10 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		}
 		
 	}
+	if (context.regenerate) {
+		program.regenerate = true;
+		console.log(program);
+	}
 	if (js2me.debug) {
 		console.log(program.name + ' finished at ' + context.position);
 	}

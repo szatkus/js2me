@@ -1,5 +1,5 @@
 "use strict";
-js2me.generateProgram = function (stream, constantPool, exceptions) {
+js2me.generateProgram = function (stream, methodName, constantPool, exceptions) {
 	var generators = [];
 	
 	
@@ -41,7 +41,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	}
 	function generateReturn() {
 		jumpFrom[stream.index - 1]++;
-		return 'functionResult = context.stack.pop();\n' +
+		return 'var functionResult = context.stack.pop();\n' +
 			'context.result = functionResult;\n' +
 			'context.finish = true;\n';
 	}
@@ -372,19 +372,17 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		'context.stack.push(stack2);\n' +
 		'context.stack.push(stack3);\n';
 	// dup2
-	generators[0x5c] = function (context) {
-		var a = context.stack.pop();
-		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
-			var b = context.stack.pop();
-			context.stack.push(b);
-			context.stack.push(a);
-			context.stack.push(b);
-			context.stack.push(a);
-		} else {
-			context.stack.push(a);
-			context.stack.push(a);
-		}
-	};
+	generators[0x5c] = 'var a = context.stack.pop();\n' +
+		'if (a.constructor != js2me.Long && a.constructor != js2me.Double) {//STOP\n' +
+		'	var b = context.stack.pop();\n' +
+		'	context.stack.push(b);\n' +
+		'	context.stack.push(a);\n' +
+		'	context.stack.push(b);\n' +
+		'	context.stack.push(a);\n' +
+		'} else {\n' +
+		'	context.stack.push(a);\n' +
+		'	context.stack.push(a);\n' +
+		'}//STOP\n';
 	// dup2_x1
 	generators[0x5d] = function (context) {
 		var a = context.stack.pop();
@@ -571,7 +569,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	};
 	function goto(context, index) {
 		context.position = positionMapping[index];
-		var now = +new Date;
+		/*var now = +new Date;
 		if (!(now - js2me.lastStop < 1000)) {
 			js2me.lastStop = now;
 			context.saveResult = false;
@@ -580,7 +578,7 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			setTimeout(function () {
 				js2me.restoreThread(threadID);
 			}, 1);
-		}
+		}*/
 	}
 	// goto
 	generators[0xa7] = function () {
@@ -671,8 +669,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_acmpeq
 	generators[0xa5] = function () {
 		var index = stream.index + stream.readInt16() - 1;
+		jumpTarget[currentOpIndex] = ['===', index];
 		jumpTo[index]++;
-		jumpTarget[currentOpIndex] = [index];
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -684,8 +683,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_acmpne
 	generators[0xa6] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
+		jumpTarget[currentOpIndex] = ['!==', index];
 		jumpTo[index]++;;
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -711,8 +711,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// if_icmpne
 	generators[0xa0] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
+		jumpTarget[currentOpIndex] = ['!==', index];
+		jumpTo[index]++;
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			var b = context.stack.pop();
 			var a = context.stack.pop();
@@ -777,8 +778,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifeq
 	generators[0x99] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
+		jumpTarget[currentOpIndex] = ['== 0', index];
 		jumpTo[index]++;;
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value === 0) {
@@ -837,8 +839,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifle
 	generators[0x9e] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
+		jumpTarget[currentOpIndex] = ['<= 0', index];
+		jumpTo[index]++;
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value <= 0) {
@@ -861,8 +864,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 	// ifnull
 	generators[0xc6] = function () {
 		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
+		jumpTarget[currentOpIndex] = ['== null', index];
+		jumpTo[index]++;
+		jumpFrom[currentOpIndex]++;
 		return function (context) {
 			var value = context.stack.pop();
 			if (value == null) {
@@ -976,6 +980,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 				body += 'if (context.saveResult && !js2me.suspendThread) {\n' +
 					'	context.stack.push(result);\n' +
 					'}\n';
+				body += 'if (!method.isUnsafe) {\n' +
+					'	context.regenerate = true;\n' +
+					'}\n';
 				result = new Function('context', body);
 				isSubfunctionSafe = false;
 			}
@@ -1036,11 +1043,9 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		return generateStore(3);
 	};
 	// isub
-	generators[0x64] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(a - b);
-	};
+	generators[0x64] = 'var b = context.stack.pop();\n' +
+		'var a = context.stack.pop();\n' +
+		'context.stack.push(a - b);\n';
 	// iushr
 	generators[0x7c] = function (context) {
 		var shift = context.stack.pop() % 32;
@@ -1075,12 +1080,10 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		'	int -= 0x100000000;\n' +
 		'}\n' +
 		'context.stack.push(int);\n';
-	// land
-	generators[0x61] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(a.add(b));
-	};
+	// ladd
+	generators[0x61] = 'var b = context.stack.pop();\n' +
+		'var a = context.stack.pop();\n' +
+		'context.stack.push(a.add(b));\n';
 	// laload
 	generators[0x2f] = function (context) {
 		var index = context.stack.pop();
@@ -1107,22 +1110,26 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		context.stack.push(a.cmp(b));
 	};
 	// lconst_0
-	generators[0x09] = function (context) {
-		context.stack.push(new js2me.Long(0, 0));
-	};
+	generators[0x09] = 'context.stack.push(new js2me.Long(0, 0));\n';
 	// lconst_1
-	generators[0x0a] = function (context) {
-		context.stack.push(new js2me.Long(0, 1));
-	};
+	generators[0x0a] = 'context.stack.push(new js2me.Long(0, 1));\n';
 	// ldc
 	generators[0x12] = function () {
 		var index = stream.readUint8();
-		return 'context.stack.push(context.constantPool[' + index + ']);\n';
+		if (constantPool[index] instanceof js2me.Double) {
+			return 'context.stack.push(new js2me.Double(' + constantPool[index].double + '));\n';
+		} else {
+			return 'context.stack.push(context.constantPool[' + index + ']);\n';
+		}
 	};
 	// ldc_w
 	generators[0x14] = generators[0x13] = function () {
 		var index = stream.readUint16();
-		return 'context.stack.push(context.constantPool[' + index + ']);\n';
+		if (constantPool[index] instanceof js2me.Double) {
+			return 'context.stack.push(new js2me.Double(' + constantPool[index].double + '));\n';
+		} else {
+			return 'context.stack.push(context.constantPool[' + index + ']);\n';
+		}
 	};
 	// ldiv
 	generators[0x6d] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
@@ -1215,21 +1222,13 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		return generateStore(index);
 	};
 	// lstore_0
-	generators[0x3f] = function (context) {
-		context.locals[0] = context.stack.pop();
-	};
+	generators[0x3f] = generateStore(0);
 	// lstore_1
-	generators[0x40] = function (context) {
-		context.locals[1] = context.stack.pop();
-	};
+	generators[0x40] = generateStore(1);
 	// lstore_2
-	generators[0x41] = function (context) {
-		context.locals[2] = context.stack.pop();
-	};
+	generators[0x41] = generateStore(2);
 	// lstore_3
-	generators[0x42] = function (context) {
-		context.locals[3] = context.stack.pop();
-	};
+	generators[0x42] = generateStore(3);
 	// lsub
 	generators[0x65] = function (context) {
 		return 'var b = context.stack.pop();\n' +
@@ -1506,30 +1505,28 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 			}
 			if (program[program.length - 1].constructor === String) {
 				program[program.length - 1] = '//0x'+ op.toString(16) +'\n' + program[program.length - 1];
-			} else {
-				isSubfunctionSafe = false;
 			}
 			isSafe = isSafe && isSubfunctionSafe;
 		} else {
 			throw new Error('Op ' + op.toString(16) + ' not supported');
 		}
 	}
+	var varId = 0;
 	function reduceStackOperations(code) {
 		var start = 0;
-		var id = 0;
 		var position = 0;
 		var popTemplate = 'context.stack.pop()';
 		var pushTemplate = 'context.stack.push';
 		while ((position = code.indexOf(popTemplate, start)) != -1) {
 			var pushPosition = code.substring(0, position).lastIndexOf(pushTemplate);
-			if (pushPosition != -1) {
+			if (pushPosition != -1 && code.substring(pushPosition, position).indexOf('//STOP') == -1) {
 				var newCode = code.substring(0, pushPosition);
-				newCode += 'var tmp' + id +' = ';
+				newCode += 'var tmp' + varId +' = ';
 				newCode += code.substring(pushPosition + pushTemplate.length, position);
-				newCode += 'tmp' + id;
+				newCode += 'tmp' + varId;
 				start = newCode.length;
 				newCode += code.substring(position + popTemplate.length);
-				id++;
+				varId++;
 				code = newCode;
 			} else {
 				start = position + popTemplate.length;
@@ -1537,58 +1534,126 @@ js2me.generateProgram = function (stream, constantPool, exceptions) {
 		}
 		return code;
 	}
-	// optimizations
-	var i = 0;
-	while (i < program.length) {
-		if (program[i].constructor === String) {
-			// merge functions
-			while (i + 1 < program.length && program[i + 1].constructor === String &&
-				jumpTo[reversedMapping[i + 1]] === 0 && jumpFrom[reversedMapping[i]] === 0) {
-				if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
-					jumpFrom[reversedMapping[i]]++;
-				}
-				program[i] += program[i + 1];
-				program.splice(i + 1, 1);
-				reversedMapping.splice(i + 1, 1);
-			}
-			program[i] = reduceStackOperations(program[i]);
-			
-		}
-		i++;
-	}
 	function checkFragment(pos, constructor, toValue, fromValue)  {
 		var realPos = reversedMapping[pos];
 		return program[pos] != null && program[pos].constructor === constructor
 			&& jumpTo[realPos] === toValue && jumpFrom[realPos] === fromValue;
 	}
-	var i = 0;
-	while (i < program.length) {
-		// find loops
-		var startTarget = jumpTarget[reversedMapping[i]];
-		var endTarget = jumpTarget[reversedMapping[i + 2]];
-		if (checkFragment(i - 1, String, 1, 0) && checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
-			checkFragment(i + 2, Function, 0, 1) &&  startTarget != null && startTarget.length === 2 && 
-			startTarget[1] === reversedMapping[i + 3] && endTarget === reversedMapping[i - 1]) {
-			var body = program[i - 1];
-			// find better varnames...
-			body += 'var bb = context.stack.pop();\n' +
-				'var aa = context.stack.pop();\n' +
-				'while (!(aa ' + startTarget[0] + 'bb)) {\n';
-			body += program[i + 1] + program[i - 1];
-			body += 'bb = context.stack.pop();\n' +
-				'aa = context.stack.pop();\n}\n';
-			program[i - 1] = body;
-			program.splice(i, 3);
-			reversedMapping.splice(i, 3);
-			i--;
+	
+	// optimizations
+	var isOptimizing = true;
+	while (isOptimizing) {
+		isOptimizing = false;
+		var i = 0;
+		while (i < program.length) {
+			if (program[i].constructor === String) {
+				// merge functions
+				while (i + 1 < program.length && program[i + 1].constructor === String &&
+					jumpTo[reversedMapping[i + 1]] === 0 && jumpFrom[reversedMapping[i]] === 0) {
+					if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
+						jumpFrom[reversedMapping[i]]++;
+					}
+					program[i] += program[i + 1];
+					program.splice(i + 1, 1);
+					reversedMapping.splice(i + 1, 1);
+					isOptimizing = true;
+				}
+				program[i] = reduceStackOperations(program[i]);
+				
+			}
+			i++;
 		}
-		i++;
+
+		var i = 0;
+		while (i < program.length) {
+			// find conditionals
+			var startTarget = jumpTarget[reversedMapping[i]];
+			var endTarget = jumpTarget[reversedMapping[i + 2]];
+			// while loop
+			if (checkFragment(i - 1, String, 1, 0) && checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
+				checkFragment(i + 2, Function, 0, 1) &&  startTarget != null && startTarget.length === 2 && 
+				startTarget[1] === reversedMapping[i + 3] && endTarget === reversedMapping[i - 1]) {
+				var body = program[i - 1];
+				if (startTarget[0].indexOf(' ') === -1) {
+					body += 'var b = context.stack.pop();\n' +
+						'var a = context.stack.pop();\n' +
+						'while (!(a ' + startTarget[0] + 'b)) {//STOP\n';
+				} else {
+					body += 'var a = context.stack.pop();\n' +
+						'while (!(a ' + startTarget[0] + ')) {//STOP\n';
+				}
+				body += program[i + 1] + program[i - 1];
+				if (startTarget[0].indexOf(' ') === -1) {
+					body += 'b = context.stack.pop();\n' +
+						'a = context.stack.pop();\n}//STOP\n';
+				} else {
+					body += 'a = context.stack.pop();\n}//STOP\n';
+				}
+				jumpTo[reversedMapping[i - 1]] = 0;
+				jumpTo[reversedMapping[i + 3]]--;
+				program[i - 1] = body;
+				program.splice(i, 3);
+				reversedMapping.splice(i, 3);
+				
+				i--;
+				isOptimizing = true;
+			}
+			// if-else
+			if (checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) && checkFragment(i + 2, Function, 0, 1) && 
+				checkFragment(i + 3, String, 1, 0) &&  startTarget != null && startTarget.length === 2 && 
+				startTarget[1] === reversedMapping[i + 3] && endTarget === reversedMapping[i + 4]) {
+				var body = '';
+				if (startTarget[0].indexOf(' ') === -1) {
+					body += 'var b = context.stack.pop();\n' +
+						'var a = context.stack.pop();\n' +
+						'if (!(a ' + startTarget[0] + 'b)) {//STOP\n';
+				} else {
+					body += 'var a = context.stack.pop();\n' +
+						'if (!(a ' + startTarget[0] + ')) {//STOP\n';
+				}
+				body += program[i + 1];
+				body += '} else {//STOP\n';
+				body += program[i + 3];
+				body += '}//STOP\n';
+				jumpFrom[reversedMapping[i]] = 0;
+				jumpTo[reversedMapping[i + 4]]--;
+				program[i] = body;
+				program.splice(i + 1, 3);
+				reversedMapping.splice(i + 1, 3);
+				isOptimizing = true;
+			}/*
+			// if
+			if (checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) && 
+				checkFragment(i + 2, String, 1, 0) &&  startTarget != null && startTarget.length === 2 && 
+				startTarget[1] === reversedMapping[i + 2]) {
+				var body = '';
+				if (startTarget[0].indexOf(' ') === -1) {
+					body += 'var b = context.stack.pop();\n' +
+						'var a = context.stack.pop();\n' +
+						'if (!(a ' + startTarget[0] + 'b)) {//STOP\n';
+				} else {
+					body += 'var a = context.stack.pop();\n' +
+						'if (!(a ' + startTarget[0] + ')) {//STOP\n';
+				}
+				body += program[i + 1];
+				body += '}//STOP\n';
+				jumpFrom[reversedMapping[i]] = 0;
+				jumpTo[reversedMapping[i + 2]]--;
+				program[i] = body;
+				program.splice(i + 1, 1);
+				reversedMapping.splice(i + 1, 1);
+				isOptimizing = true;
+			}*/
+			i++;
+		}
 	}
 	for (var i = 0; i < program.length; i++) {
 		if (program[i].constructor === String) {
-			program[i] = 'var functionResult;\n' + program[i];
+			program[i] = program[i];
 			try {
 				if (program.length > 1 || !isSafe) {
+					program[i] = '//@ sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '/' + reversedMapping[i] + '.js\n' + program[i];
+					program[i] = 'var functionResult;\n' + program[i];
 					program[i] = new Function('context', program[i]);
 				}
 			} catch(e) {

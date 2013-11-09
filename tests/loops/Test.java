@@ -17,6 +17,13 @@ public class Test extends TestMidlet {
 		System.out.println(b);
 		check(sum == 120960);
 		System.out.println(sum);
+		int i = 10;
+		while (i > 0) {
+			sum += i;
+			i--;
+		}
+		check(sum == 120960);
+		System.out.println(sum);
 		finish();
 	}
 	
