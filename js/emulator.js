@@ -103,6 +103,18 @@
 		}
 		
 		js2me.worker.postMessage(['setConfig', js2me.config]);
+		var storages = {};
+		for (var key in localStorage) {
+			var separator = key.lastIndexOf('/');
+			if (separator != -1) {
+				var storageName = key.substr(0, separator);
+				if (!storages[storageName]) {
+					storages[storageName] = {};
+				}
+				//var array = localStorage[key].split(',');
+				//storages[storageName][key.substr(separator + 1)] = ;
+			}
+		}
 		js2me.loadJAR(js2me.config['src'], function () {
 			document.getElementById('screen').innerHTML = '';
 			js2me.worker.postMessage(['launchMidlet', 1]);

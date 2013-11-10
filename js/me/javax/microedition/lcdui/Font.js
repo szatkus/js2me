@@ -19,10 +19,6 @@ js2me.createClass({
 	 * public static Font getFont(int fontSpecifier)
 	 */
 	$getFont$III$Ljavax_microedition_lcdui_Font_: function (face, style, size) {
-		if (this.context == null) {
-			var canvas = document.createElement('canvas');
-			javaRoot.$javax.$microedition.$lcdui.$Font.prototype.context = canvas.getContext('2d');
-		}
 		var font = new javaRoot.$javax.$microedition.$lcdui.$Font();
 		font.face = 'arial';
 		font.height = 16;
@@ -73,28 +69,28 @@ js2me.createClass({
 	 * public int stringWidth(String str)
 	 */
 	$stringWidth$Ljava_lang_String_$I: function (str) {
+		//TODO
 		if (str == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
-		this.context.font = this.getCSS();
-		return this.context.measureText(str.text).width;
+		return this.height * str.text.length / 2;
 	},
 	/*
 	 * public int substringWidth(String str, int offset, int len)
 	 */
 	$substringWidth$Ljava_lang_String_II$I: function (str, offset, length) {
+		//TODO
 		if (str == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
-		this.context.font = this.getCSS();
-		return this.context.measureText(str.text.substr(offset, length)).width;
+		return this.height * length  / 2;
 	},
 	/*
 	 * public int charWidth(char ch)
 	 */
 	$charWidth$C$I: function (char) {
-		this.context.font = this.getCSS();
-		return this.context.measureText(String.fromCharCode(char)).width;
+		//TODO
+		return this.height / 2;
 	},
 	/*
 	 * public int charsWidth(char[] ch, int offset, int length)

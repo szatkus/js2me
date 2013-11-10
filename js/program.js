@@ -370,7 +370,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'context.stack.push(stack3);\n';
 	// dup2
 	generators[0x5c] = 'var a = context.stack.pop();\n' +
-		'if (a.constructor != js2me.Long && a..double != null) {//STOP\n' +
+		'if (a.constructor != js2me.Long && a.double != null) {//STOP\n' +
 		'	var b = context.stack.pop();\n' +
 		'	context.stack.push(b);\n' +
 		'	context.stack.push(a);\n' +
@@ -642,7 +642,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	// iaload
 	generators[0x2e] = generateAB('context.stack.push(a[b]);\n');
 	// iastore
-	generators[0x4f] = 'var value = context.stack.pop();\n' +
+	generators[0x4f] = 'console.log(context.stack);var value = context.stack.pop();\n' +
 		'var index = context.stack.pop();\n' +
 		'var array = context.stack.pop();\n' +
 		'array[index] = value;\n';

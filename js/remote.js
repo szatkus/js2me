@@ -8,6 +8,7 @@ js2me.getFakeFunction = function(func) {
 		functionId: js2me.listeners.length - 1
 	};
 };
+js2me.storages = {};
 var document = (function () {
 	function returnFakeDOM(funcName, arg) {
 		var obj = {

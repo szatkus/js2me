@@ -1,20 +1,23 @@
 js2me.createClass({
 	construct: function(storageName) {
 		this.storageName = storageName;
+		this.storage = js2me.storages[storageName];
 	},
 	/*
-	 * 
+	 * public static RecordStore openRecordStore(String recordStoreName,  boolean createIfNecessary)
 	 */
 	$openRecordStore$Ljava_lang_String_Z$Ljavax_microedition_rms_RecordStore_: function (recordStoreName, createIfNecessary) {
 		var vendorName = js2me.manifest['midlet-vendor'];
 		var suiteName = js2me.manifest['midlet-name'];
+		var storages = js2me.storages;
 		var storageName = vendorName + '/' + suiteName + '/' + recordStoreName.text + '/';
-		if (localStorage.getItem(storageName)) {
+		if (storages[storageName]) {
 			return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);
 		} else {
 			if (createIfNecessary) {
-				localStorage.setItem(storageName + 'size', 0)
-				localStorage.setItem(storageName + 'lastModified', 0);
+				storages[storageName] = {};
+				storages[storageName].size = 0;
+				storages[storageName].lastModified = 0;
 				return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);
 			} else {
 				throw new javaRoot.$javax.$microedition.$rms.$RecordStoreNotFoundException();
@@ -25,13 +28,9 @@ js2me.createClass({
 	/*
 	 * 
 	 */
-	$deleteRecord$I$V: function () {
-	},
-	/*
-	 * 
-	 */
 	$getNumRecords$$I : function () {
-		return parseInt(localStorage.getItem(this.storageName + 'size'));
+		console.log(this.storage.size);
+		return parseInt(this.storage.size);
 	},
 	/*
 	 * 
@@ -44,30 +43,28 @@ js2me.createClass({
 	 * public void addRecordListener(RecordListener listener)
 	 */
 	$addRecord$_BII$I: function (data, offset, numBytes) {
-		var id = parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
-		localStorage.setItem(this.storageName + 'size', id);
+		var id = parseInt(this.storage.size) + 1;
+		this.storage.size = id;
+		js2me.storages.refresh = true;
 		this.$setRecord$I_BII$V(id, data, offset, numBytes);
+		return id;
 	},
 	/*
 	 * 
 	 */
 	$getNextRecordID$$I: function () {
-		return parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
+		return parseInt(this.storage.size) + 1;
 	},
 	/*
 	 * 
 	 */
 	$getRecord$I$_B: function (id) {
 		try {
-			var array = localStorage.getItem(this.storageName + id).split(',');
+			var array = this.storage[id].split();
 		} catch (e) {
 			throw new javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException();
 		}
-		var result = [];
-		for (var i = 0; i < array.length; i++) {
-			result[i] = parseInt(array[i]);
-		}
-		return result;
+		return array;
 	},
 	/*
 	 * 
@@ -116,16 +113,14 @@ js2me.createClass({
 	$setRecord$I_BII$V: function (id, data, offset, numBytes) {
 		var str = '';
 		if (data) {
-			str = data.slice(offset, offset + numBytes).toString();
+			str = data.slice(offset, offset + numBytes);
 		}
-		localStorage.setItem(this.storageName + id, str);
-		localStorage.setItem(this.storageName + 'lastModified', (new Date()).getTime());
+		this.storage[id] = str;
+		this.storage.lastModified = +new Date;
 	},
 	require: [
 		'javaRoot.$javax.$microedition.$rms.$RecordEnumerationImpl', 
 		'javaRoot.$javax.$microedition.$rms.$RecordStoreNotFoundException',
 		'javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException'
-	],
-	package: 'javaRoot.$javax.$microedition.$rms',
-	name: '$RecordStore'
+	]
 });
