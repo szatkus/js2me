@@ -37,11 +37,12 @@ js2me.createClass({
 	 * public void setLayout(int layout)
 	 */
 	$setLayout$I$V: function (layout) {
+		//TODO
 		if (layout == this.$LAYOUT_RIGHTI) {
-			this.content.style.textAlign = 'right';
+			//this.content.style.textAlign = 'right';
 		}
 		if (layout == this.$LAYOUT_CENTERI) {
-			this.content.style.textAlign = 'center';
+			//this.content.style.textAlign = 'center';
 		}
 	},
 	/*

@@ -27,7 +27,7 @@ Milestone 0.7
  - native exceptions catching
  - detect loops
  - error popup
- - orientation
+ - orientation (done)
  - remove hover
  - bug with doubles (done)
  - method stub (done)

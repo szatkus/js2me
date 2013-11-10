@@ -3,6 +3,7 @@ js2me.createClass({
 	 * public static Display getDisplay(MIDlet m)
 	 */
 	$getDisplay$Ljavax_microedition_midlet_MIDlet_$Ljavax_microedition_lcdui_Display_: function (midlet) {
+		console.log('dsdds' + midlet.display);
 		if (!midlet.display) {
 			midlet.display = new javaRoot.$javax.$microedition.$lcdui.$Display();
 			var element = document.getElementById('screen');

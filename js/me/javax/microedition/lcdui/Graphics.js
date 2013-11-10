@@ -1,12 +1,12 @@
 js2me.createClass({
 	construct: function (canvas) {
-		this.element = canvas;
+		/*this.element = canvas;
 		this.context = canvas.getContext('2d');
 		this.context.textBaseline = 'top';
 		this.$setColor$III$V(0, 0, 0);
 		this.$setClip$IIII$V(0, 0, this.element.width, this.element.height);
 		this.translateX = 0;
-		this.translateY = 0;
+		this.translateY = 0;*/
 	},
 	$HCENTERI: 1,
 	$VCENTERI: 2,
@@ -202,7 +202,7 @@ js2me.createClass({
 	 * public void drawImage(Image img, int x, int y, int anchor)
 	 */
 	$drawImage$Ljavax_microedition_lcdui_Image_III$V: function (img, x, y, anchor) {
-		this.loadContext();
+		/*this.loadContext();
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;
 		}
@@ -222,7 +222,7 @@ js2me.createClass({
 			y -= img.element.height;
 		}
 		this.context.drawImage(img.element, x, y);
-		this.context.restore();
+		this.context.restore();*/
 	},
 	/*
 	 * public void clipRect(int x, int y, int width, int height)

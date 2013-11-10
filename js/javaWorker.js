@@ -12,12 +12,9 @@ var js2me = {
 	sharedId: 0,
 	addResource: function (name, content) {
 		js2me.resources[name] = new Uint8Array(content);
-		console.log(name);
-		console.log(js2me.resources[name].length);
 	},
 	run: function () {
 		for (var name in js2me.resources) {
-			console.log(name);
 			if (name.lastIndexOf('class') >= 0 && name.lastIndexOf('class') == name.length - 5) {
 				js2me.loadJavaClass(new js2me.BufferStream(js2me.resources[name]));
 			}
@@ -40,18 +37,20 @@ var window = this;
 
 importScripts('bufferStream.js', 'classes.js', 'convert.js', 'execute.js',
 	'launcher.js', 'manifest.js', 'methodStub.js', 'numbers.js', 
-	'program.js', 'remote.js', 'utils.js');
+	'program.js', 'remote.js', 'threads.js', 'utils.js');
 
 js2me.setupJVM(function () {});
 
 addEventListener('message', function (event) {
 	try {
 		var command = event.data.shift();
-		console.log('Worker: ' + command);
 		js2me[command].apply(js2me, event.data);
 	} catch (e) {
 		console.error(command + ': ' + e.message + '\n' + e.stack);
 	}
 });
+
+js2me.setFullscreen = function (enabled) {
+};
 
 postMessage(['log', 'Worker is ready!']);
