@@ -4,12 +4,17 @@ var console = {
 	},
 	error: function (message) {
 		postMessage(['log', message, 'error']);
+	},
+	debug: function (message) {
+		postMessage(['log', message, 'debug']);
 	}
 }
 
 var js2me = {
 	resources: {},
 	sharedId: 0,
+	// for counting... things
+	stat: 0,
 	addResource: function (name, content) {
 		js2me.resources[name] = new Uint8Array(content);
 	},

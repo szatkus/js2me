@@ -8,9 +8,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		saveResult: false,
 		constantPool: constantPool
 	};
-	if (js2me.debug) {
-		console.log(program.name + ' called ');
-	}
 	js2me.suspendThread = false;
 	if (restoreInfo) {
 		context.stack = restoreInfo.stack;
@@ -73,16 +70,9 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		}		
 	}
 	
-	
-	var lastPosition = -1;
-	var limit = 0;
 	while (context.position < program.content.length && !context.finish) {
-		if (js2me.debug) {
-			console.log(program.name + ':' + context.position);
-		}
 		try {
 			var func = program.content[context.position]
-			lastPosition = context.position;
 			context.position++;
 			func(context);
 		} catch (exception) {
@@ -96,9 +86,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	}
 	if (context.regenerate) {
 		program.regenerate = true;
-	}
-	if (js2me.debug) {
-		console.log(program.name + ' finished at ' + context.position);
 	}
 	if (callback != null && !js2me.suspendThread) {
 		callback(context.result);

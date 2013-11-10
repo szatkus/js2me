@@ -95,13 +95,12 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	// areturn
 	generators[0xb0] = generateReturn;
 	// arraylength
-	generators[0xbe] = function () {
-		return 'var array = context.stack.pop();\n' +
-			'if (array == null) {\n' +
-			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-			'}\n' +
-			'context.stack.push(array.length);\n';
-	};
+	generators[0xbe] = 'var array = context.stack.pop();\n' +
+		'try {\n' +  
+		'	context.stack.push(array.length);\n' +
+		'} catch(e) {\n' +
+		'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
+		'}\n';
 	// astore
 	generators[0x3a] = function () {
 		var index = stream.readUint8();
@@ -216,7 +215,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x63] = function () {
 		return 'var b = context.stack.pop();\n' + 
 			'var a = context.stack.pop();\n' +
-			'context.stack.push(new js2me.Double(a.double + b.double));\n';
+			'context.stack.push({double: a.double + b.double});\n';
 	};
 	// daload
 	generators[0x31] = function (context) {
@@ -261,17 +260,17 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	};
 	// dconst_0
 	generators[0x0e] = function () {
-		return 'context.stack.push(new js2me.Double(0));\n';
+		return 'context.stack.push(js2me.dconst0);\n';
 	};
 	// dconst_1
 	generators[0x0f] = function () {
-		return 'context.stack.push(new js2me.Double(1));\n';
+		return 'context.stack.push(js2me.dconst1);\n';
 	};
 	// ddiv
 	generators[0x6f] = function () {
 		return 'var b = context.stack.pop();\n' + 
 			'var a = context.stack.pop();\n' +
-			'context.stack.push(new js2me.Double(a.double / b.double));\n';
+			'context.stack.push({double: a.double / b.double});\n';
 	};
 	// dload
 	generators[0x18] = function () {
@@ -298,18 +297,18 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x6b] = function () {
 		return 'var b = context.stack.pop();\n' + 
 			'var a = context.stack.pop();\n' +
-			'context.stack.push(new js2me.Double(a.double * b.double));\n';
+			'context.stack.push({double: a.double * b.double});\n';
 	};
 	// dneg
 	generators[0x77] = function () {
 		return 'var value = context.stack.pop();\n' +
-			'context.stack.push(new js2me.Double(-value.double));\n';
+			'context.stack.push({double: -value.double});\n';
 	};
 	// drem
 	generators[0x73] = function () {
 		return 'var b = context.stack.pop();\n' + 
 			'var a = context.stack.pop();\n' +
-			'context.stack.push(new js2me.Double(a.double % b.double));';
+			'context.stack.push({double: a.double % b.double});';
 	};
 	// dreturn
 	generators[0xaf] = generateReturn;
@@ -338,25 +337,23 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x67] = function () {
 		return 'var b = context.stack.pop();\n' + 
 			'var a = context.stack.pop();\n' +
-			'context.stack.push(new js2me.Double(a.double - b.double));\n';
+			'context.stack.push({double: a.double - b.double});\n';
 	};
 	// dup
 	generators[0x59] = 'var tmp = context.stack.pop();\n' +
 		'context.stack.push(tmp);\n' +
 		'context.stack.push(tmp);\n';
 	// dup_x1
-	generators[0x5a] = function (context) {
-		var a = context.stack.pop();
-		var b = context.stack.pop();
-		context.stack.push(a);
-		context.stack.push(b);
-		context.stack.push(a);
-	};
+	generators[0x5a] = 'var a = context.stack.pop();\n' +
+		'var b = context.stack.pop();\n' +
+		'context.stack.push(a);\n' +
+		'context.stack.push(b);\n' +
+		'context.stack.push(a);\n';
 	// dup_x2
 	generators[0x5b] = 'var a = context.stack.pop();\n' +
 		'var b = context.stack.pop();\n' +
 		'var c = context.stack.pop();\n' +
-		'if (a.constructor != js2me.Long && a.constructor != js2me.Double) {\n' +
+		'if (a.constructor != js2me.Long && a.double != null) {\n' +
 		'	var stack0 = a;\n' +
 		'	var stack1 = c;\n' +
 		'	var stack2 = b;\n' +
@@ -373,7 +370,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'context.stack.push(stack3);\n';
 	// dup2
 	generators[0x5c] = 'var a = context.stack.pop();\n' +
-		'if (a.constructor != js2me.Long && a.constructor != js2me.Double) {//STOP\n' +
+		'if (a.constructor != js2me.Long && a..double != null) {//STOP\n' +
 		'	var b = context.stack.pop();\n' +
 		'	context.stack.push(b);\n' +
 		'	context.stack.push(a);\n' +
@@ -387,7 +384,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x5d] = function (context) {
 		var a = context.stack.pop();
 		var b = context.stack.pop();
-		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
+		if (a.constructor != js2me.Long && a.double != null) {
 			var c = context.stack.pop();
 			context.stack.push(b);
 			context.stack.push(a);
@@ -405,8 +402,8 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x5e] = function (context) {
 		var a = context.stack.pop();
 		var b = context.stack.pop();
-		if (a.constructor != js2me.Long && a.constructor != js2me.Double) {
-			if (b.constructor != js2me.Long && b.constructor != js2me.Double) {
+		if (a.constructor != js2me.Long && a.double != null) {
+			if (b.constructor != js2me.Long && b.double != null) {
 				context.stack.push(a);
 				context.stack.push(b);
 				context.stack.push(a);
@@ -419,7 +416,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			}
 		} else {
 			var c = context.stack.pop();
-			if (c.constructor != js2me.Long && c.constructor != js2me.Double) {
+			if (c.constructor != js2me.Long && c.double != null) {
 				context.stack.push(b);
 				context.stack.push(a);
 				context.stack.push(c);
@@ -547,10 +544,11 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
 		return 'var obj = context.stack.pop();\n' +
-				'if (obj == null) {\n' +
+				'try {' +
+				'	context.stack.push(obj["' + field.name + '"]);\n' +
+				'} catch(e) {\n' + 
 				'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-				'}\n' +
-				'context.stack.push(obj["' + field.name + '"]);\n';
+				'}\n';
 	};
 	// getstatic
 	generators[0xb2] = function () {
@@ -605,13 +603,13 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x86] = '\n';
 	// i2d
 	generators[0x87] = 'var value = context.stack.pop();\n' +
-		'context.stack.push(new js2me.Double(value));\n';
+		'context.stack.push({double: value});\n';
 	// f2i
 	generators[0x8b] = 'var value = context.stack.pop();\n' +
 		'context.stack.push(Math.floor(value));\n';
 	// f2d
 	generators[0x8d] = 'var value = context.stack.pop();\n' +
-		'context.stack.push(new js2me.Double(value));\n';
+		'context.stack.push({double: value));\n';
 	// i2b
 	generators[0x91] = 'var value = context.stack.pop();\n' +
 		'value = (value + 2147483648) % 256;\n' +
@@ -636,7 +634,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'}\n' +
 		'context.stack.push(result)\n';
 	// iadd
-	generators[0x60] = generateAB('context.stack.push(js2me.checkOverflow(a + b, 32));\n');
+	generators[0x60] = generateAB('var value = a + b;\n' +
+		js2me.generateOverflowChecking(32) + 
+		'context.stack.push(value);\n');
 	// iand
 	generators[0x7e] = generateAB('context.stack.push(a & b);\n');
 	// iaload
@@ -665,7 +665,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x08] = generateConst(5);
 	// idiv
 	generators[0x6c] = generateAB('if (b === 0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
-		'context.stack.push(js2me.checkOverflow(Math.floor(a / b), 32));\n');
+		'var value = ~~(a / b);\n' + 
+		js2me.generateOverflowChecking(32) +
+		'context.stack.push(value);\n');
 	// if_acmpeq
 	generators[0xa5] = function () {
 		var index = stream.index + stream.readInt16() - 1;
@@ -878,7 +880,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x84] = function () {
 		var index = stream.readUint8();
 		var value = stream.readInt8();
-		return 'context.locals[' + index + '] = js2me.checkOverflow(context.locals[' + index + '] + ' + value +', 32);';
+		return 'var value = context.locals[' + index + '] + ' + value + ';\n' +
+			js2me.generateOverflowChecking(32) +
+			'context.locals[' + index + '] = value;';
 	};
 	// iload
 	generators[0x15] = function () {
@@ -902,11 +906,14 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		return generateLoad(3);
 	}
 	// imul
-	generators[0x68] = generateAB('context.stack.push(js2me.checkOverflow(a * b, 32));\n');
+	generators[0x68] = generateAB('var value = a * b;\n' +
+		js2me.generateOverflowChecking(32) + 
+		'context.stack.push(value);\n');
 	// ineg
 	generators[0x74] = function () {
-		return 'var value = context.stack.pop();\n' +
-			'context.stack.push(js2me.checkOverflow(-value, 32));\n';
+		return 'var value = -context.stack.pop();\n' +
+			js2me.generateOverflowChecking(32) +
+			'context.stack.push(value));\n';
 	}
 	// instanceof
 	generators[0xc1] = function () {
@@ -1057,11 +1064,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		}
 	};
 	// ixor
-	generators[0x82] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(a ^ b);
-	};
+	generators[0x82] = 'var b = context.stack.pop();\n' +
+		'var a = context.stack.pop();\n' +
+		'context.stack.push(a ^ b);\n';
 	// l2d
 	generators[0x8a] = function (context) {
 		var value = context.stack.pop();
@@ -1071,7 +1076,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		}
 		double *= 0x100000000;
 		double += value.lo;
-		context.stack.push(new js2me.Double(double));
+		context.stack.push({double: double});
 	};
 	// l2i
 	generators[0x88] = 'var value = context.stack.pop();\n' +
@@ -1116,20 +1121,12 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	// ldc
 	generators[0x12] = function () {
 		var index = stream.readUint8();
-		if (constantPool[index] instanceof js2me.Double) {
-			return 'context.stack.push(new js2me.Double(' + constantPool[index].double + '));\n';
-		} else {
-			return 'context.stack.push(context.constantPool[' + index + ']);\n';
-		}
+		return 'context.stack.push(context.constantPool[' + index + ']);\n';
 	};
-	// ldc_w
+	// ldc_w, ldc2_w
 	generators[0x14] = generators[0x13] = function () {
 		var index = stream.readUint16();
-		if (constantPool[index] instanceof js2me.Double) {
-			return 'context.stack.push(new js2me.Double(' + constantPool[index].double + '));\n';
-		} else {
-			return 'context.stack.push(context.constantPool[' + index + ']);\n';
-		}
+		return 'context.stack.push(context.constantPool[' + index + ']);\n';
 	};
 	// ldiv
 	generators[0x6d] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
@@ -1296,7 +1293,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 							if (type.indexOf('J') != -1) {
 								element[i] = new js2me.Long(0, 0);
 							} else if (type.indexOf('D') != -1) {
-								element[i] = new js2me.Double(0, 0);
+								element[i] = js2me.dconst0;
 							} else {
 								element[i] = 0;
 							}
@@ -1346,7 +1343,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			var array = new Array(length);
 			for (var i = 0; i < length; i++) {
 				if (type == 7) {
-					array[i] = new js2me.Double(0);
+					array[i] = js2me.dconst0;
 				} else if (type == 11) {
 					array[i] = new js2me.Long(0, 0);
 				} else {
@@ -1466,6 +1463,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		throw new Error('wide: unkown op ' + index);
 	}
 	var program = [];
+	var measureByteCodes = false;
 	var positionMapping = new Array(stream.getRemaining());
 	var reversedMapping = [];
 	var require = [];
@@ -1505,6 +1503,18 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			}
 			if (program[program.length - 1].constructor === String) {
 				program[program.length - 1] = '//0x'+ op.toString(16) +'\n' + program[program.length - 1];
+				if (measureByteCodes) {
+					program[program.length - 1] = 'js2me.usedByteCodes[' + op +']++;\n' + program[program.length - 1];
+				}
+			} else {
+				if (measureByteCodes) {
+					(function (oldFunc, op) {
+						program[program.length - 1] = function () {
+							js2me.usedByteCodes[op]++;
+							return oldFunc.apply(this, arguments);
+						};
+					})(program[program.length - 1], op);
+				}
 			}
 			isSafe = isSafe && isSubfunctionSafe;
 		} else {

@@ -248,18 +248,17 @@ js2me.Long = function (hi, lo) {
 js2me.Double = function (double) {
 	this.double = double;
 };
-js2me.checkOverflow = function (value, bits) {
+js2me.generateOverflowChecking = function (bits) {
 	var base = 1;
 	for (var i = 0; i < bits - 1; i++) {
 		base *= 2;
 	}
-	while (value >= base) {
-		value -= base * 2;
-	}
-	while (value < -base) {
-		value += base * 2;
-	}
-	return value;
+	return 'while (value >= ' + base + ') {\n' +
+		'	value -= ' + base + ' * 2;\n' +
+		'}\n' +
+		'while (value < -' + base + ') {\n' +
+		'	value += ' + base + ' * 2;\n' +
+		'}\n';
 };
 js2me.dataToFloat = function (value) {
 	var sign = (value & 0x80000000) != 0;
@@ -339,3 +338,5 @@ js2me.FPToBytes = function (value, exponentLength, fractionLength) {
 	}
 	return bytes;
 };
+js2me.dconst0 = {double: 0};
+js2me.dconst1 = {double: 1};
