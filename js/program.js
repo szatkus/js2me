@@ -40,10 +40,10 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		};
 	}
 	function generateReturn() {
-		jumpFrom[stream.index - 1]++;
 		return 'var functionResult = context.stack.pop();\n' +
 			'context.result = functionResult;\n' +
-			'context.finish = true;\n';
+			'context.finish = true;\n' +
+			'return functionResult;\n';
 	}
 	// aaload
 	generators[0x32] = function (context) {
@@ -216,7 +216,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x63] = function () {
 		return 'var b = context.stack.pop();\n' + 
 			'var a = context.stack.pop();\n' +
-			'context.stack.push(new js2me.Double(a.double + b.double));\n';
+			'context.stack.push({double: a.double + b.double});\n';
 	};
 	// daload
 	generators[0x31] = function (context) {
@@ -345,13 +345,11 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'context.stack.push(tmp);\n' +
 		'context.stack.push(tmp);\n';
 	// dup_x1
-	generators[0x5a] = function (context) {
-		var a = context.stack.pop();
-		var b = context.stack.pop();
-		context.stack.push(a);
-		context.stack.push(b);
-		context.stack.push(a);
-	};
+	generators[0x5a] = 'var a = context.stack.pop();\n' +
+		'var b = context.stack.pop();\n' +
+		'context.stack.push(a);\n' +
+		'context.stack.push(b);\n' +
+		'context.stack.push(a);\n';
 	// dup_x2
 	generators[0x5b] = 'var a = context.stack.pop();\n' +
 		'var b = context.stack.pop();\n' +
@@ -567,6 +565,26 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			};
 		}
 	};
+	function generateGoto(type) {
+		return function () {
+			var index = stream.index + stream.readInt16() - 1;
+			jumpTo[index]++;
+			jumpTarget[currentOpIndex] = index;
+			jumpFrom[currentOpIndex]++;
+			var body = '{context.position = /*' + index + '*/; return;}';
+			if (type) {
+				if (type.indexOf(' ') === -1) {
+					body = 'var b = context.stack.pop();\n' +
+						'var a = context.stack.pop();\n' +
+						'if (a ' + type + ' b) ' + body;
+				} else {
+					body = 'var a = context.stack.pop();\n' +
+						'if (a ' + type + ') ' + body;
+				}
+			}
+			return body;
+		}
+	}
 	function goto(context, index) {
 		context.position = positionMapping[index];
 		/*var now = +new Date;
@@ -581,15 +599,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		}*/
 	}
 	// goto
-	generators[0xa7] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTo[index]++;
-		jumpTarget[currentOpIndex] = index;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			goto(context, index);
-		};
-	};
+	generators[0xa7] = generateGoto();
 	// i2l
 	generators[0x85] = function () {
 		return 'var value = context.stack.pop();\n' +
@@ -608,7 +618,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'context.stack.push(new js2me.Double(value));\n';
 	// f2i
 	generators[0x8b] = 'var value = context.stack.pop();\n' +
-		'context.stack.push(Math.floor(value));\n';
+		'context.stack.push(~~value);\n';
 	// f2d
 	generators[0x8d] = 'var value = context.stack.pop();\n' +
 		'context.stack.push(new js2me.Double(value));\n';
@@ -636,7 +646,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'}\n' +
 		'context.stack.push(result)\n';
 	// iadd
-	generators[0x60] = generateAB('context.stack.push(js2me.checkOverflow(a + b, 32));\n');
+	generators[0x60] = generateAB('var value = a + b;\n' +
+		js2me.generateOverflowChecking(32) + 
+		'context.stack.push(value);\n');	
 	// iand
 	generators[0x7e] = generateAB('context.stack.push(a & b);\n');
 	// iaload
@@ -665,7 +677,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x08] = generateConst(5);
 	// idiv
 	generators[0x6c] = generateAB('if (b === 0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
-		'context.stack.push(js2me.checkOverflow(Math.floor(a / b), 32));\n');
+		'var value = ~~(a / b);\n' + 
+		js2me.generateOverflowChecking(32) +
+		'context.stack.push(value);\n');
 	// if_acmpeq
 	generators[0xa5] = function () {
 		var index = stream.index + stream.readInt16() - 1;
@@ -681,149 +695,27 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		};
 	};
 	// if_acmpne
-	generators[0xa6] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = ['!==', index];
-		jumpTo[index]++;;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a !== b) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xa6] = generateGoto('!==');
 	// if_icmpeq
-	generators[0x9f] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a === b) {
-				goto(context, index);
-			}
-		};
-	};
-	
+	generators[0x9f] = generateGoto('===');
 	// if_icmpne
-	generators[0xa0] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = ['!==', index];
-		jumpTo[index]++;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a !== b) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xa0] = generateGoto('!==');
 	// if_icmplt
-	generators[0xa1] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a < b) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xa1] = generateGoto('<');
 	// if_icmpge
-	generators[0xa2] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = ['>=', index];
-		jumpTo[index]++;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a >= b) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xa2] = generateGoto('>=');
 	// if_icmpgt
-	generators[0xa3] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a > b) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xa3] = generateGoto('>');
 	// if_icmple
-	generators[0xa4] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a <= b) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xa4] = generateGoto('<=');
 	// ifeq
-	generators[0x99] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = ['== 0', index];
-		jumpTo[index]++;;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			var value = context.stack.pop();
-			if (value === 0) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0x99] = generateGoto('=== 0');
 	// ifne
-	generators[0x9a] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
-		return function (context) {
-			var value = context.stack.pop();
-			if (value !== 0) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0x9a] = generateGoto('!== 0');
 	// iflt
-	generators[0x9b] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
-		return function (context) {
-			var value = context.stack.pop();
-			if (value < 0) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0x9b] = generateGoto('< 0');
 	// ifge
-	generators[0x9c] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
-		return function (context) {
-			var value = context.stack.pop();
-			if (value >= 0) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0x9c] = generateGoto('>= 0');
 	// ifgt
 	generators[0x9d] = function () {
 		var index = stream.index + stream.readInt16() - 1;
@@ -837,18 +729,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		};
 	};
 	// ifle
-	generators[0x9e] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = ['<= 0', index];
-		jumpTo[index]++;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			var value = context.stack.pop();
-			if (value <= 0) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0x9e] = generateGoto('<= 0');
 	// ifnonnull
 	generators[0xc7] = function () {
 		var index = stream.index + stream.readInt16() - 1;
@@ -862,23 +743,14 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		};
 	};
 	// ifnull
-	generators[0xc6] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = ['== null', index];
-		jumpTo[index]++;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			var value = context.stack.pop();
-			if (value == null) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xc6] = generateGoto('== null');
 	// iinc
 	generators[0x84] = function () {
 		var index = stream.readUint8();
 		var value = stream.readInt8();
-		return 'context.locals[' + index + '] = js2me.checkOverflow(context.locals[' + index + '] + ' + value +', 32);';
+		return 'var value = context.locals[' + index + '] + ' + value +';\n' +
+			js2me.generateOverflowChecking(32) +
+			'context.locals[' + index + '] = value;\n';
 	};
 	// iload
 	generators[0x15] = function () {
@@ -902,12 +774,15 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		return generateLoad(3);
 	}
 	// imul
-	generators[0x68] = generateAB('context.stack.push(js2me.checkOverflow(a * b, 32));\n');
+	generators[0x68] = generateAB('var value = a * b;\n' +
+		js2me.generateOverflowChecking(32) + 
+		'context.stack.push(value);\n');
 	// ineg
 	generators[0x74] = function () {
-		return 'var value = context.stack.pop();\n' +
-			'context.stack.push(js2me.checkOverflow(-value, 32));\n';
-	}
+		return 'var value = -context.stack.pop();\n' +
+			js2me.generateOverflowChecking(32) +
+			'context.stack.push(value);\n';
+	};
 	// instanceof
 	generators[0xc1] = function () {
 		var type = constantPool[stream.readUint16()];
@@ -1116,20 +991,12 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	// ldc
 	generators[0x12] = function () {
 		var index = stream.readUint8();
-		if (constantPool[index] instanceof js2me.Double) {
-			return 'context.stack.push(new js2me.Double(' + constantPool[index].double + '));\n';
-		} else {
-			return 'context.stack.push(context.constantPool[' + index + ']);\n';
-		}
+		return 'context.stack.push(context.constantPool[' + index + ']);\n';
 	};
-	// ldc_w
+	// ldc_w, ldc2_w
 	generators[0x14] = generators[0x13] = function () {
 		var index = stream.readUint16();
-		if (constantPool[index] instanceof js2me.Double) {
-			return 'context.stack.push(new js2me.Double(' + constantPool[index].double + '));\n';
-		} else {
-			return 'context.stack.push(context.constantPool[' + index + ']);\n';
-		}
+		return 'context.stack.push(context.constantPool[' + index + ']);\n';
 	};
 	// ldiv
 	generators[0x6d] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
@@ -1176,16 +1043,18 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		jumpTo[def]++;
 		var count = stream.readInt32();
 		var table = [];
+		var body = 'var i = context.stack.pop();\n';
 		for (var i = 0; i < count; i++) {
 			var match = stream.readInt32();
 			var value = start + stream.readInt32();
 			table[match] = value;
 			jumpTo[value]++;
+			body += 'if (i === ' + match + ') {\n' +
+				'	context.position = /*' + value + '*/; return;\n' +
+				'}\n';
 		}
-		return function (context) {
-			var index = table[context.stack.pop()] || def;
-			goto(context, index);
-		};
+		body += 'context.position = /*' + def + '*/; return;\n';
+		return body;
 	}
 	// lor
 	generators[0x81] = function (context) {
@@ -1296,7 +1165,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 							if (type.indexOf('J') != -1) {
 								element[i] = new js2me.Long(0, 0);
 							} else if (type.indexOf('D') != -1) {
-								element[i] = new js2me.Double(0, 0);
+								element[i] = js2me.dconst0;
 							} else {
 								element[i] = 0;
 							}
@@ -1346,7 +1215,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			var array = new Array(length);
 			for (var i = 0; i < length; i++) {
 				if (type == 7) {
-					array[i] = new js2me.Double(0);
+					array[i] = js2me.dconst0;
 				} else if (type == 11) {
 					array[i] = new js2me.Long(0, 0);
 				} else {
@@ -1357,7 +1226,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		};
 	}
 	// noop
-	generators[0x00] = function () {};
+	generators[0x00] = ''
 	// pop
 	generators[0x57] = function () {
 		return 'context.stack.pop();\n';
@@ -1391,11 +1260,8 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		}
 	}
 	// return
-	generators[0xb1] = function (context) {
-		jumpFrom[stream.index - 1]++;
-		return 'context.finish = true;\n';
-	}
-	
+	generators[0xb1] = 'context.finish = true;\n' +
+		'return;\n';	
 	// saload
 	generators[0x35] = function () {
 		return 'var index = context.stack.pop();\n' +
@@ -1439,15 +1305,16 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		var high = stream.readInt32();
 		var count = high - low + 1;
 		var table = [];
+		var body = 'var i = context.stack.pop();\n';
 		for (var i = 0; i < count; i++) {
 			table[low + i] = start + stream.readInt32();
 			jumpTo[table[low + i]]++;
+			body += 'if (i === ' + (low + i) + ') {\n' +
+				'	context.position = /*' + table[low + i] + '*/; return;\n' +
+				'}\n';
 		}
-		return function (context) {
-			var pos = context.stack.pop();
-			var index = table[pos] || def;
-			goto(context, index);
-		}
+		body += 'context.position = /*' + def + '*/; return;\n';
+		return body;
 	}
 	// wide
 	generators[0xc4] = function (context) {
@@ -1548,15 +1415,33 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		while (i < program.length) {
 			if (program[i].constructor === String) {
 				// merge functions
-				while (i + 1 < program.length && program[i + 1].constructor === String &&
-					jumpTo[reversedMapping[i + 1]] === 0 && jumpFrom[reversedMapping[i]] === 0) {
-					if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
-						jumpFrom[reversedMapping[i]]++;
+				var run = true;
+				while (i + 1 < program.length && program[i + 1].constructor === String && run) {
+					run = false;
+					if (jumpTo[reversedMapping[i + 1]] === 0) {
+						if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
+							jumpFrom[reversedMapping[i]]++;
+						}
+						program[i] += program[i + 1];
+						program.splice(i + 1, 1);
+						reversedMapping.splice(i + 1, 1);
+						isOptimizing = true;
+						run = true;
+					} else {
+						var regexp = new RegExp('context.position = /\\*' + reversedMapping[i + 1] + '\\*/', 'g');
+						var match = program[i].match(regexp);
+						if (match && match.length == jumpTo[reversedMapping[i + 1]]) {
+							var body = 'jmp' + varId + ': do {//STOP\n';
+							body += program[i].replace(regexp, 'break jmp' + varId);
+							body += '} while (false);//STOP\n' + program[i + 1];
+							program[i] = body;
+							varId++;
+							program.splice(i + 1, 1);
+							reversedMapping.splice(i + 1, 1);
+							isOptimizing = true;
+							run = true;
+						}
 					}
-					program[i] += program[i + 1];
-					program.splice(i + 1, 1);
-					reversedMapping.splice(i + 1, 1);
-					isOptimizing = true;
 				}
 				program[i] = reduceStackOperations(program[i]);
 				
@@ -1570,7 +1455,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			var startTarget = jumpTarget[reversedMapping[i]];
 			var endTarget = jumpTarget[reversedMapping[i + 2]];
 			// while loop
-			if (checkFragment(i - 1, String, 1, 0) && checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
+			/*if (checkFragment(i - 1, String, 1, 0) && checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
 				checkFragment(i + 2, Function, 0, 1) &&  startTarget != null && startTarget.length === 2 && 
 				startTarget[1] === reversedMapping[i + 3] && endTarget === reversedMapping[i - 1]) {
 				var body = program[i - 1];
@@ -1621,11 +1506,10 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 				program.splice(i + 1, 3);
 				reversedMapping.splice(i + 1, 3);
 				isOptimizing = true;
-			}/*
+			}
 			// if
-			if (checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) && 
-				checkFragment(i + 2, String, 1, 0) &&  startTarget != null && startTarget.length === 2 && 
-				startTarget[1] === reversedMapping[i + 2]) {
+			if (checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
+				startTarget != null && startTarget.length === 2 && startTarget[1] === reversedMapping[i + 2]) {
 				var body = '';
 				if (startTarget[0].indexOf(' ') === -1) {
 					body += 'var b = context.stack.pop();\n' +
@@ -1647,8 +1531,19 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			i++;
 		}
 	}
+	for (var i = 0; i < reversedMapping.length; i++) {
+		positionMapping[reversedMapping[i]] = i;
+	}
+	for (var i = 1; i < positionMapping.length; i++) {
+		if (positionMapping[i] == null) {
+			positionMapping[i] = positionMapping[i - 1];
+		}
+	}
 	for (var i = 0; i < program.length; i++) {
 		if (program[i].constructor === String) {
+			for (var j = 0; j < reversedMapping.length; j++) {
+				program[i] = program[i].replace(new RegExp('/\\*' + reversedMapping[j] + '\\*/', 'g'), j);
+			}
 			program[i] = program[i];
 			try {
 				if (program.length > 1 || !isSafe) {
@@ -1666,14 +1561,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	if (program.length > 1) {
 		isSafe = false;
 	}
-	for (var i = 0; i < reversedMapping.length; i++) {
-		positionMapping[reversedMapping[i]] = i;
-	}
-	for (var i = 1; i < positionMapping.length; i++) {
-		if (positionMapping[i] == null) {
-			positionMapping[i] = positionMapping[i - 1];
-		}
-	}
+	
 	/*for (var i = 0; i < program.length; i++) {
 		console.log(reversedMapping[i] + ': ' + program[i].toString());
 		console.error('************');

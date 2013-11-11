@@ -8,9 +8,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		saveResult: false,
 		constantPool: constantPool
 	};
-	if (js2me.debug) {
-		console.log(program.name + ' called ');
-	}
 	js2me.suspendThread = false;
 	if (restoreInfo) {
 		context.stack = restoreInfo.stack;
@@ -18,9 +15,14 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		context.saveResult = restoreInfo.saveResult;
 		callback = restoreInfo.callback;
 		try {
-			executeFunction(function () {
-				return js2me.restoreThread(js2me.currentThread);
-			}, restoreInfo.saveResult);
+			var result = js2me.restoreThread(js2me.currentThread);
+			if (js2me.suspendThread) {
+				suspendCall();
+			} else {
+				if (restoreInfo.saveResult) {
+					context.stack.push(result);
+				}
+			}
 		} catch (exception) {
 			tryCatchException(exception);
 		}
@@ -61,27 +63,10 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		}
 	}
 	
-	function executeFunction(func, saveResult) {
-		var result = func();
-		if (js2me.suspendThread) {
-			suspendCall(saveResult);
-			return;
-		}
-		if (saveResult) {
-			context.stack.push(result);
-		}		
-	}
-	
-	
-	var lastPosition = -1;
-	var limit = 0;
-	while (context.position < program.content.length && !context.finish) {
-		if (js2me.debug) {
-			console.log(program.name + ':' + context.position);
-		}
+	var length = program.content.length;
+	while (context.position < length && !context.finish) {
 		try {
 			var func = program.content[context.position]
-			lastPosition = context.position;
 			context.position++;
 			func(context);
 		} catch (exception) {
@@ -95,10 +80,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	}
 	if (context.regenerate) {
 		program.regenerate = true;
-		console.log(program);
-	}
-	if (js2me.debug) {
-		console.log(program.name + ' finished at ' + context.position);
 	}
 	if (callback != null && !js2me.suspendThread) {
 		callback(context.result);

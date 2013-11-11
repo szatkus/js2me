@@ -2,9 +2,9 @@ public class Test extends TestMidlet {
 	public void startApp() {
 		
 		String[] args = new String[]{"100"};
-		spectralnorm.main(args);
-		spectralnorm.main(args);
-		spectralnorm.main(args);
+		for (int i = 0; i < 10; i++) {
+			spectralnorm.main(args);
+		}
 		finish();
 	}
 }

@@ -13,6 +13,7 @@ js2me.createClass({
 			return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);
 		} else {
 			if (createIfNecessary) {
+				localStorage.setItem(storageName, '0');
 				localStorage.setItem(storageName + 'size', 0)
 				localStorage.setItem(storageName + 'lastModified', 0);
 				return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);

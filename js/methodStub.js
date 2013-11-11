@@ -58,10 +58,8 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 				methodBody = methodBody.replace(new RegExp('context\\.result', 'g'), 'functionResult');
 				var returnStatement = 'if (callback && callback.constructor === Function) {\n' +
 					'	callback(functionResult);\n' +
-					'}\n' +
-					'return functionResult';
+					'}\n';
 				methodBody = methodBody.replace(new RegExp('context\\.stack', 'g'), 'stack');
-				methodBody = methodBody.replace(new RegExp('context\\.finish = true', 'g'), returnStatement);
 				methodBody = methodBody.replace(new RegExp('context\\.finish = true', 'g'), returnStatement);
 				methodBody = methodBody.replace(new RegExp('context\\.saveResult', 'g'), 'var nothing');
 				methodBody = methodBody.replace(new RegExp('context\\.constantPool', 'g'), 'arguments.callee.constantPool');

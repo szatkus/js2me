@@ -298,7 +298,7 @@ js2me.createClass({
 	 * public void drawRegion(Image src, int x_src, int y_src, int width, int height, int transform, int x_dest, int y_dest, int anchor)
 	 */
 	$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
-		this.loadContext();
+		//this.loadContext();
 		var dw = width;
 		var dh = height;
 		if (transform >= 4) {
@@ -338,7 +338,7 @@ js2me.createClass({
 			this.context.scale(1, -1);
 		}
 		this.context.drawImage(src.element, sx, sy, width, height, -dw / 2, -dh / 2, dw, dh);
-		this.context.restore();
+		//this.context.restore();
 	},
 	/*
 	 * public int getTranslateX()
