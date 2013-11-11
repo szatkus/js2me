@@ -24,6 +24,8 @@ js2me.loadJAR = function (filename, callback) {
 					js2me.checkClasses(callback);
 				});
 			});
+		}, function (message) {
+			js2me.showError(message);
 		});
 	}
 	

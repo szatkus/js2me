@@ -12,12 +12,21 @@ js2me.createClass({
 	 * public static int max(int a, int b)
 	 */
 	$max$JJ$J: function (a, b) {
-		if (a.toInt() > b.toInt()) {
+		if (a.cmp(b) == 1) {
 			return a;
 		} else {
 			return b;
 		}
 	},
+	
+	$min$JJ$J: function (a, b) {
+		if (a.cmp(b) == 1) {
+			return b;
+		} else {
+			return a;
+		}
+	},
+	
 	/*
 	 * public static double sin(double a)
 	 */

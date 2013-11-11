@@ -7,7 +7,7 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		}
 		for (var i = 0; i < arguments.length; i++) {
 			locals.push(arguments[i]);
-			if (arguments[i] && (arguments[i].constructor == js2me.Double || arguments[i].constructor == js2me.Long)) {
+			if (arguments[i] && (arguments[i].double != null || arguments[i].constructor == js2me.Long)) {
 				locals.push(arguments[i]);
 			}
 		}
@@ -25,8 +25,11 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 			program = js2me.generateProgram(new js2me.BufferStream(stream), methodName, constantPool, exceptions);
 			program.name = methodName;
 			arguments.callee.data = program;
-			// We can compile to native function!
 			if (program.isSafe) {
+				arguments.callee.isUnsafe = false;
+			}
+			// We can compile to native function!
+			if (program.isSafe && program.content.length === 1) {
 				console.log(methodName + ' is safe! Compiling to native :)');
 				var methodBody = program.content[0];
 				var limit = 5000;
@@ -79,9 +82,6 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 				newClass.prototype[escapedName] = nativeMethod;
 				return nativeMethod.apply(this, arguments);
 			}
-		}
-		if (program.name == 'javaRoot.$FPCpackage.$k.prototype.$run$$V') {
-			console.log(program);
 		}
 		return js2me.execute(program, locals, constantPool, exceptions, null, callback);
 	};

@@ -130,6 +130,9 @@
 								callback(true);
 							}
 						};
+						element.onerror = function () {
+							js2me.showError('Error loading ' + className + ' class.');
+						}
 						document.head.appendChild(element);
 					})(className);
 				}

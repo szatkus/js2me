@@ -29,6 +29,10 @@
 		}
 	};
 	window.onload = function () {
+		document.getElementById('alert').style.display = 'none';
+		document.getElementById('alert').addEventListener('click', function () {
+			document.getElementById('alert').style.display = 'none';
+		});
 		window.addEventListener('keyup', function () {
 			js2me.sendKeyReleasedEvent();
 		});
@@ -128,5 +132,9 @@
 	js2me.setFullscreen = function (enabled) {
 		//TODO
 		var screen = document.getElementById('screen');
+	};
+	js2me.showError = function (message) {
+		document.getElementById('alert').style.display = '';
+		document.querySelector('#alert .message').innerHTML = message;
 	};
 })();

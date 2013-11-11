@@ -14,13 +14,18 @@ js2me.restoreThread = function (threadId) {
 		return;
 	}
 	var restoreStack = js2me.restoreStack[threadId].pop();
-	if (restoreStack) {
-		js2me.currentThread = threadId;
-		if (typeof restoreStack == 'function') {
-			return restoreStack();
-		} else {
-			return js2me.execute.apply(js2me, restoreStack);
+	try {
+		if (restoreStack) {
+			js2me.currentThread = threadId;
+			if (typeof restoreStack == 'function') {
+				return restoreStack();
+			} else {
+				return js2me.execute.apply(js2me, restoreStack);
+			}
 		}
+	} catch (e) {
+		console.error(e);
+		js2me.showError(e.message);
 	}
 };
 /**
@@ -31,8 +36,13 @@ js2me.launchThread = function (func) {
 	var threadId = -js2me.lastThread;
 	js2me.lastThread++;
 	setTimeout(function () {
-		js2me.currentThread = threadId;
-		func();
+		try {
+			js2me.currentThread = threadId;
+			func();
+		} catch (e) {
+			console.error(e);
+			js2me.showError(e.message);
+		}
 	}, 1);
 };
 js2me.lastThread = 1;

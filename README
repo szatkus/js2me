@@ -25,17 +25,16 @@ Milestone 0.7
  - more performance
  - more tests
  - native exceptions catching
- - detect loops
  - error popup
- - orientation
- - remove hover
+ - orientation (done)
+ - remove hover (done)
  - bug with doubles (done)
  - method stub (done)
- - JavaWorker?
 Milestone X
  - Building Blocks
  - MIDI support
  - M3G
+ - JavaWorker
  - pass Microemu unit tests
 
 Zip.js from https://github.com/gildas-lormeau/zip.js

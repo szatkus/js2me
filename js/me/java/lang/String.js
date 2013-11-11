@@ -45,6 +45,12 @@ js2me.createClass({
 		}
 	},
 	/*
+	 * public String()
+	 */
+	_init$_CII$V: function (data, offset, length) {
+		this._init$_C$V(data.slice(offset, offset + length));
+	},
+	/*
 	 * public boolean equals(Object anObject)
 	 */
 	$equals$Ljava_lang_Object_$Z: function (obj) {

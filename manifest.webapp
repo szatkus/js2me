@@ -3,6 +3,7 @@
     "name": "JayME",
     "description": "Java Mobile Edition emulator for Firefox OS.",
     "launch_path": "/index.html",
+    "orientation": ["portrait"],
     "installs_allowed_from": [
       "*"
     ],
