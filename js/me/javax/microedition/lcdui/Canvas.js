@@ -114,7 +114,9 @@ js2me.createClass({
 		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		js2me.launchThread(function () {
-			canvas.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
+			canvas.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics, function () {
+				js2me.renderer.refresh();
+			});
 		});
 	},
 	/*

@@ -22,10 +22,10 @@ Milestone 0.6 (done)
  - loading screen (done)
  - scroll (done)
 Milestone 0.7
- - more performance
+ - more performance (done)
  - more tests
  - native exceptions catching
- - error popup
+ - error popup (done)
  - orientation (done)
  - remove hover (done)
  - bug with doubles (done)
@@ -33,6 +33,7 @@ Milestone 0.7
 Milestone X
  - Building Blocks
  - MIDI support
+ - WebGL
  - M3G
  - JavaWorker
  - pass Microemu unit tests
