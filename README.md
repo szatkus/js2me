@@ -26,6 +26,7 @@ Feel free to submit a pull requests. There's also [short guide](tree/master/js/m
 Usage
 -------------------
 To use it in browser you must host it on some HTTP server and open launch.html.
+
 Launch parameters:
 * src - path to jar file
 * width, height - size of display
@@ -36,17 +37,26 @@ example: /launch.html?src=out/test.jar&width=320&height=240
 Milestones
 --------------
 Milestone 0.1 - Hello world (test.jar) works (done)
+
 Milestone 0.2 - Picross (picross.jar) works (done)
+
 Milestone 0.2.5 - Play around... (done)
+
 Milestone 0.3 - Run [FPC benchmark](http://www.dpsoftware.org/) (done)
+
 Milestone 0.4 - Optimizations (done)
+
 Milestone 0.5 - Firefox OS application (**rejected**)
+
 Milestone 0.6 (done)
+
  * performance (done, much better than expected!)
  * tests (done)
  * loading screen (done)
  * scroll (done)
+
 Milestone 0.7
+
  * more performance (done)
  * more tests (done)
  * repair canvas
@@ -56,7 +66,9 @@ Milestone 0.7
  * remove hover (done)
  * bug with doubles (done)
  * method stub (done)
+
 Milestone X
+
  * native exceptions catching
  * Building Blocks
  * MIDI support
@@ -67,4 +79,5 @@ Milestone X
 Thanks
 -----------
 [Zip.js](https://github.com/gildas-lormeau/zip.js)
+
 [Asteroids.jar](http://jfdoue.free.fr/index.html)
