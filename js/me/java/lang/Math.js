@@ -3,7 +3,7 @@ js2me.createClass({
 	 * public static int abs(int a)
 	 */
 	$abs$D$D: function (value) {
-		return new js2me.Double(Math.abs(value.double));
+		return {double: Math.abs(value.double)};
 	},
 	$abs$I$I: Math.abs,
 	$min$II$I: Math.min,
@@ -31,12 +31,12 @@ js2me.createClass({
 	 * public static double sin(double a)
 	 */
 	$sin$D$D: function (value) {
-		return new js2me.Double(Math.sin(value.double));
+		return {double: Math.sin(value.double)};
 	},
 	/*
 	 * public static double sqrt(double a)
 	 */
 	$sqrt$D$D: function (value) {
-		return new js2me.Double(Math.sqrt(value.double));
+		return {double: Math.sqrt(value.double)};
 	}
 });

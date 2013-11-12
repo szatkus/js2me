@@ -3,6 +3,8 @@ var js2me = {
 	JAVA_ROOT: 'javaRoot',
 	debug: false,
 	stat: 0,
+	calledMethods: {},
+	profile: true,
 	config: {
 		width: 240,
 		height: 266,

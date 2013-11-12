@@ -18,7 +18,7 @@ js2me.createClass({
 		if (n.hi > 0) {
 			console.log('Too large skip value');
 		}
-		return new js2me.Long(0, this.stream.skip(n.lo));
+		return {hi: 0, lo: this.stream.skip(n.lo)};
 	},
 	/*
 	 * 
@@ -26,8 +26,6 @@ js2me.createClass({
 	$available$$I: function () {
 		return this.stream.getRemaining();
 	},
-	superClass: 'javaRoot.$java.$io.$InputStream',
-	package: 'javaRoot.$java.$io',
-	name: '$BufferStream'
+	superClass: 'javaRoot.$java.$io.$InputStream'
 });
 

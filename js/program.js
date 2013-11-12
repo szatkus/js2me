@@ -348,7 +348,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x5b] = 'var a = context.stack.pop();\n' +
 		'var b = context.stack.pop();\n' +
 		'var c = context.stack.pop();\n' +
-		'if (a.constructor != js2me.Long && a.double == null) {\n' +
+		'if (a.hi == null && a.double == null) {\n' +
 		'	var stack0 = a;\n' +
 		'	var stack1 = c;\n' +
 		'	var stack2 = b;\n' +
@@ -365,7 +365,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'context.stack.push(stack3);\n';
 	// dup2
 	generators[0x5c] = 'var a = context.stack.pop();\n' +
-		'if (a.constructor != js2me.Long && a.double == null) {//STOP\n' +
+		'if (a.hi == null && a.double == null) {//STOP\n' +
 		'	var b = context.stack.pop();\n' +
 		'	context.stack.push(b);\n' +
 		'	context.stack.push(a);\n' +
@@ -379,7 +379,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x5d] = function (context) {
 		var a = context.stack.pop();
 		var b = context.stack.pop();
-		if (a.constructor != js2me.Long && a.double == null) {
+		if (a.hi == null && a.double == null) {
 			var c = context.stack.pop();
 			context.stack.push(b);
 			context.stack.push(a);
@@ -397,8 +397,8 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x5e] = function (context) {
 		var a = context.stack.pop();
 		var b = context.stack.pop();
-		if (a.constructor != js2me.Long && a.double == null) {
-			if (b.constructor != js2me.Long && b.double == null) {
+		if (a.hi == null && a.double == null) {
+			if (b.hi == null && b.double == null) {
 				context.stack.push(a);
 				context.stack.push(b);
 				context.stack.push(a);
@@ -411,7 +411,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			}
 		} else {
 			var c = context.stack.pop();
-			if (c.constructor != js2me.Long && c.double == null) {
+			if (c.hi == null && c.double == null) {
 				context.stack.push(b);
 				context.stack.push(a);
 				context.stack.push(c);
@@ -542,14 +542,14 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 				'if (obj == null) {\n' +
 				'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
 				'}\n' +
-				'context.stack.push(obj["' + field.name + '"]);\n';
+				'context.stack.push(obj.' + field.name + ');\n';
 	};
 	// getstatic
 	generators[0xb2] = function () {
 		var field = constantPool[stream.readUint16()];
 		var obj = js2me.findClass(field.className);
 		if (obj.prototype && obj.prototype.initialized) {
-			return 'context.stack.push(' + field.className + '.prototype["' + field.name + '"]);\n'
+			return 'context.stack.push(' + field.className + '.prototype.' + field.name + ');\n'
 		} else {
 			return function (context) {
 				var obj = js2me.findClass(field.className);
@@ -565,15 +565,15 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			jumpTo[index]++;
 			jumpTarget[currentOpIndex] = index;
 			jumpFrom[currentOpIndex]++;
-			var body = '{context.position = /*' + index + '*/; return;}';
+			var body = 'context.position = /*' + index + '*/; return;';
 			if (type) {
 				if (type.indexOf(' ') === -1) {
 					body = 'var b = context.stack.pop();\n' +
 						'var a = context.stack.pop();\n' +
-						'if (a ' + type + ' b) ' + body;
+						'//STOP\nif (a ' + type + ' b) {' + body + '}//STOP\n';
 				} else {
 					body = 'var a = context.stack.pop();\n' +
-						'if (a ' + type + ') ' + body;
+						'//STOP\nif (a ' + type + ') {' + body + '}//STOP\n';
 				}
 			}
 			return body;
@@ -599,9 +599,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		return 'var value = context.stack.pop();\n' +
 			'var result;\n' +
 			'if (value >= 0) {\n' +
-			'	result = new js2me.Long(0, value);\n' +
+			'	result = {hi: 0, lo: value};\n' +
 			'} else {\n' +
-			'	result = new js2me.Long(0xffffffff, value + 4294967296);\n' +
+			'	result = {hi: 0xffffffff, lo: value + 4294967296};\n' +
 			'}\n' +
 			'context.stack.push(result);\n';
 	};
@@ -715,17 +715,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	// ifle
 	generators[0x9e] = generateGoto('<= 0');
 	// ifnonnull
-	generators[0xc7] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = [index];
-		jumpTo[index]++;;
-		return function (context) {
-			var value = context.stack.pop();
-			if (value != null) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xc7] = generateGoto('!= null');
 	// ifnull
 	generators[0xc6] = generateGoto('== null');
 	// iinc
@@ -906,15 +896,15 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		'var a = context.stack.pop();\n' +
 		'context.stack.push(a - b);\n';
 	// iushr
-	generators[0x7c] = function (context) {
-		var shift = context.stack.pop() % 32;
-		var value = context.stack.pop();
-		if (value >= 0) {
-			context.stack.push(value >> shift);
-		} else {
-			context.stack.push((value >> shift) + (2 << ~shift));
-		}
-	};
+	generators[0x7c] = 'var shift = context.stack.pop() % 32;\n' + 
+		'var value = context.stack.pop();\n' +
+		'var result;\n' +
+		'if (value >= 0) {\n' +
+		'	result = value >> shift;\n' +
+		'} else {\n' +
+		'	result = (value >> shift) + (2 << ~shift);\n' +
+		'}\n' +
+		'context.stack.push(result);\n';
 	// ixor
 	generators[0x82] = 'var b = context.stack.pop();\n' +
 		'var a = context.stack.pop();\n' +
@@ -940,7 +930,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	// ladd
 	generators[0x61] = 'var b = context.stack.pop();\n' +
 		'var a = context.stack.pop();\n' +
-		'context.stack.push(a.add(b));\n';
+		'context.stack.push(js2me.ladd(a, b));\n';
 	// laload
 	generators[0x2f] = function (context) {
 		var index = context.stack.pop();
@@ -948,11 +938,9 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		context.stack.push(array[index]);
 	};
 	// land
-	generators[0x7f] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(new js2me.Long(a.hi & b.hi, a.lo & b.lo));
-	};
+	generators[0x7f] = 'var b = context.stack.pop();\n' +
+		'var a = context.stack.pop();\n' +
+		'context.stack.push({hi: a.hi & b.hi, lo: a.lo & b.lo});\n';
 	// lastore
 	generators[0x50] = function (context) {
 		var value = context.stack.pop();
@@ -961,15 +949,13 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		array[index] = value;
 	};
 	// lcmp
-	generators[0x94] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(a.cmp(b));
-	};
+	generators[0x94] = 'var b = context.stack.pop();\n' +
+		'var a = context.stack.pop();\n' +
+		'context.stack.push(js2me.lcmp(a, b));\n';
 	// lconst_0
-	generators[0x09] = 'context.stack.push(new js2me.Long(0, 0));\n';
+	generators[0x09] = 'context.stack.push({hi: 0, lo: 0});\n';
 	// lconst_1
-	generators[0x0a] = 'context.stack.push(new js2me.Long(0, 1));\n';
+	generators[0x0a] = 'context.stack.push({hi: 0, lo: 1});\n';
 	// ldc
 	generators[0x12] = function () {
 		var index = stream.readUint8();
@@ -982,7 +968,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	};
 	// ldiv
 	generators[0x6d] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
-		'context.stack.push(a.div(b).div);\n');
+		'context.stack.push(js2me.ldiv(a, b).div);\n');
 	// lload
 	generators[0x16] = function () {
 		var index = stream.readUint8();
@@ -1005,16 +991,12 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		return generateLoad(3);
 	};
 	// lmul
-	generators[0x69] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(a.mul(b));
-	};
+	generators[0x69] = 'var b = context.stack.pop();\n' +
+		'var a = context.stack.pop();\n' +
+		'context.stack.push(js2me.lmul(a, b));\n'
 	// lneg
-	generators[0x75] = function (context) {
-		var a = context.stack.pop();
-		context.stack.push(a.neg());
-	};
+	generators[0x75] = 'var a = context.stack.pop();\n' +
+		'context.stack.push(js2me.lneg(a));\n'
 	// lookupswitch
 	generators[0xab] = function () {
 		var start = stream.index - 1;
@@ -1046,25 +1028,23 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	};
 	// lrem
 	generators[0x71] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' +
-		'context.stack.push(a.div(b).rem);\n');
+		'context.stack.push(js2me.ldiv(a, b).rem);\n');
 	// lreturn
 	generators[0xad] = generateReturn;
 	// lshl
-	generators[0x79] = function (context) {
-		var shift = context.stack.pop() % 64;
-		var value = context.stack.pop();
-		context.stack.push(value.shl(shift));
-	};
+	generators[0x79] = 'var shift = context.stack.pop() % 64;\n' +
+		'var value = context.stack.pop();\n' +
+		'context.stack.push(js2me.lshl(value, shift));\n';
 	// lshr
 	generators[0x7b] = 'var shift = context.stack.pop() % 64;\n' +
 		'var value = context.stack.pop();\n' +
-		'var sign = value.sign();\n' +
+		'var sign = value.hi >= 2147483648;\n' +
 		'if (sign) {\n' +
-		'	value = value.neg();\n' +
+		'	value = js2me.lneg(value);\n' +
 		'}\n' +
-		'var result = value.shr(shift);\n' +
+		'var result = js2me.lshr(value, shift);\n' +
 		'if (sign) {\n' +
-		'	result = result.neg();\n' +
+		'	result = js2me.lneg(result);\n' +
 		'}\n' +
 		'context.stack.push(result);\n';
 	// lstore
@@ -1084,7 +1064,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 	generators[0x65] = function (context) {
 		return 'var b = context.stack.pop();\n' +
 			'var a = context.stack.pop();\n' +
-			'context.stack.push(a.sub(b));\n';
+			'context.stack.push(js2me.lsub(a, b));\n';
 	};
 	// lushr
 	generators[0x7d] = function (context) {
@@ -1223,14 +1203,14 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		var field = constantPool[stream.readUint16()];
 		return 'var value = context.stack.pop();\n' +
 			'var obj = context.stack.pop();\n' +
-			'obj["' + field.name + '"] = value;\n';
+			'obj.' + field.name + ' = value;\n';
 	}
 	// putstatic
 	generators[0xb3] = function () {
 		var field = constantPool[stream.readUint16()];
 		var obj = js2me.findClass(field.className);
 		if (obj.prototype && obj.prototype.initialized) {
-			return field.className + '.prototype["' + field.name + '"] = context.stack.pop();\n'
+			return field.className + '.prototype.' + field.name + ' = context.stack.pop();\n'
 		} else {
 			return function (context) {
 				var value = context.stack.pop();
@@ -1315,6 +1295,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		throw new Error('wide: unkown op ' + index);
 	}
 	var program = [];
+	var calls = [];
 	var positionMapping = new Array(stream.getRemaining());
 	var reversedMapping = [];
 	var require = [];
@@ -1412,7 +1393,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 					} else {
 						var regexp = new RegExp('context.position = /\\*' + reversedMapping[i + 1] + '\\*/', 'g');
 						var match = program[i].match(regexp);
-						if (false && methodName.indexOf('Line') == -1 && match && match.length == jumpTo[reversedMapping[i + 1]]) {
+						if (match && match.length == jumpTo[reversedMapping[i + 1]]) {
 							var body = 'jmp' + varId + ': do {//STOP\n';
 							body += program[i].replace(regexp, 'break jmp' + varId);
 							body += 'break;} while (true);//STOP\n' + program[i + 1];
@@ -1442,88 +1423,6 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 			}
 			i++;
 		}
-
-		var i = 0;
-		while (i < program.length) {
-			// find conditionals
-			var startTarget = jumpTarget[reversedMapping[i]];
-			var endTarget = jumpTarget[reversedMapping[i + 2]];
-			// while loop
-			/*if (checkFragment(i - 1, String, 1, 0) && checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
-				checkFragment(i + 2, Function, 0, 1) &&  startTarget != null && startTarget.length === 2 && 
-				startTarget[1] === reversedMapping[i + 3] && endTarget === reversedMapping[i - 1]) {
-				var body = program[i - 1];
-				if (startTarget[0].indexOf(' ') === -1) {
-					body += 'var b = context.stack.pop();\n' +
-						'var a = context.stack.pop();\n' +
-						'while (!(a ' + startTarget[0] + 'b)) {//STOP\n';
-				} else {
-					body += 'var a = context.stack.pop();\n' +
-						'while (!(a ' + startTarget[0] + ')) {//STOP\n';
-				}
-				body += program[i + 1] + program[i - 1];
-				if (startTarget[0].indexOf(' ') === -1) {
-					body += 'b = context.stack.pop();\n' +
-						'a = context.stack.pop();\n}//STOP\n';
-				} else {
-					body += 'a = context.stack.pop();\n}//STOP\n';
-				}
-				jumpTo[reversedMapping[i - 1]] = 0;
-				jumpTo[reversedMapping[i + 3]]--;
-				program[i - 1] = body;
-				program.splice(i, 3);
-				reversedMapping.splice(i, 3);
-				
-				i--;
-				isOptimizing = true;
-			}
-			// if-else
-			if (checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) && checkFragment(i + 2, Function, 0, 1) && 
-				checkFragment(i + 3, String, 1, 0) &&  startTarget != null && startTarget.length === 2 && 
-				startTarget[1] === reversedMapping[i + 3] && endTarget === reversedMapping[i + 4]) {
-				var body = '';
-				if (startTarget[0].indexOf(' ') === -1) {
-					body += 'var b = context.stack.pop();\n' +
-						'var a = context.stack.pop();\n' +
-						'if (!(a ' + startTarget[0] + 'b)) {//STOP\n';
-				} else {
-					body += 'var a = context.stack.pop();\n' +
-						'if (!(a ' + startTarget[0] + ')) {//STOP\n';
-				}
-				body += program[i + 1];
-				body += '} else {//STOP\n';
-				body += program[i + 3];
-				body += '}//STOP\n';
-				jumpFrom[reversedMapping[i]] = 0;
-				jumpTo[reversedMapping[i + 4]]--;
-				program[i] = body;
-				program.splice(i + 1, 3);
-				reversedMapping.splice(i + 1, 3);
-				isOptimizing = true;
-			}
-			// if
-			if (checkFragment(i, Function, 0, 1) && checkFragment(i + 1, String, 0, 0) &&
-				startTarget != null && startTarget.length === 2 && startTarget[1] === reversedMapping[i + 2]) {
-				var body = '';
-				if (startTarget[0].indexOf(' ') === -1) {
-					body += 'var b = context.stack.pop();\n' +
-						'var a = context.stack.pop();\n' +
-						'if (!(a ' + startTarget[0] + 'b)) {//STOP\n';
-				} else {
-					body += 'var a = context.stack.pop();\n' +
-						'if (!(a ' + startTarget[0] + ')) {//STOP\n';
-				}
-				body += program[i + 1];
-				body += '}//STOP\n';
-				jumpFrom[reversedMapping[i]] = 0;
-				jumpTo[reversedMapping[i + 2]]--;
-				program[i] = body;
-				program.splice(i + 1, 1);
-				reversedMapping.splice(i + 1, 1);
-				isOptimizing = true;
-			}*/
-			i++;
-		}
 	}
 	for (var i = 0; i < reversedMapping.length; i++) {
 		positionMapping[reversedMapping[i]] = i;
@@ -1544,7 +1443,13 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 				if (program.length > 1 || !isSafe) {
 					program[i] = '//@ sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '/' + reversedMapping[i] + '.js\n' + program[i];
 					program[i] = 'var functionResult;\n' + program[i];
+					if (js2me.profile) {
+						program[i] = 'return function ' + methodName.replace(new RegExp('\\.', 'g'), '_') + i + '(context) {\n' + program[i] + '};';
+					}
 					program[i] = new Function('context', program[i]);
+					if (js2me.profile) {
+						program[i] = program[i]();
+					}
 				}
 			} catch(e) {
 				console.error(e.message);

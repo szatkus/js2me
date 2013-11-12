@@ -24,7 +24,7 @@ js2me.restoreThread = function (threadId) {
 			}
 		}
 	} catch (e) {
-		console.error(e);
+		console.error(e.stack);
 		js2me.showError(e.message);
 	}
 };
@@ -40,7 +40,7 @@ js2me.launchThread = function (func) {
 			js2me.currentThread = threadId;
 			func();
 		} catch (e) {
-			console.error(e);
+			console.error(e.stack);
 			js2me.showError(e.message);
 		}
 	}, 1);

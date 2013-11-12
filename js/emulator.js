@@ -65,7 +65,7 @@
 				});
 			})(buttonsMapping[i]);
 		}
-		document.getElementById('top').style.display = 'none';
+		//document.getElementById('top').style.display = 'none';
 		document.querySelector('#show.topbutton').addEventListener('touchstart', function () {
 			document.getElementById('top').style.display = '';
 		});

@@ -36,14 +36,14 @@ js2me.createClass({
 		var threadId = js2me.currentThread;
 		setTimeout(function () {
 			js2me.restoreThread(threadId);
-		}, miliseconds.toInt());
+		}, miliseconds.lo);
 	}),
 	/*
 	 * public static void yield()
 	 */
 	$yield$$V: js2me.markUnsafe(function () {
 		var currentThread = javaRoot.$java.$lang.$Thread.prototype.$currentThread$$Ljava_lang_Thread_()
-		currentThread.$sleep$J$V(new js2me.Long(0, 1));
+		currentThread.$sleep$J$V({lo: 10});
 	}),
 	/*
 	 * public static Thread currentThread()

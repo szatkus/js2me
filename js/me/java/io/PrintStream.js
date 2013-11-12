@@ -50,7 +50,7 @@ js2me.createClass({
 	 * public void print(boolean b)
 	 */
 	$print$J$V: function (value) {
-		this.output.$write$_B$V(value.toString());
+		this.output.$write$_B$V(js2me.longToString(value));
 	},
 	/*
 	 * public void print(boolean b)

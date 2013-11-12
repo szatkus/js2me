@@ -59,7 +59,7 @@ js2me.convertClass = function (stream) {
 			}
 			if (tag == TAG_LONG) {
 				constant.implemented = true;
-				constant.value = new js2me.Long(stream.readUint32(), stream.readUint32());
+				constant.value = {hi: stream.readUint32(), lo: stream.readUint32()};
 			}
 			if (tag == TAG_DOUBLE) {
 				constant.implemented = true;
@@ -229,10 +229,10 @@ js2me.convertClass = function (stream) {
 				newClass.prototype[fieldName] = 0;
 			}
 			if (type == 'D') {
-				newClass.prototype[fieldName] = new js2me.Double(0);
+				newClass.prototype[fieldName] = js2me.dconst0;
 			}
 			if (type == 'J') {
-				newClass.prototype[fieldName] = new js2me.Long(0, 0);
+				newClass.prototype[fieldName] = {hi: 0, lo: 0}
 			}
 			if (type == 'C') {
 				newClass.prototype[fieldName] = 0;

@@ -41,7 +41,7 @@ js2me.createClass({
 	 * public StringBuffer append(Object obj)
 	 */
 	$append$J$Ljava_lang_StringBuffer_: function (l) {
-		this.string += js2me.UTF8ToString(l.toString());
+		this.string += js2me.UTF8ToString(js2me.longToString(l));
 		return this;
 	},
 	/*
