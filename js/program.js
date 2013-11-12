@@ -1,7 +1,18 @@
 "use strict";
-js2me.generateProgram = function (stream, methodName, constantPool, exceptions) {
+js2me.generateProgram = function (data) {
 	var generators = [];
+	var stream = data.stream;
+	var methodName = data.methodName;
+	var constantPool = data.constantPool;
+	var exceptions = data.exceptions;
 	
+	data.regenerate = false;
+	
+	if (data.content == null) {
+		console.log('Generating method ' + methodName);
+	} else {
+		console.log('Regenerating method ' + methodName);
+	}
 	
 	function generateArrayLoad() {
 		return 'var index = context.stack.pop();\n' +
@@ -816,7 +827,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 				'var result = method.apply(obj, args);\n';
 			var result;
 			var classObj = js2me.findClass(methodInfo.className);
-			if (classObj &&  classObj.prototype[methodInfo.name] && !classObj.prototype[methodInfo.name].isUnsafe) {
+			if ((classObj &&  classObj.prototype[methodInfo.name] && !classObj.prototype[methodInfo.name].isUnsafe) || data.hints[currentOpIndex]) {
 				if (isSaveResult) {
 					body += 'context.stack.push(result);\n';
 				}
@@ -831,6 +842,7 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 					'}\n';
 				body += 'if (!method.isUnsafe) {\n' +
 					'	context.regenerate = true;\n' +
+					'	context.hints[' + currentOpIndex + '] = true;\n' +
 					'}\n';
 				result = new Function('context', body);
 				isSubfunctionSafe = false;
@@ -1463,10 +1475,76 @@ js2me.generateProgram = function (stream, methodName, constantPool, exceptions) 
 		console.log(reversedMapping[i] + ': ' + program[i].toString());
 		console.error('************');
 	}*/
-	return {
-		content: program,
-		mapping: positionMapping,
-		require: require,
-		isSafe: isSafe
-	};
+	stream.reset();
+	data.content =  program;
+	data.mapping = positionMapping;
+	data.require = require;
+	data.isSafe = isSafe;
+	data.parent.prototype[data.name].data = data;
+	if (data.isSafe) {
+		data.parent.prototype[data.name].isUnsafe = false;
+	}
+	// We can compile to native function!
+	if (data.isSafe && data.content.length === 1) {
+		console.log(data.methodName + ' is safe! Compiling to native :)');
+		var methodBody = data.content[0];
+		var limit = 5000;
+		var args = [];
+		for (var i = 0; i < data.maxLocals; i++) {
+			var localName;
+			//locals[0] == this for non-static
+			if (!data.isStatic) {
+				if (i > 0) {
+					localName = 'local' + i;
+				} else {
+					localName = 'this';
+				}
+			} else  {
+				localName = 'local' + i;
+			}
+			methodBody = methodBody.replace(new RegExp('context\\.locals\\[' + i + '\\]', 'g'), localName);
+			if (localName != 'this') {
+				if (args.length < data.argumentsTypes.length) {
+					args.push(localName);
+					if (data.argumentsTypes[args.length - 1] === 'D' || data.argumentsTypes[args.length - 1] === 'J') {
+						i++;
+					}
+				} else {
+					methodBody = 'var ' + localName + ';\n' + methodBody;
+				}
+			}
+		}
+		methodBody = methodBody.replace(new RegExp('context\\.result', 'g'), 'functionResult');
+		var returnStatement = 'if (callback && callback.constructor === Function) {\n' +
+			'	callback(functionResult);\n' +
+			'}\n';
+		methodBody = methodBody.replace(new RegExp('context\\.stack', 'g'), 'stack');
+		methodBody = methodBody.replace(new RegExp('context\\.finish = true', 'g'), returnStatement);
+		methodBody = methodBody.replace(new RegExp('context\\.saveResult', 'g'), 'var nothing');
+		methodBody = methodBody.replace(new RegExp('context\\.constantPool', 'g'), 'constantPool');
+		methodBody = 'var functionResult;\n' + methodBody;
+		methodBody = 'var stack = [];\n' + methodBody;
+		methodBody = 'var constantPool = ' + methodName + '.constantPool;\n' + methodBody;
+		// dear Chromium developers, I love you!
+		methodBody = '//@ sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '.js\n' + methodBody;
+		args.push('callback');
+		if (js2me.profile) {
+			methodBody = 'return function ' + methodName.replace(new RegExp('\\.', 'g'), '_') + '(' + args.join(',') + ') {\n' + methodBody + '};';
+		}
+		args.push(methodBody);
+		try {
+			data.nativeMethod = Function.apply(null, args);
+			if (js2me.profile) {
+				data.nativeMethod = data.nativeMethod();
+			}
+			data.nativeMethod.constantPool = constantPool;
+			data.parent.prototype[data.name] = data.nativeMethod;
+			data.isNative = true;
+		} catch (e) {
+			console.error(e);
+			console.log(methodBody);
+		}
+	}
 };
+
+// what I have done...

@@ -11,6 +11,7 @@ js2me.convertClass = function (stream) {
 	newClass.prototype.pool = constantPool;
 	newClass.prototype.require = [];
 	newClass.prototype.initialized = false;
+	newClass.prototype.initializing = false;
 	var TAG_UTF8 = 1;
 	var TAG_INTEGER = 3;
 	var TAG_FLOAT = 4;
@@ -179,7 +180,7 @@ js2me.convertClass = function (stream) {
 				};
 				if (tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 					var constant = constantPool[index];
-					var methodPath = constant.className + '->' + constant.name;
+					var methodPath = constant.className + '.prototype.' + constant.name;
 					js2me.usedMethods[methodPath] = true;
 				}
 			}
@@ -245,7 +246,7 @@ js2me.convertClass = function (stream) {
 			}
 		}
 	}
-	function readAttributes(name, type) {
+	function readAttributes(name, type, accessFlags) {
 		var count = stream.readUint16();
 		var attributes = {};
 		for (var i = 0; i < count; i++) {
@@ -273,7 +274,7 @@ js2me.convertClass = function (stream) {
 				var argumentsTypes = getArguments(type);
 				var methodName = thisClass.className + '.prototype.' + escapedName;
 				//TODO: move it somewhere else
-				value = js2me.generateMethodStub(newClass, codeStream, methodName, constantPool, exceptions, maxLocals, escapedName, argumentsTypes);
+				value = js2me.generateMethodStub(newClass, codeStream, methodName, constantPool, exceptions, maxLocals, escapedName, argumentsTypes, accessFlags);
 			}
 			if (attributeName == 'Synthetic') {
 				value = true;
@@ -321,7 +322,7 @@ js2me.convertClass = function (stream) {
 			var accessFlags = stream.readUint16();
 			var name = constantPool[stream.readUint16()];
 			var type = constantPool[stream.readUint16()];
-			var attributes = readAttributes(name, type);
+			var attributes = readAttributes(name, type, accessFlags);
 			newClass.prototype[escapeName(name) + escapeType(type)] = attributes['Code'];
 		}
 	}

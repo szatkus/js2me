@@ -22,15 +22,17 @@ Milestone 0.6 (done)
  - loading screen (done)
  - scroll (done)
 Milestone 0.7
- - more performance
- - more tests
- - native exceptions catching
- - error popup
+ - more performance (done)
+ - more tests (done)
+ - repair canvas
+ - method generating
+ - error popup (done)
  - orientation (done)
  - remove hover (done)
  - bug with doubles (done)
  - method stub (done)
 Milestone X
+ - native exceptions catching
  - Building Blocks
  - MIDI support
  - M3G

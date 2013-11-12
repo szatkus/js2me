@@ -16,7 +16,7 @@ js2me.createClass({
 		task.timer = setTimeout(function () {
 			task.executing = false;
 			task.$run$$V();
-		}, delay.toInt());
+		}, delay.lo);
 		this.timers.push(task.timer);
 	},
 	/*
@@ -38,11 +38,11 @@ js2me.createClass({
 						return;
 					}
 					task.$run$$V();
-				}, interval.toInt());
+				}, interval.lo);
 				timer.timers.push(task.timer);
 			}
 			task.$run$$V();
-		}, delay.toInt());
+		}, delay.lo);
 		this.timers.push(task.timer);
 	},
 	/*

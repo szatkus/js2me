@@ -164,19 +164,9 @@
 					}
 				}
 				
-				if (classObj.prototype._clinit$$V) {
-					var clinit = classObj.prototype._clinit$$V;
-					/*for (var i = 0; clinit.data && i < clinit.data.require.length; i++) {
-						var dep = js2me.findClass(clinit.data.require[i]);
-						if (!dep.prototype.initialized) {
-							initializeClass(dep, retry);
-							return;
-						}
-					}*/
-					classObj.prototype._clinit$$V = null;
-					// might need it later
-					classObj.prototype.clinit = clinit;
-					clinit(retry);
+				if (classObj.prototype._clinit$$V && !classObj.prototype.initializing) {
+					classObj.prototype.initializing = true;
+					classObj.prototype._clinit$$V(retry);
 					return;
 				}
 				

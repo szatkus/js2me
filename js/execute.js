@@ -3,6 +3,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		stack: [],
 		result: null,
 		locals: locals,
+		hints: [],
 		position: 0,
 		finish: false,
 		saveResult: false,
@@ -80,6 +81,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	}
 	if (context.regenerate) {
 		program.regenerate = true;
+		program.hints = context.hints;
 	}
 	if (callback != null && !js2me.suspendThread) {
 		callback(context.result);
