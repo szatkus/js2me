@@ -10,7 +10,7 @@ js2me.createClass({
 	 * public long freeMemory()
 	 */
 	$freeMemory$$J: function () {
-		return new js2me.Long(0, 500000);
+		return {hi: 0, lo: 500000};
 	},
 	/*
 	 * public void gc()
@@ -31,6 +31,6 @@ js2me.createClass({
 	$totalMemory$$J: function () {
 		// the total amount of memory currently available for current and future objects, measured in bytes.
 		// here you are...
-		return new js2me.Long(0, 1000000);
+		return {hi: 0, lo: 1000000};
 	}
 });

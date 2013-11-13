@@ -52,6 +52,12 @@ js2me.createClass({
 		this.title = s;
 	},
 	/*
+	 * public String getTitle()
+	 */
+	$getTitle$$Ljava_lang_String_: function () {
+		return this.title;
+	},
+	/*
 	 * public int getWidth()
 	 */
 	$getWidth$$I: function () {

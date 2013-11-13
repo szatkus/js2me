@@ -66,7 +66,7 @@ js2me.createClass({
 			var result = this.$buf_B.length - this.$posI;
 			this.$posI = this.$buf_B.length;
 		}
-		return new js2me.Long(0, result);
+		return {hi: 0, lo: result};
 	},
 	superClass: 'javaRoot.$java.$io.$InputStream'
 });

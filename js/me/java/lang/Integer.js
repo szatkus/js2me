@@ -27,7 +27,7 @@ js2me.createClass({
 	 * public double doubleValue()
 	 */
 	$doubleValue$$D: function () {
-		return new js2me.Double(this.value);
+		return {double: this.value};
 	},
 	/*
 	 * public boolean equals(Object obj)
@@ -62,9 +62,9 @@ js2me.createClass({
 	 */
 	$longValue$$J: function () {
 		if (this.value >= 0) {
-			return new js2me.Long(0, this.value);
+			return {hi: 0, lo: this.value};
 		} else {
-			return new js2me.Long(-1, this.value);
+			return {hi: 4294967295, lo: 4294967296 + this.value};
 		}
 	},
 	/*

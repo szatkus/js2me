@@ -46,14 +46,29 @@ js2me.createClass({
 		this.timers.push(task.timer);
 	},
 	/*
+	 * public void scheduleAtFixedRate(TimerTask task, long delay, long period)
+	 */
+	$scheduleAtFixedRate$Ljava_util_TimerTask_JJ$V: function (task, delay, interval) {
+		task.executing = true;
+		var timer = this;
+		task.timer = setTimeout(function () {
+			if (interval) {
+				task.timer = setInterval(function () {
+					task.$run$$V();
+				}, interval.lo);
+				timer.timers.push(task.timer);
+			}
+			task.$run$$V();
+		}, delay.lo);
+		this.timers.push(task.timer);
+	},
+	/*
 	 * public void cancel()
 	 */
 	$cancel$$V: function () {
 		for (var i = 0; i < this.timers.length; i++) {
 			clearTimeout(this.timers[i]);
 		}
-	},
-	package: 'javaRoot.$java.$util',
-	name: '$Timer'
+	}
 });
 

@@ -4,8 +4,7 @@ source ./config
 
 for i in out/*.jar; do
 	echo -n "$i"
-	phantomjs runTest.js "$HOST/launch.html?src=$i" > __tmp
-	if cat __tmp | grep -q SUCCESS; then
+	if phantomjs runTest.js "$HOST/launch.html?src=$i" | tee __tmp | grep -q SUCCESS; then
 		 echo " - OK"
 	else
 		cat __tmp

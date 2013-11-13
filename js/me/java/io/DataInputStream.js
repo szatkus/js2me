@@ -123,7 +123,7 @@ js2me.createClass({
 	 * 
 	 */
 	$readLong$$J: function () {
-		return new js2me.Long(this.readUnsignedInt(), this.readUnsignedInt());
+		return {hi: this.readUnsignedInt(), lo: this.readUnsignedInt()};
 	},
 	/*
 	 * 
@@ -199,7 +199,7 @@ js2me.createClass({
 	 * 
 	 */
 	$skipBytes$I$I: function (n) {
-		return this.$skip$J$J(new js2me.Long(0, n)).lo;
+		return this.$skip$J$J({hi: 0, lo: n}).lo;
 	},
 	superClass: 'javaRoot.$java.$io.$InputStream',
 	interfaces: ['javaRoot.$java.$io.$DataInput']

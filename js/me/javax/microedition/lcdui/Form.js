@@ -10,6 +10,25 @@ js2me.createClass({
 		this.init();
 	},
 	/*
+	 * public Form(String title, Item[] items)
+	 */
+	_init$Ljava_lang_String__Ljavax_microedition_lcdui_Item_$V: function(title, items) {
+		this._init$Ljava_lang_String_$V(title);
+		if (items == null) {
+			return;
+		}
+		try {
+			for (var i = 0; i < items.length; i++) {
+				if (items[i] == null) {
+					throw new javaRoot.$java.$lang.$NullPointerException();
+				}
+				this.$append$Ljavax_microedition_lcdui_Item_$I(items[i]);
+			}
+		} catch (e) {
+			throw new javaRoot.$java.$lang.$IllegalStateException ();
+		}
+	},
+	/*
 	 * public int append(Item item)
 	 */
 	$append$Ljava_lang_String_$I: function (str) {

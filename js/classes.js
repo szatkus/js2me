@@ -281,7 +281,8 @@
 			'javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException',
 			'javaRoot.$java.$lang.$NegativeArraySizeException',
 			'javaRoot.$java.$lang.$ArrayObject',
-			'javaRoot.$java.$lang.$ArithmeticException'
+			'javaRoot.$java.$lang.$ArithmeticException',
+			'javaRoot.$java.$lang.$ArrayStoreException'
 			];
 			loadNativeClasses(standardClasses, callback);
 		};

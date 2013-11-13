@@ -246,18 +246,20 @@ js2me.generateProgram = function (data) {
 			body += '.double';
 		}
 		body += ';\n';
+		body += 'var result;\n';
 		body += 'if (isNaN(a) || isNaN(b)) {\n';
-		body += '	context.stack.push(' + onNaN + ');\n';
+		body += '	result = ' + onNaN + ';\n';
 		body += '}\n'
 		body += 'if (a > b) {\n';
-		body += '	context.stack.push(1);\n';
+		body += '	result = 1;\n';
 		body += '}\n';
 		body += 'if (a === b) {\n';
-		body += '	context.stack.push(0);\n';
+		body += '	result = 0;\n';
 		body += '}\n';
 		body += 'if (a < b) {\n';
-		body += '	context.stack.push(-1);\n';
+		body += '	result = -1;\n';
 		body += '}\n';
+		body += 'context.stack.push(result);\n';
 		return body;
 	}
 	// dcmpg
@@ -821,7 +823,7 @@ js2me.generateProgram = function (data) {
 			}
 			var isSaveResult = (methodInfo.type.returnType != 'V');
 			body += 'if (!method) {\n' +
-				'	throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
+				'	debugger;throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
 				'}\n' +
 				'context.saveResult = ' + isSaveResult + ';\n' +
 				'var result = method.apply(obj, args);\n';
@@ -1033,11 +1035,9 @@ js2me.generateProgram = function (data) {
 		return body;
 	}
 	// lor
-	generators[0x81] = function (context) {
-		var b = context.stack.pop();
-		var a = context.stack.pop();
-		context.stack.push(new js2me.Long(a.hi | b.hi, a.lo | b.lo));
-	};
+	generators[0x81] = 'var b = context.stack.pop();\n' +
+		'var a = context.stack.pop();' +
+		'context.stack.push({hi: a.hi | b.hi, lo: a.lo | b.lo});';
 	// lrem
 	generators[0x71] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' +
 		'context.stack.push(js2me.ldiv(a, b).rem);\n');
@@ -1137,7 +1137,7 @@ js2me.generateProgram = function (data) {
 					for (var i = 0; i < counts[depth]; i++) {
 						if (type.indexOf('L') == -1) {
 							if (type.indexOf('J') != -1) {
-								element[i] = new js2me.Long(0, 0);
+								element[i] = {hi: 0, lo: 0};
 							} else if (type.indexOf('D') != -1) {
 								element[i] = js2me.dconst0;
 							} else {
@@ -1191,7 +1191,7 @@ js2me.generateProgram = function (data) {
 				if (type == 7) {
 					array[i] = js2me.dconst0;
 				} else if (type == 11) {
-					array[i] = new js2me.Long(0, 0);
+					array[i] = {hi: 0, lo: 0};
 				} else {
 					array[i] = 0;
 				}
@@ -1200,7 +1200,7 @@ js2me.generateProgram = function (data) {
 		};
 	}
 	// noop
-	generators[0x00] = ''
+	generators[0x00] = ' ';
 	// pop
 	generators[0x57] = function () {
 		return 'context.stack.pop();\n';

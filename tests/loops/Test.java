@@ -22,7 +22,7 @@ public class Test extends TestMidlet {
 			sum += i;
 			i--;
 		}
-		check(sum == 120960);
+		check(sum == 121015);
 		System.out.println(sum);
 		finish();
 	}

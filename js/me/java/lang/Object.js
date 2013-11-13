@@ -26,7 +26,7 @@ js2me.createClass({
 	/*
 	 * 
 	 */
-	$wait$J$V: function (timeout) {
+	$wait$J$V: js2me.markUnsafe(function (timeout) {
 		var threadId = js2me.currentThread;
 		if (this.waiting == null) {
 			this.waiting = [];
@@ -44,13 +44,13 @@ js2me.createClass({
 				js2me.restoreThread(threadId);
 			}, timeout.lo);
 		}
-	},
+	}),
 	/*
 	 * 
 	 */
-	$wait$$V: function () {
-		this.$wait$J$V(new js2me.Long(0, 0));
-	},
+	$wait$$V: js2me.markUnsafe(function () {
+		this.$wait$J$V({hi: 0, lo: 0});
+	}),
 	/*
 	 * public int hashCode()
 	 */
