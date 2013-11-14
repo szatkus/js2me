@@ -13,6 +13,7 @@ js2me.restoreThread = function (threadId) {
 	if (js2me.restoreStack[threadId] == undefined) {
 		return;
 	}
+	js2me.suspendThread = false;
 	var restoreStack = js2me.restoreStack[threadId].pop();
 	try {
 		if (restoreStack) {
@@ -23,6 +24,7 @@ js2me.restoreThread = function (threadId) {
 				return js2me.execute.apply(js2me, restoreStack);
 			}
 		}
+		js2me.suspendThread = false;
 	} catch (e) {
 		console.error(e.stack);
 		js2me.showError(e.message);
@@ -37,8 +39,10 @@ js2me.launchThread = function (func) {
 	js2me.lastThread++;
 	setTimeout(function () {
 		try {
+			js2me.suspendThread = false;
 			js2me.currentThread = threadId;
 			func();
+			js2me.suspendThread = false;
 		} catch (e) {
 			console.error(e.stack);
 			js2me.showError(e.message);

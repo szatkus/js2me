@@ -5,10 +5,11 @@ var js2me = {
 	stat: 0,
 	calledMethods: {},
 	profile: true,
+	storageName: '',
 	config: {
+		app: true,
 		width: 240,
 		height: 266,
-		fullHeight: 320,
-		src: 'jars/asteroids.jar'
+		fullHeight: 320
 	}
 };

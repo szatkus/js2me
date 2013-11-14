@@ -2,11 +2,16 @@ js2me.createClass({
 	construct: function (canvas) {
 		this.element = canvas;
 		this.context = canvas.getContext('2d');
+		this.context.mozImageSmoothingEnabled = false;
 		this.context.textBaseline = 'top';
 		this.$setColor$III$V(0, 0, 0);
 		this.$setClip$IIII$V(0, 0, this.element.width, this.element.height);
 		this.translateX = 0;
 		this.translateY = 0;
+		this.clipX = 0;
+		this.clipY = 0;
+		this.clipWidth = canvas.width;
+		this.clipHeight = canvas.height;
 	},
 	$HCENTERI: 1,
 	$VCENTERI: 2,
@@ -48,7 +53,6 @@ js2me.createClass({
 	 * public void fillRect(int x, int y, int width, int height)
 	 */
 	$fillRect$IIII$V: function (x, y, width, height) {
-		this.loadContext();
 		if (width == 0) {
 			width = 1;
 		}
@@ -56,13 +60,11 @@ js2me.createClass({
 			height = 1;
 		}
 		this.context.fillRect(x, y, width, height);
-		//this.context.restore();
 	},
 	/*
 	 * public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
 	 */
 	$fillTriangle$IIIIII$V: function (x1, y1, x2, y2, x3, y3) {
-		this.loadContext();
 		this.context.beginPath();
 		this.context.moveTo(x1, y1);
 		this.context.lineTo(x2, y2);
@@ -70,13 +72,11 @@ js2me.createClass({
 		this.context.lineTo(x1, y1);
 		this.context.fill();
 		this.context.closePath();
-		//this.context.restore();
 	},
 	/*
 	 * public void drawRect(int x, int y, int width, int height)
 	 */
 	$drawRect$IIII$V: function (x, y, width, height) {
-		this.loadContext();
 		if (width == 0) {
 			width = 1;
 		}
@@ -84,33 +84,27 @@ js2me.createClass({
 			height = 1;
 		}
 		this.context.strokeRect(x, y, width, height);
-		//this.context.restore();
 	},
 	/*
 	 * public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight)
 	 */
 	$drawRoundRect$IIIIII$V: function (x, y, width, height, arcWidth, arcHeight) {
-		/*this.loadContext();
 		this.drawRoundRectPath(x, y, width, height, arcWidth, arcHeight);
 		this.context.stroke();
-		this.context.closePath();*/
-		//this.context.restore();
+		this.context.closePath();
 	},
 	/*
 	 * public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight)
 	 */
 	$fillRoundRect$IIIIII$V: function (x, y, width, height, arcWidth, arcHeight) {
-		/*this.loadContext();
 		this.drawRoundRectPath(x, y, width, height, arcWidth, arcHeight);
 		this.context.fill();
-		this.context.closePath();*/
-		//this.context.restore();
+		this.context.closePath();
 	},
 	/*
 	 * public void drawLine(int x1, int y1, int x2, int y2)
 	 */
 	$drawLine$IIII$V: function (x1, y1, x2, y2) {
-		/*this.loadContext();
 		this.context.beginPath();
 		if (x1 > x2) {
 			x1++;
@@ -131,8 +125,7 @@ js2me.createClass({
 		this.context.moveTo(x1, y1);
 		this.context.lineTo(x2, y2);
 		this.context.stroke();
-		this.context.closePath();*/
-		//this.context.restore();
+		this.context.closePath();
 	},
 	/*
 	 * public void drawChar(char character, int x, int y, int anchor)
@@ -152,21 +145,17 @@ js2me.createClass({
 	 * public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle)
 	 */
 	$drawArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
-		/*this.loadContext();
 		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
 		this.context.stroke();
 		this.context.closePath();
-		this.context.restore();*/
 	},
 	/*
 	 * public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle)
 	 */
 	$fillArc$IIIIII$V: function (x, y, width, height, startAngle, arcAngle) {
-		/*this.loadContext();
 		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
 		this.context.fill();
 		this.context.closePath();
-		this.context.restore();*/
 	},
 	/*
 	 * public void setFont(Font font)
@@ -179,7 +168,7 @@ js2me.createClass({
 	 * public void drawString(String str, int x, int y, int anchor)
 	 */
 	$drawString$Ljava_lang_String_III$V: function (str, x, y, anchor) {
-		this.loadContext();
+		var width = this.context.measureText(str.text).width;
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;
 		}
@@ -196,35 +185,25 @@ js2me.createClass({
 			this.context.textBaseline = 'bottom';
 		}
 		if (anchor & this.$HCENTERI) {
-			x -= this.context.measureText(str.text).width / 2;
+			x -= width / 2;
 		}
 		if (anchor & this.$RIGHTI) {
-			x -= this.context.measureText(str.text).width;
+			x -= width
 		}
-		this.context.fillText(str.text, x, y);
-		//this.context.restore();
+		if (x >= this.clipX && y >= this.clipY && x + width <= this.clipX + this.clipWidth &&
+			y + this.font.height <= this.clipY + this.clipHeight) {
+			this.context.fillText(str.text, x, y);
+		} else {
+			this.clip();
+			this.context.fillText(str.text, x, y);
+			this.context.restore();
+		}
+		
 	},
 	/*
 	 * public void drawImage(Image img, int x, int y, int anchor)
 	 */
 	$drawImage$Ljavax_microedition_lcdui_Image_III$V: function (img, x, y, anchor) {
-		/*if (anchor !== 0) {
-			if (anchor & this.$VCENTERI) {
-				y -= img.element.height / 2;
-			}
-			if (anchor & this.$BASELINEI) {
-				console.log('baseline,  what to do?');
-			}
-			if (anchor & this.$RIGHTI) {
-				x -= img.element.width;
-			}
-			if (anchor & this.$HCENTERI) {
-				x -= img.element.width / 2;
-			}
-			if (anchor & this.$BOTTOMI) {
-				y -= img.element.height;
-			}
-		}*/
 		this.$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V(img, 0, 0, img.element.width, img.element.height, 0, x, y, anchor);
 	},
 	/*
@@ -251,26 +230,18 @@ js2me.createClass({
 		this.clipY = y;
 		this.clipWidth = width;
 		this.clipHeight = height;
-		//this.context.restore();
-		//this.context.save();
-		/*this.context.translate(this.translateX, this.translateY);
-		this.context.beginPath();
-		this.context.rect(x, y, width, height);
-		this.context.clip();
-		this.context.closePath();
-		this.context.translate(-this.translateX, -this.translateY);*/
 	},
 	/*
 	 * public int getClipX()
 	 */
 	$getClipX$$I: function () {
-		return this.clipX + this.translateX;
+		return this.clipX;
 	},
 	/*
 	 * public int getClipY()
 	 */
 	$getClipY$$I: function () {
-		return this.clipY + this.translateY;
+		return this.clipY;
 	},
 	/*
 	 * public int getClipWidth()
@@ -301,7 +272,6 @@ js2me.createClass({
 	 * public void drawRegion(Image src, int x_src, int y_src, int width, int height, int transform, int x_dest, int y_dest, int anchor)
 	 */
 	$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V: function(src, sx, sy, width, height, transform, dx, dy, anchor) {
-		//this.loadContext();
 		var dw = width;
 		var dh = height;
 		if (transform >= 4) {
@@ -398,6 +368,8 @@ js2me.createClass({
 	$translate$II$V: function (x, y) {
 		this.translateX += x;
 		this.translateY += y;
+		this.clipX += x;
+		this.clipY += y;
 		this.context.translate(this.translateX, this.translateY);
 	},
 	/*
@@ -406,19 +378,12 @@ js2me.createClass({
 	$setStrokeStyle$I$V: function (style) {
 		this.style = style;
 	},
-	// FML, it only exists because of stupid canvas clip
-	loadContext: function () {
-		/*this.context.save();
-		if (this.style == this.$DOTTEDI) {
-			this.context.mozDash = [2];
-		} else {
-			this.context.mozDash = null;
-		}
-		this.context.fillStyle = this.color;
-		this.context.strokeStyle = this.color;
-		if (this.font) {
-			
-		}*/
+	clip: function () {
+		this.context.save();
+		this.context.beginPath();
+		this.context.rect(this.clipX, this.clipY, this.clipWidth, this.clipHeight);
+		this.context.clip();
+		this.context.closePath();
 	},
 	drawArcPath: function (x, y, width, height, startAngle, arcAngle) {
 		this.context.save();

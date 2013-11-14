@@ -804,6 +804,9 @@ js2me.generateProgram = function (data) {
 			for (var i = argumentsCount - 1; i >= 0; i--) {
 				body += 'args[' + i + '] = context.stack.pop();\n';
 			}
+			if (js2me.profile) {
+				//body += 'js2me.calledMethods["' + methodInfo.className + '.prototype.' + methodInfo.name + '"] = js2me.calledMethods["' + methodInfo.className + '.prototype.' + methodInfo.name + '"] + 1 || 1;\n';
+			}
 			//body += 'console.debug("'+methodInfo.className + '->' + methodInfo.name +'");console.debug(args);\n';
 			if (isStatic) {
 				body += 'var obj = ' + methodInfo.className + ';\n';
@@ -823,19 +826,28 @@ js2me.generateProgram = function (data) {
 			}
 			var isSaveResult = (methodInfo.type.returnType != 'V');
 			body += 'if (!method) {\n' +
-				'	debugger;throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
+				'	throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
 				'}\n' +
 				'context.saveResult = ' + isSaveResult + ';\n' +
 				'var result = method.apply(obj, args);\n';
 			var result;
 			var classObj = js2me.findClass(methodInfo.className);
-			if ((classObj &&  classObj.prototype[methodInfo.name] && !classObj.prototype[methodInfo.name].isUnsafe) || data.hints[currentOpIndex]) {
+			var isInvocationSafe = true;
+			var subclasses = js2me.findSubclasses(methodInfo.className);
+			for (var i = 0; i < subclasses.length; i++) {
+				if (subclasses[i].prototype[methodInfo.name] && subclasses[i].prototype[methodInfo.name].isUnsafe) {
+					isInvocationSafe = false;
+				}
+			}
+			if (isInvocationSafe) {
 				if (isSaveResult) {
 					body += 'context.stack.push(result);\n';
 				}
-				body +=	'if (js2me.suspendThread) {\n' +
-					'	throw new Error("Safe method ' + methodInfo.className + '->' + methodInfo.name + ' just suspended the thread!");\n' + 
-					'}\n';
+				if (js2me.profile) {
+					body +=	'if (js2me.suspendThread) {\n' +
+						'	throw new Error("Safe method ' + methodInfo.className + '->' + methodInfo.name + ' just suspended the thread!");\n' + 
+						'}\n';
+				}
 				result = body;
 				isSubfunctionSafe = true;
 			} else {
@@ -1483,6 +1495,7 @@ js2me.generateProgram = function (data) {
 	data.parent.prototype[data.name].data = data;
 	if (data.isSafe) {
 		data.parent.prototype[data.name].isUnsafe = false;
+		localStorage.setItem(js2me.storageName + methodName, 'safe');
 	}
 	// We can compile to native function!
 	if (data.isSafe && data.content.length === 1) {

@@ -43,17 +43,22 @@ js2me.createClass({
 		this.element = document.createElement('canvas');
 		this.element.width = js2me.config.width;
 		this.element.height = js2me.config.height;
+		//this.element.setAttribute('moz-opaque', '');
 		var canvas = this;
 		this.element.addEventListener('DOMNodeInserted', function () {
 			js2me.addEventListener('keypress', canvas.keyPressListener);
 			js2me.addEventListener('keyreleased', canvas.keyReleasedListener);
-			canvas.$repaint$$V();
-			canvas.$showNotify$$V();
+			js2me.launchThread(function () {
+				canvas.$repaint$$V();
+				canvas.$showNotify$$V();
+			});
 		});
 		this.element.addEventListener('DOMNodeRemoved', function () {
 			js2me.removeEventListener('keypress', canvas.keyPressListener);
 			js2me.removeEventListener('keyreleased', canvas.keyReleasedListener);
-			canvas.$hideNotify$$V();
+			js2me.launchThread(function () {
+				canvas.$hideNotify$$V();
+			});
 		});
 		this.keyPressListener = function (keyCode) {
 			var gameCode = canvas.gameActionMapping[keyCode];
@@ -61,20 +66,24 @@ js2me.createClass({
 				canvas.gameState = canvas.gameState | (1 << gameCode);
 			}
 			canvas.keysState[keyCode] = true;
-			canvas.$keyPressed$I$V(keyCode);
+			js2me.launchThread(function () {
+				canvas.$keyPressed$I$V(keyCode);
+			});
 		};
 		this.keyReleasedListener = function (keyCode) {
 			if (keyCode != null) {
 				canvas.keysState[keyCode] = false;
-				canvas.$keyReleased$I$V(keyCode);
+				js2me.launchThread(function () {
+					canvas.$keyReleased$I$V(keyCode);
+				});
 			} else {
 				for (var i in canvas.keysState) {
 					if (canvas.keysState[i]) {
 						canvas.keysState[i] = false;
 						(function (j) {
-							setTimeout(function () {
+							js2me.launchThread(function () {
 								canvas.$keyReleased$I$V(j);
-							}, 1);
+							});
 						})(i);
 					}
 				}
@@ -104,12 +113,14 @@ js2me.createClass({
 	 * public final void repaint(int x, int y, int width, int height)
 	 */
 	$repaint$$V: function () {
-		this.calls++;
-		var time = +new Date;
-		if (time - this.time > 1000) {
-			document.getElementById('title').innerHTML = this.calls;
-			this.time = time;
-			this.calls = 0;
+		if (js2me.profile) {
+			this.calls++;
+			var time = +new Date;
+			if (time - this.time > 1000) {
+				document.getElementById('title').innerHTML = this.calls;
+				this.time = time;
+				this.calls = 0;
+			}
 		}
 		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;

@@ -1,30 +1,23 @@
-@font-face {
-	font-family: Miso;
-	src: url('miso-bold.ttf');
-} 
-
 html, body {
 	margin: 0px;
 	overflow: hidden;
 	height: 100%;
 	font-family: Miso;
 	-moz-user-select:none;
+	background: #f4f5f5;
+	overflow: hidden;
 }
 
 .topbutton {
 	width: 10mm;
 	height: 10mm;
-	display: inline-block;
-	background: white;
 	vertical-align: middle;
 	font-size: 10mm;
 	line-height: 10mm;
-	font-family: Miso;
-	color: #eee;
-	background-color: #444;
 	cursor: pointer;
+	padding: 0;
+	margin: 0;
 }
-
 #title {
 	text-align: center;
 	height: 10mm;
@@ -39,23 +32,16 @@ html, body {
 	text-align: center;
 }
 .key, .softkey, #joypad {
-	display: inline-block;
-	border: 1px solid black;
-	background-color: #444;
-	font-size: 9mm;
-	color: #eee;
+	font-size: 6mm;
 	cursor: pointer;
 	margin: 1px;
 	height: 10mm;
 	line-height: 10mm;
-	vertical-align: middle;
 }
 .softkey {
 	width: 30%;
-	background: #333;
 }
 #joypad {
-	display: inline-block;
 	width: 30%;
 }
 .num {
@@ -68,7 +54,6 @@ html, body {
 	width: 100%;
 	height: 100%;
 	text-align: center;
-	background-color: #111;
 }
 
 #screen {
@@ -106,6 +91,14 @@ html, body {
 	left: 0px;
 }
 
+#settings-button {
+	position: absolute;
+	top: 10mm;
+	left: 0px;
+	padding: 0;
+}
+
+
 #blanket-main {
 	position: absolute;
 	top: 0px;
@@ -134,10 +127,57 @@ html, body {
 
 #alert .message {
 	width: 50%;
-	background: grey;
+	background: #fffdf9;
 	padding: 10mm;
-	font-size: 10mm;
+	font-size: 1em;
 	text-align: center;
 	word-wrap: break-word;
 	margin: 100px auto;
+}
+
+#settings {
+	position: absolute;
+	top: 100%;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	transition: top 200ms;
+}
+
+.dialog {
+	background: #fffdf9;
+	width: calc(90% - 20mm);
+	height: calc(100% - 40mm);
+	padding: 10mm;
+	font-size: 6mm;
+	word-wrap: break-word;
+	margin: 10mm auto;
+	border: 0.1rem solid #a6a6a6;
+	border-radius: 0.2rem;
+}
+
+#settings button {
+	font-size: 6mm;
+}
+
+#settings .options {
+	height: calc(100% - 20mm);
+	overflow: auto;
+}
+
+#settings .option {
+	margin: 1mm 0mm;
+}
+
+#settings select {
+	font-size: 6mm;
+}
+
+#settings progress {
+	width: 100%;
+}
+
+#settings aside {
+	color: #333;
+	font-size: 4mm;
 }

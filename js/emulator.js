@@ -33,6 +33,38 @@
 		document.getElementById('alert').addEventListener('click', function () {
 			document.getElementById('alert').style.display = 'none';
 		});
+		var settingsDialog = document.getElementById('settings');
+		var screenSizeSelector = document.querySelector('select.screen-size');
+		var generateMethodsButton = document.querySelector('button.generate-methods');
+		document.getElementById('settings-button').addEventListener('click', function () {
+			settingsDialog.style.top = 0;
+			var screenSize = loadConfig('width') + ',';
+			screenSize += loadConfig('height') + ',';
+			screenSize += loadConfig('fullHeight');
+			var options = screenSizeSelector.options;
+			for (var i = 0; i < options.length; i++) {
+				if (options[i].value == screenSize) {
+					screenSizeSelector.selectedIndex = i;
+				}
+			}
+			generateMethodsButton.disabled = (js2me.manifest == null);
+		});
+		generateMethodsButton.addEventListener('click', function () {
+			generateMethodsButton.innerHTML = 'Please wait...';
+			generateMethodsButton.classList.add('disabled');
+			setTimeout(function () {
+				js2me.generateAllMethods(true);
+				generateMethodsButton.innerHTML = 'Generate methods';
+				generateMethodsButton.classList.remove('disabled');
+			}, 1);
+		});
+		settings.querySelector('button.done').addEventListener('click', function () {
+			var screenSize = screenSizeSelector.value.split(',');
+			localStorage.setItem(js2me.storageName + 'width', screenSize[0]);
+			localStorage.setItem(js2me.storageName + 'height', screenSize[1]);
+			localStorage.setItem(js2me.storageName + 'fullHeight', screenSize[2]);
+			settings.style.top = '100%';
+		});
 		window.addEventListener('keyup', function () {
 			js2me.sendKeyReleasedEvent();
 		});
@@ -54,9 +86,6 @@
 		for (var i in buttonsMapping) {
 			(function (key) {
 				var button = keypad.querySelector('#' + i);
-				/*button.addEventListener('mousedown', function() {
-					js2me.sendKeyPressEvent(key);
-				});*/
 				button.addEventListener('touchstart', function() {
 					js2me.sendKeyPressEvent(key);
 				});
@@ -65,15 +94,15 @@
 				});
 			})(buttonsMapping[i]);
 		}
-		//document.getElementById('top').style.display = 'none';
-		document.querySelector('#show.topbutton').addEventListener('touchstart', function () {
+		document.getElementById('top').style.display = 'none';
+		document.querySelector('#show.topbutton').addEventListener('click', function () {
 			document.getElementById('top').style.display = '';
 		});
-		document.querySelector('#hide.topbutton').addEventListener('touchstart', function () {
+		document.querySelector('#hide.topbutton').addEventListener('click', function () {
 			document.getElementById('top').style.display = 'none';
 		});
-		document.querySelector('#exit.topbutton').addEventListener('touchstart', function () {
-			location.href='index.html';
+		document.querySelector('#exit.topbutton').addEventListener('click', function () {
+			location.reload();
 		});
 		var parts = location.search.substr(1).split('&');
 		for (var i = 0; i < parts.length; i++) {
@@ -84,49 +113,28 @@
 			js2me.config[parts[i].split('=')[0]] = value;
 		}
 		var buttons = document.getElementsByTagName('a');
-		
-		function drawCoverage(data) {
-			var source = document.createElement('pre');
-			source.className = 'source';
-			document.getElementById('blanket-main').appendChild(source);
-			for (var i in data.files) {
-				for (var j = 0; j < data.files[i].source.length; j++) {
-					var coverage = data.files[i][j + 1];
-					var line = data.files[i].source[j];
-					var lineElement = document.createElement('div');
-					if (coverage > 0) {
-						lineElement.className = 'good';
-					}
-					if (coverage == 0) {
-						lineElement.className = 'bad';
-					}
-					lineElement.innerHTML = line;
-					source.appendChild(lineElement);
-				}
-			}
+		var selector = document.getElementById('file-selector');
+		if (localStorage.getItem('height') == null) {
+			localStorage.setItem('height', js2me.config.height)
 		}
-		
-		js2me.loadJAR(js2me.config['src'], function () {
-			document.getElementById('screen').innerHTML = '';
-			if (js2me.config.test) {
-				document.querySelector('script[src="' + js2me.config.test + '"]').setAttribute('data-cover');
-				var script = document.createElement('script');
-				script.src = 'js/blanket/blanket.js';
-				script.addEventListener('load', function () {
-					blanket._loadSourceFiles(function () {
-						js2me.launchMidlet(1);
-						//TODO: no better idea
-						setTimeout(function () {
-							var data = {};
-							blanket.report(data);
-							drawCoverage(data);
-						}, 5000);
-					});
-				});
-				document.head.appendChild(script);
-			} else {
+		if (localStorage.getItem('width') == null) {
+			localStorage.setItem('width', js2me.config.width)
+		}
+		if (localStorage.getItem('fullHeight') == null) {
+			localStorage.setItem('fullHeight', js2me.config.fullHeight)
+		}
+		function loadConfig(name) {
+			return (js2me.config[name] = parseInt(localStorage.getItem(js2me.storageName + name)) ||
+					parseInt(localStorage.getItem(name)));
+		}
+		selector.addEventListener('change', function () {
+			js2me.loadJAR(selector.files[0], function () {
+				document.getElementById('screen').innerHTML = '';
+				loadConfig('width');
+				loadConfig('height');
+				loadConfig('fullHeight');
 				js2me.launchMidlet(1);
-			}
+			});
 		});
 	};
 	js2me.setFullscreen = function (enabled) {

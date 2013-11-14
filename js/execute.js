@@ -1,3 +1,12 @@
+/**
+ * Executes given program.
+ * program An object returned by js2me.generateProgram
+ * locals An array of local variables
+ * constantPool 
+ * exceptions
+ * restoreInfo
+ * callback
+ */
 js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo, callback) {
 	var context = {
 		stack: [],

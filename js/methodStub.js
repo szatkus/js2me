@@ -36,11 +36,11 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 			return js2me.execute(data, locals, constantPool, exceptions, null, callback);
 		}
 	};
-	stub.isUnsafe = true;
+	stub.isUnsafe = !localStorage.getItem(js2me.storageName + methodName);
 	stub.data = data;
 	return stub;
 };
-js2me.generateAllMethods = function () {
+js2me.generateAllMethods = function (force) {
 	var generated = 0;
 	for (var i in js2me.usedMethods) {
 		var separator = i.indexOf('.prototype.');
@@ -49,11 +49,12 @@ js2me.generateAllMethods = function () {
 		var methodName = i.substr(separator + 11);
 		var data;
 		if (classObj && classObj.prototype[methodName] && (data = classObj.prototype[methodName].data)) {
-			if (data.content == null || data.regenerate) {
+			if (data.content == null || data.regenerate || force) {
 				js2me.generateProgram(classObj.prototype[methodName].data);
 				generated++;
 			}
 		}
 	}
 	console.log(generated + ' methods have been generated.');
+	return generated;
 };

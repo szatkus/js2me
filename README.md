@@ -15,24 +15,13 @@ App
 -------
 It exists. You only have to clone this repository and push to your phone. If you don't want any superfluous files you can use `$ ./buildApp.sh`.
 
-UI/UX
--------
-Poor.
-
 Contribution
 --------------
 Feel free to submit a pull requests. There's also [short guide](tree/master/js/me) how to write your own pseudo-Java classes.
 
 Usage
 -------------------
-To use it in browser you must host it on some HTTP server and open launch.html.
-
-Launch parameters:
-* src - path to jar file
-* width, height - size of display
-* fullHeight - height of fullscreen display
-* app=anything - app mode (disables System.out.print)
-example: /launch.html?src=out/test.jar&width=320&height=240
+Just open index.html. Works in Firefox and Chromium.
 
 Milestones
 --------------
@@ -59,8 +48,10 @@ Milestone 0.7
 
  * more performance (done)
  * more tests (done)
- * repair canvas
+ * repair canvas (done)
  * method generating
+ * file input (done)
+ * settings
  * error popup (done)
  * orientation (done)
  * remove hover (done)

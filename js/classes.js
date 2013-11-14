@@ -51,6 +51,20 @@
 		return classObj;
 	};
 	/**
+	 * Finds classes which implement given class (including that class).
+	 * @param {string} path Class name.
+	 * @return {[constructor]} Class constructors.
+	 */
+	js2me.findSubclasses = function (path) {
+		var result = [];		
+		iterateClasses(javaRoot, 'javaRoot', function (classObj) {
+			if (classObj instanceof Function && classObj.prototype.isImplement(path)) {
+				result.push(classObj);
+			}
+		});
+		return result;
+	};
+	/**
 	 * Creates a constructor from given prototype and put into class bucket (i. e. result of executing current js file).
 	 * @param {object} proto Object which is used as prototype.
 	 */
@@ -207,7 +221,7 @@
 				throw new Error('Dependencies cannot be satisfied.');
 			}
 			var classes = {};
-			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj) {
+			iterateClasses(javaRoot, 'javaRoot', function (obj) {
 				if (obj.prototype) {
 					if (obj.prototype.require == null) {
 						obj.prototype.require = [];
@@ -220,6 +234,9 @@
 								}
 							}
 						}
+					}
+					if (obj.prototype.interfaces instanceof Array) {
+						obj.prototype.require = obj.prototype.require.concat(obj.prototype.interfaces);
 					}
 					if (!obj.prototype.superClass && obj != javaRoot.$java.$lang.$Object) {
 						obj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
