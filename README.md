@@ -49,9 +49,9 @@ Milestone 0.7
  * more performance (done)
  * more tests (done)
  * repair canvas (done)
- * method generating
+ * method generating (done)
  * file input (done)
- * settings
+ * settings (done)
  * error popup (done)
  * orientation (done)
  * remove hover (done)
