@@ -42,8 +42,11 @@ js2me.createClass({
 	 * public static void yield()
 	 */
 	$yield$$V: js2me.markUnsafe(function () {
-		var currentThread = javaRoot.$java.$lang.$Thread.prototype.$currentThread$$Ljava_lang_Thread_()
-		currentThread.$sleep$J$V({lo: 10});
+		js2me.suspendThread = true;
+		var threadId = js2me.currentThread;
+		setTimeout(function () {
+			js2me.restoreThread(threadId);
+		}, 10);
 	}),
 	/*
 	 * public static Thread currentThread()
@@ -62,8 +65,6 @@ js2me.createClass({
 	 */
 	$activeCount$$I: function () {
 		return js2me.threads.length;
-	},
-	package: 'javaRoot.$java.$lang',
-	name: '$Thread'
+	}
 });
 

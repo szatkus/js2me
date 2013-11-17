@@ -1,3 +1,4 @@
+js2me.lastFieldId = 1;
 /**
  * Converts Java class definition into JavaScript.
  * @param {BufferStream} stream The class file format compliant with JVM specifications.
@@ -150,7 +151,17 @@ js2me.convertClass = function (stream) {
 				constantPool[index] = constant.value;
 			}
 			if (tag == TAG_CLASS_INFO) {
-				var name = resolveConstant(constant.nameIndex)
+				var name = resolveConstant(constant.nameIndex);
+				var isClass = true;
+				var arrayPrefix = name.substr(0, name.lastIndexOf('[') + 1);
+				name = name.substr(name.lastIndexOf('[') + 1);
+				if (arrayPrefix.length > 0) {
+					isClass = false;
+				}
+				if (name[0] === 'L' && name[name.length - 1] === ';') {
+					isClass = true;
+					name = name.substring(1, name.length - 1);
+				}
 				var nameElements = name.split('/');
 				var className = '';
 				for (var i in nameElements) {
@@ -159,11 +170,13 @@ js2me.convertClass = function (stream) {
 					}
 					className += '$' + nameElements[i];
 				}
-				className = js2me.JAVA_ROOT + '.' + className;
 				
-				if (className.indexOf('[') == -1 ) {
+				
+				if (isClass) {
+					className = 'javaRoot.' + className;
 					newClass.prototype.require.push(className);
 				}
+				className = arrayPrefix + className;
 				constantPool[index] = {
 					className: className
 				};
@@ -226,24 +239,26 @@ js2me.convertClass = function (stream) {
 			var type = constantPool[stream.readUint16()];
 			var attributes = readAttributes();
 			var fieldName = escapeName(name) + escapeType(type);
+			newClass.prototype[fieldName] = js2me.lastFieldId;
 			if (type == 'B' || type == 'S' || type == 'F' || type == 'I') {
-				newClass.prototype[fieldName] = 0;
+				newClass.prototype['$' + js2me.lastFieldId] = 0;
 			}
 			if (type == 'D') {
-				newClass.prototype[fieldName] = js2me.dconst0;
+				newClass.prototype['$' + js2me.lastFieldId] = js2me.dconst0;
 			}
 			if (type == 'J') {
-				newClass.prototype[fieldName] = {hi: 0, lo: 0}
+				newClass.prototype['$' + js2me.lastFieldId] = {hi: 0, lo: 0}
 			}
 			if (type == 'C') {
-				newClass.prototype[fieldName] = 0;
+				newClass.prototype['$' + js2me.lastFieldId] = 0;
 			}
 			if (type == 'Z') {
-				newClass.prototype[fieldName] = 0;
+				newClass.prototype['$' + js2me.lastFieldId] = 0;
 			}
 			if (attributes['ConstantValue']) {
-				newClass.prototype[fieldName] = attributes['ConstantValue'];
+				newClass.prototype['$' + js2me.lastFieldId] = attributes['ConstantValue'];
 			}
+			js2me.lastFieldId++;
 		}
 	}
 	function readAttributes(name, type, accessFlags) {

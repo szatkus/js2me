@@ -1,4 +1,5 @@
 js2me.createClass({
+	$outLjava_io_PrintStream_: 'out',
 	/*
 	 * public static long currentTimeMillis()
 	 */
@@ -8,7 +9,7 @@ js2me.createClass({
 	},
 	_clinit$$V: function (callback) {
 		// disable output in app
-		javaRoot.$java.$lang.$System.prototype.$outLjava_io_PrintStream_ = new javaRoot.$java.$io.$PrintStream({
+		javaRoot.$java.$lang.$System.prototype.$out = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
 			$write$_B$V: function (b) {
 				if (!js2me.config.app) {

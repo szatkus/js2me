@@ -58,6 +58,10 @@ Milestone 0.7
  * bug with doubles (done)
  * method stub (done)
 
+Milestone 0.8
+
+ * Run Adventures of Ted
+
 Milestone X
 
  * native exceptions catching

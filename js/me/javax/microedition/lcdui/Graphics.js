@@ -2,6 +2,7 @@ js2me.createClass({
 	construct: function (canvas) {
 		this.element = canvas;
 		this.context = canvas.getContext('2d');
+		this.context.restore();
 		this.context.mozImageSmoothingEnabled = false;
 		this.context.textBaseline = 'top';
 		this.$setColor$III$V(0, 0, 0);
@@ -12,6 +13,7 @@ js2me.createClass({
 		this.clipY = 0;
 		this.clipWidth = canvas.width;
 		this.clipHeight = canvas.height;
+		this.context.save();
 	},
 	$HCENTERI: 1,
 	$VCENTERI: 2,
@@ -148,6 +150,28 @@ js2me.createClass({
 		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
 		this.context.stroke();
 		this.context.closePath();
+		this.context.restore();
+	},
+	/*
+	 * public void drawRGB(int[] rgbData, int offset, int scanlength, int x, int y, int width, int height, boolean processAlpha)
+	 */
+	$drawRGB$_IIIIIIIZ$V: function (data, offset, length, x, y, width, height, processAlpha) {
+		//TODO: maybe little faster...
+		var oldColor = this.$getColor$$I();
+		for (var i = 0; i < width * height; i++) {
+			var pixel = data[offset + length * i];
+			var red = (pixel & 0xff0000) >> 16;
+			var green = (pixel & 0x00ff00) >> 8;
+			var blue = (pixel & 0x0000ff);
+			var alpha = 1;
+			if (processAlpha) {
+				alpha = pixel / 0x100000000;
+			}
+			var color = 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
+			this.context.fillStyle = color;
+			this.context.fillRect(x + i % width, y + Math.floor(i / width), 1, 1);
+		}
+		this.$setColor$I$V(oldColor);
 	},
 	/*
 	 * public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle)
@@ -156,6 +180,7 @@ js2me.createClass({
 		this.drawArcPath(x, y, width, height, startAngle, arcAngle);
 		this.context.fill();
 		this.context.closePath();
+		this.context.restore();
 	},
 	/*
 	 * public void setFont(Font font)

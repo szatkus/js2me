@@ -47,7 +47,7 @@ js2me.createClass({
 	$addRecord$_BII$I: function (data, offset, numBytes) {
 		var id = parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
 		localStorage.setItem(this.storageName + 'size', id);
-		this.$setRecord$I_BII$V(id, data, offset, numBytes);
+		this.$setRecord$I_BII$V(id - 1, data, offset, numBytes);
 	},
 	/*
 	 * 

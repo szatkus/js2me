@@ -42,9 +42,9 @@ js2me.createClass({
 	 */
 	$callSerially$Ljava_lang_Runnable_$V: function (r) {
 		a = 1;
-		setTimeout(function () {
+		js2me.launchThread(function () {
 			r.$run$$V();
-		}, 1);
+		});
 	},
 	/*
 	 * public Displayable getCurrent()

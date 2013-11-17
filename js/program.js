@@ -551,23 +551,26 @@ js2me.generateProgram = function (data) {
 	// getfield
 	generators[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
+		var classObj = js2me.findClass(field.className);
+		var fieldId = classObj.prototype[field.name];
 		return 'var obj = context.stack.pop();\n' +
 				'if (obj == null) {\n' +
 				'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
 				'}\n' +
-				'context.stack.push(obj.' + field.name + ');\n';
+				'context.stack.push(obj.$' + fieldId + ');\n';
 	};
 	// getstatic
 	generators[0xb2] = function () {
 		var field = constantPool[stream.readUint16()];
-		var obj = js2me.findClass(field.className);
-		if (obj.prototype && obj.prototype.initialized) {
-			return 'context.stack.push(' + field.className + '.prototype.' + field.name + ');\n'
+		var classObj = js2me.findClass(field.className);
+		var fieldId = classObj.prototype[field.name];
+		if (classObj.prototype && classObj.prototype.initialized) {
+			return 'context.stack.push(' + field.className + '.prototype.$' + fieldId+ ');\n'
 		} else {
 			return function (context) {
 				var obj = js2me.findClass(field.className);
 				js2me.initializeClass(obj, function () {
-					context.stack.push(obj.prototype[field.name]);
+					context.stack.push(obj.prototype['$' + fieldId]);
 				});
 			};
 		}
@@ -833,7 +836,11 @@ js2me.generateProgram = function (data) {
 			var result;
 			var classObj = js2me.findClass(methodInfo.className);
 			var isInvocationSafe = true;
-			var subclasses = js2me.findSubclasses(methodInfo.className);
+			if (isVirtual) {
+				var subclasses = js2me.findSubclasses(methodInfo.className);
+			} else {
+				var subclasses = [js2me.findClass(methodInfo.className)];
+			}
 			for (var i = 0; i < subclasses.length; i++) {
 				if (subclasses[i].prototype[methodInfo.name] && subclasses[i].prototype[methodInfo.name].isUnsafe) {
 					isInvocationSafe = false;
@@ -853,10 +860,6 @@ js2me.generateProgram = function (data) {
 			} else {
 				body += 'if (context.saveResult && !js2me.suspendThread) {\n' +
 					'	context.stack.push(result);\n' +
-					'}\n';
-				body += 'if (!method.isUnsafe) {\n' +
-					'	context.regenerate = true;\n' +
-					'	context.hints[' + currentOpIndex + '] = true;\n' +
 					'}\n';
 				result = new Function('context', body);
 				isSubfunctionSafe = false;
@@ -1140,11 +1143,14 @@ js2me.generateProgram = function (data) {
 		var dimensions = stream.readUint8();
 		return function (context) {
 			var counts = [];
+			var className = type;
 			for (var i = 0; i < dimensions; i++) {
 				counts[i] = context.stack.pop();
 			}
+			className = className.substr(1);
 			counts.reverse();
-			function setLength(element, depth) {
+			function setLength(element, depth, className) {
+				className = className.substr(1);
 				if (depth + 1 == dimensions) {
 					for (var i = 0; i < counts[depth]; i++) {
 						if (type.indexOf('L') == -1) {
@@ -1164,11 +1170,13 @@ js2me.generateProgram = function (data) {
 				}
 				for (var i = 0; i < counts[depth]; i++) {
 					element[i] = [];
-					setLength(element[i], depth + 1);
+					element[i].className = className;
+					setLength(element[i], depth + 1, className);
 				}
 			}
 			var array = [];
-			setLength(array, 0);
+			array.className = className;
+			setLength(array, 0, className);
 			context.stack.push(array);
 		};
 	};
@@ -1225,22 +1233,25 @@ js2me.generateProgram = function (data) {
 	// putfield
 	generators[0xb5] = function () {
 		var field = constantPool[stream.readUint16()];
+		var classObj = js2me.findClass(field.className);
+		var fieldId = classObj.prototype[field.name];
 		return 'var value = context.stack.pop();\n' +
 			'var obj = context.stack.pop();\n' +
-			'obj.' + field.name + ' = value;\n';
+			'obj.$' + fieldId + ' = value;\n';
 	}
 	// putstatic
 	generators[0xb3] = function () {
 		var field = constantPool[stream.readUint16()];
-		var obj = js2me.findClass(field.className);
-		if (obj.prototype && obj.prototype.initialized) {
-			return field.className + '.prototype.' + field.name + ' = context.stack.pop();\n'
+		var classObj = js2me.findClass(field.className);
+		var fieldId = classObj.prototype[field.name];
+		if (classObj.prototype && classObj.prototype.initialized) {
+			return field.className + '.prototype.$' + fieldId + ' = context.stack.pop();\n'
 		} else {
 			return function (context) {
 				var value = context.stack.pop();
 				var obj = js2me.findClass(field.className);
 				js2me.initializeClass(obj, function () {
-					obj.prototype[field.name] = value;
+					obj.prototype['$' + fieldId] = value;
 				});
 			};
 		}
@@ -1510,17 +1521,20 @@ js2me.generateProgram = function (data) {
 				if (i > 0) {
 					localName = 'local' + i;
 				} else {
-					localName = 'this';
+					localName = '_this';
 				}
 			} else  {
 				localName = 'local' + i;
 			}
 			methodBody = methodBody.replace(new RegExp('context\\.locals\\[' + i + '\\]', 'g'), localName);
-			if (localName != 'this') {
+			if (localName != '_this') {
 				if (args.length < data.argumentsTypes.length) {
 					args.push(localName);
 					if (data.argumentsTypes[args.length - 1] === 'D' || data.argumentsTypes[args.length - 1] === 'J') {
 						i++;
+						localName = 'local' + i;
+						methodBody = methodBody.replace(new RegExp('context\\.locals\\[' + i + '\\]', 'g'), localName);
+						methodBody = 'var ' + localName + ';\n' + methodBody;
 					}
 				} else {
 					methodBody = 'var ' + localName + ';\n' + methodBody;
@@ -1537,6 +1551,7 @@ js2me.generateProgram = function (data) {
 		methodBody = methodBody.replace(new RegExp('context\\.constantPool', 'g'), 'constantPool');
 		methodBody = 'var functionResult;\n' + methodBody;
 		methodBody = 'var stack = [];\n' + methodBody;
+		methodBody = 'var _this = this;\n' + methodBody;
 		methodBody = 'var constantPool = ' + methodName + '.constantPool;\n' + methodBody;
 		// dear Chromium developers, I love you!
 		methodBody = '//@ sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '.js\n' + methodBody;

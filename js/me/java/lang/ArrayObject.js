@@ -1,8 +1,8 @@
 js2me.createClass({
 	construct: function (array) {
-		this.className = array.className;
+		this.className = '[' + array.className;
 		if (this.className == null) {
-			throw new Error('unkown array');
+			throw new Error('unknown array');
 		}
 	}
 });
