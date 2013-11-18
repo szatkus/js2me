@@ -79,11 +79,21 @@ js2me.createClass({
 			image.element.getContext('2d').drawImage(imageElement, 0, 0);
 			js2me.restoreThread(threadId);
 		};
-		imageElement.src = js2me.bytesToDataURI(data, offset, length, mime);
+		var isError = false;
+		imageElement.onerror = function () {
+			isError = true;
+			js2me.restoreThread(threadId);
+		};
+		var url = js2me.bytesToDataURI(data, offset, length, mime);
+		console.log(url.length);
+		imageElement.src = url;
 		//console.log(dataURI);
 		js2me.suspendThread = true;
 		var threadId = js2me.currentThread;
 		js2me.restoreStack[threadId] = [function () {
+			if (isError) {
+				throw new javaRoot.$java.$io.$IOException('Cannot load image');
+			}
 			return image;
 		}];
 		return image;

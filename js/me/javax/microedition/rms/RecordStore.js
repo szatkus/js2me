@@ -39,7 +39,7 @@ js2me.createClass({
 	 */
 	$getLastModified$$J: function () {
 		var time = parseInt(localStorage.getItem(this.storageName + 'lastModified'));
-		return new js2me.Long(0, time);
+		return  {hi: Math.floor(time / 0x100000000), lo: time % 0x100000000};
 	},
 	/*
 	 * public void addRecordListener(RecordListener listener)
@@ -65,6 +65,9 @@ js2me.createClass({
 			throw new javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException();
 		}
 		var result = [];
+		if (array[0] === '') {
+			return result;
+		}
 		for (var i = 0; i < array.length; i++) {
 			result[i] = parseInt(array[i]);
 		}
@@ -126,7 +129,5 @@ js2me.createClass({
 		'javaRoot.$javax.$microedition.$rms.$RecordEnumerationImpl', 
 		'javaRoot.$javax.$microedition.$rms.$RecordStoreNotFoundException',
 		'javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException'
-	],
-	package: 'javaRoot.$javax.$microedition.$rms',
-	name: '$RecordStore'
+	]
 });

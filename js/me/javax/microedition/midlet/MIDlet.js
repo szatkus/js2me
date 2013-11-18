@@ -20,8 +20,7 @@ js2me.createClass({
 		if (property != null) {
 			return new javaRoot.$java.$lang.$String(property);
 		}
-	},
-	package: 'javaRoot.$javax.$microedition.$midlet',
-	name: '$MIDlet'
+		return null;
+	}
 });
 

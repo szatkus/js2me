@@ -19,7 +19,7 @@ class Game extends Canvas {
                 g.setColor(0, 255, 0);
                 g.drawRect(30, 20, 20, 150);
                 g.setColor(255, 255, 0);
-                g.fillRect(130, 20, 20, 150);
+                //g.fillRect(130, 20, 20, 150);
                 g.drawLine(50, 50, 40, 120);
                 g.setClip(50, 50, 10, 10);
                 g.fillRect(0, 0, 100, 150);

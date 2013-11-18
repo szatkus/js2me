@@ -124,6 +124,8 @@ js2me.createClass({
 		}
 		this.array[index] = obj;
 	},
+	$setSize$I$V: function () {
+	},
 	/*
 	 * public int size()
 	 */

@@ -60,7 +60,8 @@ Milestone 0.7
 
 Milestone 0.8
 
- * Run Adventures of Ted
+ * Run Tomb Raider (done)
+ * Run GTA: Chinatown Wars
 
 Milestone X
 

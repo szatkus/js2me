@@ -1,6 +1,6 @@
 js2me.createClass({
 	construct: function (text) {
-		this.text = text
+		this.text = text || '';
 	},
 	/*
 	 * public String()

@@ -129,19 +129,19 @@ js2me.createClass({
 	 * public StringBuffer insert(int offset, char c)
 	 */
 	$insert$IC$Ljava_lang_StringBuffer_: function (offset, value) {
-		return this.insert(String.fromCharCode(value));
+		return this.insert(offset, String.fromCharCode(value));
 	},
 	/*
 	 * public StringBuffer insert(int offset, int i)
 	 */
 	$insert$II$Ljava_lang_StringBuffer_: function (offset, value) {
-		return this.insert(value);
+		return this.insert(offset, value);
 	},
 	/*
 	 * public StringBuffer insert(int offset, String str)
 	 */
 	$insert$ILjava_lang_String_$Ljava_lang_StringBuffer_: function (offset, str) {
-		return this.insert(str.text);
+		return this.insert(offset, str.text);
 	},
 	/*
 	 * public void setCharAt(int index, char ch)

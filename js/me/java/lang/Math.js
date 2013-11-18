@@ -12,7 +12,7 @@ js2me.createClass({
 	 * public static int max(int a, int b)
 	 */
 	$max$JJ$J: function (a, b) {
-		if (a.cmp(b) == 1) {
+		if (js2me.lcmp(a, b) == 1) {
 			return a;
 		} else {
 			return b;
@@ -20,7 +20,7 @@ js2me.createClass({
 	},
 	
 	$min$JJ$J: function (a, b) {
-		if (a.cmp(b) == 1) {
+		if (js2me.lcmp(a, b) == 1) {
 			return b;
 		} else {
 			return a;

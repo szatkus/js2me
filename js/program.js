@@ -691,19 +691,7 @@ js2me.generateProgram = function (data) {
 		js2me.generateOverflowChecking(32) +
 		'context.stack.push(value);\n');
 	// if_acmpeq
-	generators[0xa5] = function () {
-		var index = stream.index + stream.readInt16() - 1;
-		jumpTarget[currentOpIndex] = ['===', index];
-		jumpTo[index]++;
-		jumpFrom[currentOpIndex]++;
-		return function (context) {
-			var b = context.stack.pop();
-			var a = context.stack.pop();
-			if (a === b) {
-				goto(context, index);
-			}
-		};
-	};
+	generators[0xa5] = generateGoto('===');
 	// if_acmpne
 	generators[0xa6] = generateGoto('!==');
 	// if_icmpeq

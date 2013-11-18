@@ -1,8 +1,15 @@
 js2me.createClass({
 	/*
-	 * public Hashtable(int initialCapacity)
+	 * public Hashtable()
 	 */
 	_init$$V: function () {
+		this.array = [];
+		this.keys = [];
+	},
+	/*
+	 * public Hashtable(int initialCapacity)
+	 */
+	_init$I$V: function () {
 		this.array = [];
 		this.keys = [];
 	},
