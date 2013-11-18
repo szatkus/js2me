@@ -27,25 +27,25 @@ js2me.createClass({
 		font.face = 'arial';
 		font.height = 16;
 		font.style = '';
-		if (size & this.prototype.$SIZE_SMALLI) {
+		if (size & this.$SIZE_SMALLI) {
 			font.height = 12;
 		}
-		if (size & this.prototype.$SIZE_LARGEI) {
+		if (size & this.$SIZE_LARGEI) {
 			font.height = 20;
 		}
-		if (size & this.prototype.$FACE_MONOSPACEI) {
+		if (size & this.$FACE_MONOSPACEI) {
 			font.face = 'monospace';
 		}
-		if (size & this.prototype.$FACE_MONOSPACEI) {
+		if (size & this.$FACE_MONOSPACEI) {
 			font.face = 'monospace';
 		}
-		if (style & this.prototype.$SIZE_BOLDI) {
+		if (style & this.$SIZE_BOLDI) {
 			font.style += 'bold ';
 		}
-		if (style & this.prototype.$SIZE_ITALICI) {
+		if (style & this.$SIZE_ITALICI) {
 			font.style += 'italic ';
 		}
-		if (style & this.prototype.$SIZE_UNDERLINEDI) {
+		if (style & this.$SIZE_UNDERLINEDI) {
 			//TODO
 			console.log('underline unsupported');
 		}

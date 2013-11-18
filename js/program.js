@@ -791,17 +791,16 @@ js2me.generateProgram = function (data) {
 				stream.readUint16();
 			}
 			var argumentsCount = methodInfo.type.argumentsTypes.length;
-			var body = 'var args = new Array(' + argumentsCount + ')\n';
+			var body = '';
 			for (var i = argumentsCount - 1; i >= 0; i--) {
-				body += 'args[' + i + '] = context.stack.pop();\n';
+				body += 'var args' + i + ' = context.stack.pop();\n';
 			}
 			if (js2me.profile) {
 				//body += 'js2me.calledMethods["' + methodInfo.className + '.prototype.' + methodInfo.name + '"] = js2me.calledMethods["' + methodInfo.className + '.prototype.' + methodInfo.name + '"] + 1 || 1;\n';
 			}
 			//body += 'console.debug("'+methodInfo.className + '->' + methodInfo.name +'");console.debug(args);\n';
-			if (isStatic) {
-				body += 'var obj = ' + methodInfo.className + ';\n';
-			} else {
+			
+			if (!isStatic) {
 				body += 'var obj = context.stack.pop();\n' +
 				'if (obj == null) {\n' +
 				'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
@@ -810,17 +809,23 @@ js2me.generateProgram = function (data) {
 				'	obj = new javaRoot.$java.$lang.$ArrayObject(obj);\n' +
 				'}\n';
 			}
-			if (isVirtual) {
-				body += 'var method = obj.' + methodInfo.name + ';\n';
-			} else {
-				body += 'var method = ' + methodInfo.className + '.prototype.' + methodInfo.name + ';\n';
-			}
+			
 			var isSaveResult = (methodInfo.type.returnType != 'V');
-			body += 'if (!method) {\n' +
-				'	throw new Error("Not implemented ' + methodInfo.className + '->' + methodInfo.name + '");\n' + 
-				'}\n' +
-				'context.saveResult = ' + isSaveResult + ';\n' +
-				'var result = method.apply(obj, args);\n';
+			body += 'context.saveResult = ' + isSaveResult + ';\n';
+			var args = '';
+			for (var i = 0; i < argumentsCount; i++) {
+				args += ', args' + i;
+			}
+			body += 'var result = ';
+			if (isVirtual) {
+				body += 'obj.' + methodInfo.name + '(' + args.substr(1) + ');\n';
+			} else {
+				if (isStatic) {
+					body += methodInfo.className + '.prototype.' + methodInfo.name + '(' + args.substr(1) + ');\n';
+				} else {
+					body += methodInfo.className + '.prototype.' + methodInfo.name + '.call(obj' + args + ');\n';
+				}
+			}
 			var result;
 			var classObj = js2me.findClass(methodInfo.className);
 			var isInvocationSafe = true;

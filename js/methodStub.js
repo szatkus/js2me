@@ -13,7 +13,7 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 	};
 	var stub = function () {
 		var locals = [];
-		if (this.constructor != Function) {
+		if (!data.isStatic) {
 			locals.push(this);
 		}
 		for (var i = 0; i < arguments.length; i++) {
