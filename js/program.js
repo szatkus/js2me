@@ -99,6 +99,7 @@ js2me.generateProgram = function (data) {
 			'}\n' +
 			'var array = new Array(length);\n' +
 			'array.className = "' + type.className + '";\n' +
+			'for (var i = 0; i < array.length; i++) array[i] = null;\n' +
 			'context.stack.push(array);\n';
 	};
 	// areturn
@@ -580,12 +581,12 @@ js2me.generateProgram = function (data) {
 			var index = stream.index + stream.readInt16() - 1;
 			jumpTo[index]++;
 			jumpTarget[currentOpIndex] = index;
-			jumpFrom[currentOpIndex]++;
 			var body = 'context.position = /*' + index + '*/; return;';
 			if (type) {
 				if (type.indexOf(' ') === -1) {
 					body = 'var b = context.stack.pop();\n' +
 						'var a = context.stack.pop();\n' +
+						'if (a !== b && a == null && b == null) debugger;\n' +
 						'//STOP\nif (a ' + type + ' b) {' + body + '}//STOP\n';
 				} else {
 					body = 'var a = context.stack.pop();\n' +
@@ -848,16 +849,15 @@ js2me.generateProgram = function (data) {
 						'	throw new Error("Safe method ' + methodInfo.className + '->' + methodInfo.name + ' just suspended the thread!");\n' + 
 						'}\n';
 				}
-				result = body;
 				isSubfunctionSafe = true;
 			} else {
 				body += 'if (context.saveResult && !js2me.suspendThread) {\n' +
 					'	context.stack.push(result);\n' +
 					'}\n';
-				result = new Function('context', body);
+				jumpFrom[currentOpIndex]++;
 				isSubfunctionSafe = false;
 			}
-			return result;
+			return body;
 		}  catch (e) {
 			console.error(e.message);
 		}
@@ -1094,22 +1094,25 @@ js2me.generateProgram = function (data) {
 		context.stack.push(result);
 	};
 	// monitoenter
-	generators[0xc2] = function (context) {
-		var obj = context.stack.pop();
-		if (obj.monitorCount == null) {
-			obj.monitorCount = [];
-		}
-		if (obj.monitorQueue == null) {
-			obj.monitorQueue = [];
-		}
-		if (obj.monitorCount.length == 0 || obj.monitorCount[0] == js2me.currentThread) {
-			obj.monitorCount.push(js2me.currentThread)
-		} else {
-			obj.monitorQueue.push(js2me.currentThread)
-			js2me.suspendThread = true;
-			context.finish = true;
-			context.saveResult = false;
-		}
+	generators[0xc2] = function () {
+		isSubfunctionSafe = false;
+		return function (context) {
+			var obj = context.stack.pop();
+			if (obj.monitorCount == null) {
+				obj.monitorCount = [];
+			}
+			if (obj.monitorQueue == null) {
+				obj.monitorQueue = [];
+			}
+			if (obj.monitorCount.length == 0 || obj.monitorCount[0] == js2me.currentThread) {
+				obj.monitorCount.push(js2me.currentThread)
+			} else {
+				obj.monitorQueue.push(js2me.currentThread)
+				js2me.suspendThread = true;
+				context.finish = true;
+				context.saveResult = false;
+			}
+		};
 	};
 	// monitoexit
 	generators[0xc3] = function (context) {
@@ -1410,45 +1413,70 @@ js2me.generateProgram = function (data) {
 				var run = true;
 				while (i + 1 < program.length && program[i + 1].constructor === String && run) {
 					run = false;
-					if (jumpTo[reversedMapping[i + 1]] === 0) {
-						if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
-							jumpFrom[reversedMapping[i]]++;
-						}
-						program[i] += program[i + 1];
-						program.splice(i + 1, 1);
-						reversedMapping.splice(i + 1, 1);
-						isOptimizing = true;
-						run = true;
-					} else {
-						var regexp = new RegExp('context.position = /\\*' + reversedMapping[i + 1] + '\\*/', 'g');
-						var match = program[i].match(regexp);
-						if (match && match.length == jumpTo[reversedMapping[i + 1]]) {
-							var body = 'jmp' + varId + ': do {//STOP\n';
-							body += program[i].replace(regexp, 'break jmp' + varId);
-							body += 'break;} while (true);//STOP\n' + program[i + 1];
-							program[i] = body;
-							varId++;
+					if (jumpFrom[reversedMapping[i]] === 0) {
+						if (jumpTo[reversedMapping[i + 1]] === 0) {
+							if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
+								jumpFrom[reversedMapping[i]] -= jumpFrom[reversedMapping[i + 1]];
+							}
+							program[i] += program[i + 1];
 							program.splice(i + 1, 1);
 							reversedMapping.splice(i + 1, 1);
 							isOptimizing = true;
 							run = true;
-						}
-						var regexp = new RegExp('context.position = /\\*' + reversedMapping[i] + '\\*/', 'g');
-						var match = program[i].match(regexp);
-						if (match) {
-							var body = 'jmp' + varId + ': do {//STOP\n';
-							body += program[i].replace(regexp, 'continue jmp' + varId);
-							body += 'break;} while (true);//STOP\n';
-							program[i] = body;
-							jumpTo[reversedMapping[i]] -= match.length;
-							varId++;
-							isOptimizing = true;
-							run = true;
+						} else {
+							var regexp = new RegExp('context.position = /\\*' + reversedMapping[i + 1] + '\\*/', 'g');
+							var match = program[i].match(regexp);
+							if (match && match.length == jumpTo[reversedMapping[i + 1]]) {
+								var body = 'jmp' + varId + ': do {//STOP\n';
+								body += program[i].replace(regexp, 'break jmp' + varId);
+								body += 'break;} while (true);//STOP\n' + program[i + 1];
+								if (jumpFrom[reversedMapping[i + 1]]  !== 0) {
+									jumpFrom[reversedMapping[i]] -= jumpFrom[reversedMapping[i + 1]]
+								}
+								program[i] = body;
+								varId++;
+								program.splice(i + 1, 1);
+								reversedMapping.splice(i + 1, 1);
+								isOptimizing = true;
+								run = true;
+							}
+							var regexp = new RegExp('context.position = /\\*' + reversedMapping[i] + '\\*/', 'g');
+							var match = program[i].match(regexp);
+							if (match) {
+								var body = 'jmp' + varId + ': do {//STOP\n';
+								body += program[i].replace(regexp, 'continue jmp' + varId);
+								body += 'break;} while (true);//STOP\n';
+								program[i] = body;
+								jumpTo[reversedMapping[i]] -= match.length;
+								varId++;
+								isOptimizing = true;
+								run = true;
+							}
 						}
 					}
 				}
 				program[i] = reduceStackOperations(program[i]);
-				
+				for (var j = 0; j < exceptions.length; j++) {
+					if (exceptions[j].startPc === reversedMapping[i] && exceptions[j].endPc <= reversedMapping[i + 1]) {
+						var body = 'try {//STOP\n';
+						body += program[i];
+						body += '} catch(e) {//STOP\n';
+						if (exceptions[j].catchType != null) {
+							body += '	if (e.isImplement && e.isImplement("' + exceptions[j].catchType.className + '")) {\n';
+						}
+						body += '		context.position = /*' + exceptions[j].handler + '*/; return;\n';
+						if (exceptions[j].catchType != null) {
+							body += '	} else throw e;\n';
+						}
+						body += '}//STOP\n';
+						program[i] = body;
+						jumpTo[reversedMapping[i]]--;
+						jumpFrom[reversedMapping[i]]--;
+						exceptions.splice(j, 1);
+						isOptimizing = true;
+						j--;
+					}
+				}
 			}
 			i++;
 		}

@@ -252,10 +252,10 @@ js2me.generateOverflowChecking = function (bits) {
 		base *= 2;
 	}
 	return 'while (value >= ' + base + ') {\n' +
-		'	value -= ' + base + ' * 2;\n' +
+		'	value -= ' + (base * 2) + ';\n' +
 		'}\n' +
 		'while (value < -' + base + ') {\n' +
-		'	value += ' + base + ' * 2;\n' +
+		'	value += ' + (base * 2) + ';\n' +
 		'}\n';
 };
 js2me.dataToFloat = function (value) {

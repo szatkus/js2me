@@ -240,6 +240,7 @@ js2me.convertClass = function (stream) {
 			var attributes = readAttributes();
 			var fieldName = escapeName(name) + escapeType(type);
 			newClass.prototype[fieldName] = js2me.lastFieldId;
+			newClass.prototype['$' + js2me.lastFieldId] = null;
 			if (type == 'B' || type == 'S' || type == 'F' || type == 'I') {
 				newClass.prototype['$' + js2me.lastFieldId] = 0;
 			}

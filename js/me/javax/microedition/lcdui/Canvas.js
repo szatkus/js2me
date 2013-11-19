@@ -110,7 +110,7 @@ js2me.createClass({
 	},
 	time: 0,
 	/*
-	 * public final void repaint(int x, int y, int width, int height)
+	 * public final void repaint(t)
 	 */
 	$repaint$$V: function () {
 		if (js2me.profile) {
@@ -127,6 +127,13 @@ js2me.createClass({
 		js2me.launchThread(function () {
 			canvas.$paint$Ljavax_microedition_lcdui_Graphics_$V(graphics);
 		});
+	},
+	/*
+	 * public final void repaint(int x, int y, int width, int height)
+	 */
+	$repaint$IIII$V: function () {
+		//TODO: there's some constraints...
+		this.$repaint$$V();
 	},
 	/*
 	 * public int getKeyCode(int gameAction)

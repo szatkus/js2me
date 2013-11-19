@@ -4,7 +4,7 @@ var js2me = {
 	debug: false,
 	stat: 0,
 	calledMethods: {},
-	profile: false,
+	profile: true,
 	storageName: '',
 	config: {
 		app: true,

@@ -1,5 +1,22 @@
 js2me.createClass({
 	/*
+	 * public static Image createImage(InputStream stream)
+	 */
+	$createImage$Ljava_io_InputStream_$Ljavax_microedition_lcdui_Image_: js2me.markUnsafe(function (stream) {
+		if (stream == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		var data = [];
+		var byte;
+		while ((byte = stream.$read$$I()) != -1) {
+			if (byte >= 128) {
+				byte -= 256;
+			}
+			data.push(byte);
+		}
+		return this.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
+	}),
+	/*
 	 * public static Image createImage(int width, int height)
 	 */
 	$createImage$II$Ljavax_microedition_lcdui_Image_: function (width, height) {
