@@ -85,9 +85,7 @@ js2me.createClass({
 			js2me.restoreThread(threadId);
 		};
 		var url = js2me.bytesToDataURI(data, offset, length, mime);
-		console.log(url.length);
 		imageElement.src = url;
-		//console.log(dataURI);
 		js2me.suspendThread = true;
 		var threadId = js2me.currentThread;
 		js2me.restoreStack[threadId] = [function () {

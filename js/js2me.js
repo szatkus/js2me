@@ -7,7 +7,7 @@ var js2me = {
 	profile: false,
 	storageName: '',
 	config: {
-		app: false,
+		app: true,
 		width: 240,
 		height: 266,
 		fullHeight: 320

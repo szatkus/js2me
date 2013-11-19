@@ -1243,6 +1243,7 @@ js2me.generateProgram = function (data) {
 			return function (context) {
 				var value = context.stack.pop();
 				var obj = js2me.findClass(field.className);
+				
 				js2me.initializeClass(obj, function () {
 					obj.prototype['$' + fieldId] = value;
 				});

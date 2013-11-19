@@ -9,10 +9,21 @@ js2me.createClass({
 		this.text = value.text;
 	},
 	/*
-	 * public String()
+	 * public String(byte[] bytes, String enc)
 	 */
 	_init$_BLjava_lang_String_$V: function (data, enc) {
-		this.text = js2me.UTF8ToString(data);
+		if (enc.text.toLowerCase() === 'utf-8') {
+			this.text = js2me.UTF8ToString(data);
+			return;
+		}
+		if (enc.text.toLowerCase() === 'iso-8859-1') {
+			this.text = '';
+			for (var i = 0; i < data.length; i++) {
+				this.text += String.fromCharCode(data[i]);
+			}
+			return;
+		}
+		throw new javaRoot.$java.$io.$UnsupportedEncodingException(enc.text);
 	},
 	/*
 	 * public String()
