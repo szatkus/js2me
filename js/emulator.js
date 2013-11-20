@@ -136,6 +136,32 @@
 				js2me.launchMidlet(1);
 			});
 		});
+		if (js2me.config.src) {
+			var request = new XMLHttpRequest;
+			request.onreadystatechange = function() {
+				if (request.readyState === 4){
+					var blob;
+					if (window.Blob) {
+						blob = new Blob([request.response]);
+					} else {
+						var builder = new (window.BlobBuilder || window.WebKitBlobBuilder);
+						builder.append(request.response);
+						blob = builder.getBlob();
+					}
+					js2me.loadJAR(blob, function () {
+						document.getElementById('screen').innerHTML = '';
+						loadConfig('width');
+						loadConfig('height');
+						loadConfig('fullHeight');
+						js2me.launchMidlet(1);
+					});
+				}
+			};
+			request.open('GET', js2me.config.src);
+			// blob didn't work in phantomjs
+			request.responseType = 'arraybuffer';
+			request.send();
+		}
 	};
 	js2me.setFullscreen = function (enabled) {
 		//TODO

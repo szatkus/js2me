@@ -29,6 +29,7 @@ js2me.loadJAR = function (file, callback) {
 	}
 	
 	js2me.setupJVM(function () {
+		console.log(file);
 		loadReader(new zip.BlobReader(file));
 	});
 }

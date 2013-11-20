@@ -65,8 +65,6 @@ Milestone 0.8
 
 Milestone X
 
- * native exceptions catching
- * Building Blocks
  * MIDI support
  * M3G
  * JavaWorker

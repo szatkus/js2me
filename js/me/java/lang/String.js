@@ -294,7 +294,7 @@ js2me.createClass({
 	 * public String toLowerCase()
 	 */
 	$toLowerCase$$Ljava_lang_String_: function () {
-		new javaRoot.$java.$lang.$String(this.text.toLowerCase());
+		return new javaRoot.$java.$lang.$String(this.text.toLowerCase());
 	},
 	/*
 	 * public String toUpperCase()
