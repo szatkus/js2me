@@ -12,7 +12,7 @@ js2me.createClass({
 	 * public String(byte[] bytes, String enc)
 	 */
 	_init$_BLjava_lang_String_$V: function (data, enc) {
-		if (enc.text.toLowerCase() === 'utf-8') {
+		if (!enc || enc.text.toLowerCase() === 'utf-8') {
 			this.text = js2me.UTF8ToString(data);
 			return;
 		}
@@ -187,7 +187,17 @@ js2me.createClass({
 	 * public String trim()
 	 */
 	$trim$$Ljava_lang_String_: function () {
-		return new javaRoot.$java.$lang.$String(this.text.trim());
+		for (var i = 0; i < this.text.length && this.text.charCodeAt(i) <= 20; i++);
+		var start = i;
+		for (var i = this.text.length - 1; i >= 0 && this.text.charCodeAt(i) <= 20; i--);
+		var end = i + 1;
+		var result;
+		if (end <= start) {
+			result = '';
+		} else {
+			result = this.text.substring(start, end);
+		}
+		return new javaRoot.$java.$lang.$String(result);
 	},
 	/*
 	 * public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)

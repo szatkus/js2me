@@ -61,7 +61,7 @@ Milestone 0.7
 Milestone 0.8
 
  * Run Tomb Raider (done)
- * Run GTA: Chinatown Wars
+ * Run Courage the Coward Dog (done)
 
 Milestone X
 

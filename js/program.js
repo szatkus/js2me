@@ -93,6 +93,7 @@ js2me.generateProgram = function (data) {
 	// anewarray
 	generators[0xbd] = function () {
 		var type = constantPool[stream.readUint16()];
+		//if (type.className == 'javaRoot.$javax.$microedition.$media.$Player') debugger;
 		return 'var length = context.stack.pop();\n' +
 			'if (length < 0) {\n' +
 			'	throw new javaRoot.$java.$lang.$NegativeArraySizeException();\n' +
@@ -581,7 +582,7 @@ js2me.generateProgram = function (data) {
 			var index = stream.index + stream.readInt16() - 1;
 			jumpTo[index]++;
 			jumpTarget[currentOpIndex] = index;
-			var body = 'context.position = /*' + index + '*/; return;';
+			var body = 'context.position = /*' + index + '*/; return "jump";';
 			if (type) {
 				if (type.indexOf(' ') === -1) {
 					body = 'var b = context.stack.pop();\n' +
@@ -1200,20 +1201,19 @@ js2me.generateProgram = function (data) {
 	// newarray
 	generators[0xbc] = function () {
 		var type = stream.readUint8();
-		return function (context) {
-			var length = context.stack.pop();
-			var array = new Array(length);
-			for (var i = 0; i < length; i++) {
-				if (type == 7) {
-					array[i] = js2me.dconst0;
-				} else if (type == 11) {
-					array[i] = {hi: 0, lo: 0};
-				} else {
-					array[i] = 0;
-				}
-			}
-			context.stack.push(array);
-		};
+		var body = 'var length = context.stack.pop();\n' +
+			'var array = new Array(length);\n';
+		body += 'for (var i = 0; i < length; i++) {\n';
+		if (type == 7) {
+			body += 'array[i] = js2me.dconst0;\n';
+		} else if (type == 11) {
+			body += 'array[i] = {hi: 0, lo: 0};\n';
+		} else {
+			body += 'array[i] = 0;\n';
+		}
+		body += '}\n';
+		body += 'context.stack.push(array);\n';
+		return body;
 	}
 	// noop
 	generators[0x00] = ' ';
@@ -1344,6 +1344,7 @@ js2me.generateProgram = function (data) {
 	}
 	
 	var isSubfunctionSafe;
+	var onlyCode = true;
 	while (!stream.isEnd()) {
 		reversedMapping[program.length] = stream.index;
 		currentOpIndex = stream.index;
@@ -1367,6 +1368,8 @@ js2me.generateProgram = function (data) {
 			}
 			if (program[program.length - 1].constructor === String) {
 				program[program.length - 1] = '//0x'+ op.toString(16) +'\n' + program[program.length - 1];
+			} else {
+				onlyCode = false;
 			}
 			isSafe = isSafe && isSubfunctionSafe;
 		} else {
@@ -1489,6 +1492,19 @@ js2me.generateProgram = function (data) {
 			positionMapping[i] = positionMapping[i - 1];
 		}
 	}
+	// Last effort to merge it all
+	if (isSafe && program.length > 1 && onlyCode && data.exceptions.length === 0) {
+		var body = 'var position = 0;\n';
+		body += 'while (true) {\nmain: switch (position) {\n';
+		for (var i = 0; i < program.length; i++) {
+			body += '\ncase ' + i + '://STOP\n';
+			body += program[i]
+				.replace(new RegExp('return "jump"', 'g'), 'break main')
+				.replace(new RegExp('context.position', 'g'), 'position');
+		}
+		body += '}\n}\n';
+		program = [body];
+	}
 	//isSafe = false;
 	for (var i = 0; i < program.length; i++) {
 		if (program[i].constructor === String) {
@@ -1530,6 +1546,7 @@ js2me.generateProgram = function (data) {
 		data.parent.prototype[data.name].isUnsafe = false;
 		localStorage.setItem(js2me.storageName + methodName, 'safe');
 	}
+	
 	// We can compile to native function!
 	if (data.isSafe && data.content.length === 1) {
 		console.log(data.methodName + ' is safe! Compiling to native :)');

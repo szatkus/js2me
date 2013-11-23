@@ -101,7 +101,11 @@ js2me.createClass({
 	 * public boolean isShown()
 	 */
 	$isShown$$Z: function () {
-		return this.element.parentNode != null;
+		if (this.element.parentNode != null) {
+			return 1;
+		} else {
+			return 0;
+		}
 	},
 	refreshCommands: function () {
 		//TODO: no multicommands

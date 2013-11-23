@@ -24,6 +24,7 @@ js2me.createClass({
 		image.element = document.createElement('canvas');
 		image.element.width = width;
 		image.element.height = height;
+		image.mutable = true;
 		return image;
 	},
 	/*
@@ -50,6 +51,7 @@ js2me.createClass({
 		var image = javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(source.$getWidth$$I(), source.$getHeight$$I());
 		var graphics = image.$getGraphics$$Ljavax_microedition_lcdui_Graphics_();
 		graphics.$drawImage$Ljavax_microedition_lcdui_Image_III$V(source, 0, 0, 0);
+		image.mutable = false;
 		return image;
 	},
 	/*
@@ -59,6 +61,8 @@ js2me.createClass({
 		var image = javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(width, height);
 		var graphics = image.$getGraphics$$Ljavax_microedition_lcdui_Graphics_();
 		graphics.$drawRegion$Ljavax_microedition_lcdui_Image_IIIIIIII$V(source, x, y, width, height, transform, 0, 0, 0);
+		image.mutable = false;
+		return image;
 	},
 	/*
 	 * public static Image createImage(int width, int height)
@@ -111,13 +115,14 @@ js2me.createClass({
 			}
 			return image;
 		}];
+		image.mutable = false;
 		return image;
 	}),
 	/*
 	 * public static Image createRGBImage(int[] rgb, int width, int height, boolean processAlpha)
 	 */
 	$createRGBImage$_IIIZ$Ljavax_microedition_lcdui_Image_: function (rgb, width, height, alphaProcessing) {
-		var image = new this.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(width, height);
+		var image = this.$createImage$II$Ljavax_microedition_lcdui_Image_(width, height);
 		var context = image.element.getContext('2d');
 		var imageData = context.getImageData(0, 0, width, height);
 		for (var i = 0; i < width * height; i++) {
@@ -142,6 +147,7 @@ js2me.createClass({
 			}
 		}
 		context.putImageData(imageData, 0, 0);
+		image.mutable = false;
 		return image;
 	},
 	/*
@@ -161,5 +167,15 @@ js2me.createClass({
 	 */
 	$getHeight$$I: function () {
 		return this.element.height;
+	},
+	/*
+	 * public boolean isMutable()
+	 */
+	$isMutable$$Z: function () {
+		if (this.mutable) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 });

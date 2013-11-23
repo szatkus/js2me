@@ -101,6 +101,16 @@ js2me.createClass({
 		this.command = command;
 	},
 	/*
+	 * public void setSelectedIndex(int elementNum, boolean selected)
+	 */
+	$setSelectedIndex$IZ$V: function (index) {
+		//TODO
+		if (index < 0 || index >= this.items.length) {
+			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
+		}
+		this.selectedItem = index;
+	},
+	/*
 	 * public void setFitPolicy(int fitPolicy)
 	 */
 	$setFitPolicy$I$V: function () {
