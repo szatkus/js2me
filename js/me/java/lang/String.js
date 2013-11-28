@@ -62,6 +62,15 @@ js2me.createClass({
 		this._init$_C$V(data.slice(offset, offset + length));
 	},
 	/*
+	 * public String(StringBuffer buffer)
+	 */
+	_init$Ljava_lang_StringBuffer_$V: function (buffer) {
+		if (buffer == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		return buffer.$toString$$Ljava_lang_String_();
+	},
+	/*
 	 * public boolean equals(Object anObject)
 	 */
 	$equals$Ljava_lang_Object_$Z: function (obj) {

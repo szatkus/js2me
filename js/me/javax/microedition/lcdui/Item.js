@@ -27,6 +27,9 @@ js2me.createClass({
 	$getLabel$$Ljava_lang_String_: function (str) {
 		return new javaRoot.$java.$lang.$String(this.label.innerHTML);
 	},
+	$setDefaultCommand$Ljavax_microedition_lcdui_Command_$V: function (command) {
+		this.command = command;
+	},
 	/*
 	 * public void setItemCommandListener(ItemCommandListener l)
 	 */
