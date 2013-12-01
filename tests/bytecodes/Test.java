@@ -52,7 +52,7 @@ public class Test extends TestMidlet {
 		}
 		for (byte j = 0; j < ss.length; j++) {
 			check(ss[j].length() == j + 1);
-			check(ss[j].length() - 1 == ss[j].lastIndexOf("s"));
+			check(ss[j].length() - 1 == ss[j].lastIndexOf('s'));
 		}
 		//37
 		check(i >> 2 == 1);

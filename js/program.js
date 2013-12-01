@@ -135,9 +135,7 @@ js2me.generateProgram = function (data) {
 		return generateStore(3);
 	};
 	// athrow
-	generators[0xbf] = function (context) {
-		throw context.stack.pop();
-	};
+	generators[0xbf] = 'throw context.stack.pop();\n';
 	// baload
 	generators[0x33] = function (context) {
 		return generateArrayLoad();
@@ -1467,6 +1465,7 @@ js2me.generateProgram = function (data) {
 						if (exceptions[j].catchType != null) {
 							body += '	if (e.isImplement && e.isImplement("' + exceptions[j].catchType.className + '")) {\n';
 						}
+						body += '		context.stack.push(e);\n';
 						body += '		context.position = /*' + exceptions[j].handler + '*/; return;\n';
 						if (exceptions[j].catchType != null) {
 							body += '	} else throw e;\n';

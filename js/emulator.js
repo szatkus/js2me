@@ -141,12 +141,13 @@
 			request.onreadystatechange = function() {
 				if (request.readyState === 4){
 					var blob;
-					if (window.Blob) {
-						blob = new Blob([request.response]);
-					} else {
-						var builder = new (window.BlobBuilder || window.WebKitBlobBuilder);
+					var builder = (window.BlobBuilder || window.WebKitBlobBuilder || null);
+					if (builder) {
+						builder = new builder();
 						builder.append(request.response);
 						blob = builder.getBlob();
+					} else {
+						blob = new Blob([request.response]);
 					}
 					js2me.loadJAR(blob, function () {
 						document.getElementById('screen').innerHTML = '';
