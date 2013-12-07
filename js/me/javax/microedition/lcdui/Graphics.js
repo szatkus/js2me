@@ -90,8 +90,9 @@ js2me.createClass({
 	$drawRGB$_IIIIIIIZ$V: function (data, offset, length, x, y, width, height, processAlpha) {
 			//TODO: maybe little faster...
 			var oldColor = this.$getColor$$I();
-			for (var i = 0; i < width * height; i++) {
-					var pixel = data[offset + length * i];
+			for (var i = 0; i < height; i++) {
+				for (var j = 0; j < width; j++) {
+					var pixel = data[offset + i * length + j];
 					var red = (pixel & 0xff0000) >> 16;
 					var green = (pixel & 0x00ff00) >> 8;
 					var blue = (pixel & 0x0000ff);
@@ -101,7 +102,8 @@ js2me.createClass({
 					}
 					var color = 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
 					this.context.fillStyle = color;
-					this.context.fillRect(x + i % width, y + Math.floor(i / width), 1, 1);
+					this.context.fillRect(x + j, y + i, 1, 1);
+				}
 			}
 			this.$setColor$I$V(oldColor);
 	},

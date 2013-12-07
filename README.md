@@ -17,7 +17,7 @@ It exists. You only have to clone this repository and push to your phone. If you
 
 Contribution
 --------------
-Feel free to submit a pull requests. There's also [short guide](tree/master/js/me) how to write your own pseudo-Java classes.
+Feel free to submit a pull requests. There's also [short guide](tree/js/me) how to write your own pseudo-Java classes.
 
 Usage
 -------------------
@@ -62,6 +62,10 @@ Milestone 0.8
 
  * Run Tomb Raider (done)
  * Run Courage the Coward Dog (done)
+ * App (pending)
+
+Milestone 0.9
+ * Run Ginger
 
 Milestone X
 

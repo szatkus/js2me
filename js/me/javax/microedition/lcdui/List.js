@@ -53,7 +53,8 @@ js2me.createClass({
 					list.selectedItem = i;
 				}
 			}
-			list.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(list.command, list);
+			var command = list.command || list.choiceCommands[0];
+			list.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(command, list);
 		});
 		this.refreshItem(newItem);
 		this.items.push(newItem);

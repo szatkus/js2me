@@ -16,6 +16,12 @@ js2me.createClass({
 		this.priority = priority;
 	},
 	/*
+	 * public String getLabel()
+	 */
+	$getLabel$$Ljava_lang_String_: function () {
+		return this.label;
+	},
+	/*
 	 * public int getPriority()
 	 */
 	$getPriority$$I: function () {

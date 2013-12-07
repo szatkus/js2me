@@ -55,6 +55,16 @@ js2me.createClass({
 		return js2me.threads[js2me.currentThread];
 	},
 	/*
+	 * public final boolean isAlive()
+	 */
+	$isAlive$$Z: function () {
+		if (this.id === js2me.currentThread || js2me.restoreStack[this.id]) {
+			return 1;
+		} else {
+			return 0;
+		}
+	},
+	/*
 	 * public final void setPriority(int newPriority)
 	 */
 	$setPriority$I$V: function (priority) {

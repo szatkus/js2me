@@ -127,14 +127,22 @@
 			return (js2me.config[name] = parseInt(localStorage.getItem(js2me.storageName + name)) ||
 					parseInt(localStorage.getItem(name)));
 		}
-		selector.addEventListener('change', function () {
-			js2me.loadJAR(selector.files[0], function () {
-				document.getElementById('screen').innerHTML = '';
-				loadConfig('width');
-				loadConfig('height');
-				loadConfig('fullHeight');
-				js2me.launchMidlet(1);
+		selector.addEventListener('click', function () {
+			var pick = new MozActivity({
+				name: 'pick',
+				data: {
+				   //type: ['*/*']
+				 }
 			});
+			pick.onsuccess = function () {
+				js2me.loadJAR(this.result.blob, function () {
+					document.getElementById('screen').innerHTML = '';
+					loadConfig('width');
+					loadConfig('height');
+					loadConfig('fullHeight');
+					js2me.launchMidlet(1);
+				});
+			};
 		});
 		if (js2me.config.src) {
 			var request = new XMLHttpRequest;

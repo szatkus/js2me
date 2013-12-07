@@ -62,7 +62,7 @@ js2me.createClass({
 		});
 		this.keyPressListener = function (keyCode) {
 			var gameCode = canvas.gameActionMapping[keyCode];
-			if (gameCode == null) {
+			if (gameCode != null) {
 				canvas.gameState = canvas.gameState | (1 << gameCode);
 			}
 			canvas.keysState[keyCode] = true;

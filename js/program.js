@@ -1513,7 +1513,7 @@ js2me.generateProgram = function (data) {
 			program[i] = program[i];
 			try {
 				if (program.length > 1 || !isSafe) {
-					program[i] = '//@ sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '/' + reversedMapping[i] + '.js\n' + program[i];
+					program[i] = '//# sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '/' + reversedMapping[i] + '.js\n' + program[i];
 					program[i] = 'var functionResult;\n' + program[i];
 					if (js2me.profile) {
 						program[i] = 'return function ' + methodName.replace(new RegExp('\\.', 'g'), '_') + i + '(context) {\n' + program[i] + '};';
@@ -1592,7 +1592,7 @@ js2me.generateProgram = function (data) {
 		methodBody = 'var _this = this;\n' + methodBody;
 		methodBody = 'var constantPool = ' + methodName + '.constantPool;\n' + methodBody;
 		// dear Chromium developers, I love you!
-		methodBody = '//@ sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '.js\n' + methodBody;
+		methodBody = '//# sourceURL=' + methodName.replace(new RegExp('\\.prototype\\.|\\.', 'g'), '/') + '.js\n' + methodBody;
 		args.push('callback');
 		if (js2me.profile) {
 			methodBody = 'return function ' + methodName.replace(new RegExp('\\.', 'g'), '_') + '(' + args.join(',') + ') {\n' + methodBody + '};';
