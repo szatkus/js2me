@@ -4,6 +4,7 @@ js2me.createClass({
 	 */
 	_init$Ljava_lang_String_$V: function (str) {
 		this.$setTitle$Ljava_lang_String_$V(str);
+		this.init();
 	},
 	/*
 	 * public Alert(String title)
@@ -15,6 +16,7 @@ js2me.createClass({
 		this.type = type;
 		this.element = document.createElement('div');
 		this.element.innerHTML = text.text;
+		this.init();
 	},
 	/*
 	 * public void setTimeout(int time)
