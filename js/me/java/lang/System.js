@@ -4,8 +4,8 @@ js2me.createClass({
 	 * public static long currentTimeMillis()
 	 */
 	$currentTimeMillis$$J: function () {
-		var time = (new Date()).getTime();
-		return {hi: Math.floor(time / 0x100000000), lo: time % 0x100000000};
+		var time = Date.now();
+		return {hi: ~~(time / 0x100000000), lo: time % 0x100000000};
 	},
 	_clinit$$V: function (callback) {
 		// disable output in app
