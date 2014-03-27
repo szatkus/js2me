@@ -19,6 +19,12 @@ js2me.createClass({
 		return new javaRoot.$java.$util.$Calendar();
 	},
 	/*
+	 * public static Calendar getInstance(TimeZone zone)
+	 */
+	$getInstance$Ljava_util_TimeZone_$Ljava_util_Calendar_: function () {
+		return new javaRoot.$java.$util.$Calendar();
+	},
+	/*
 	 * public final void setTime(Date date)
 	 */
 	$setTime$Ljava_util_Date_$V: function (date) {

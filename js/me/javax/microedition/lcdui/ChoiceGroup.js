@@ -9,5 +9,15 @@ js2me.createClass({
 	},
 	$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I: function () {
 	},
+	/*
+	 * public void setSelectedIndex(int elementNum, boolean selected)
+	 */
+	$setSelectedIndex$IZ$V: function (index) {
+		//TODO
+		/*if (index < 0 || index >= this.items.length) {
+			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
+		}
+		this.selectedItem = index;*/
+	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Item'
 });

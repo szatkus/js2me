@@ -53,6 +53,12 @@ js2me.createClass({
 		return this.current;
 	},
 	/*
+	 * public boolean isColor()
+	 */
+	$isColor$$Z: function () {
+		return 1;
+	},
+	/*
 	 * public boolean vibrate(int duration)
 	 */
 	$vibrate$I$Z: function () {
