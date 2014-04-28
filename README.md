@@ -19,10 +19,6 @@ Contribution
 --------------
 Feel free to submit a pull requests. There's also [short guide](tree/js/me) how to write your own pseudo-Java classes.
 
-Usage
--------------------
-Just open index.html. Works in Firefox and Chromium.
-
 Milestones
 --------------
 Milestone 0.1 - Hello world (test.jar) works (done)
@@ -66,6 +62,8 @@ Milestone 0.8
 
 Milestone 0.9
  * Run Ginger
+ * Run JaduGadu
+ * Priviliged app
 
 Milestone X
 
