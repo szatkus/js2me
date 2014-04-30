@@ -58,12 +58,14 @@ Milestone 0.8
 
  * Run Tomb Raider (done)
  * Run Courage the Coward Dog (done)
- * App (pending)
+ * App (**rejected**)
 
 Milestone 0.9
  * Run Ginger
  * Run JaduGadu
- * Priviliged app
+ * Priviliged app (fuck!, looks like we need two versions of app)
+ * Rewrite the compiler... two times, with JIT (master branch) and as interpreter (privileged branch)
+ * Make forms work perfectly, with nice tests and candies
 
 Milestone X
 
