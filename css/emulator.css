@@ -76,6 +76,8 @@ html, body {
 
 .item {
 	text-align: left;
+	border: 1px black solid;
+	white-space: nowrap;
 }
 
 #top {

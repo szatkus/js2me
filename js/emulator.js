@@ -113,7 +113,6 @@
 			js2me.config[parts[i].split('=')[0]] = value;
 		}
 		var buttons = document.getElementsByTagName('a');
-		var selector = document.getElementById('file-selector');
 		if (localStorage.getItem('height') == null) {
 			localStorage.setItem('height', js2me.config.height)
 		}
@@ -127,23 +126,6 @@
 			return (js2me.config[name] = parseInt(localStorage.getItem(js2me.storageName + name)) ||
 					parseInt(localStorage.getItem(name)));
 		}
-		selector.addEventListener('click', function () {
-			var pick = new MozActivity({
-				name: 'pick',
-				data: {
-				   //type: ['*/*']
-				 }
-			});
-			pick.onsuccess = function () {
-				js2me.loadJAR(this.result.blob, function () {
-					document.getElementById('screen').innerHTML = '';
-					loadConfig('width');
-					loadConfig('height');
-					loadConfig('fullHeight');
-					js2me.launchMidlet(1);
-				});
-			};
-		});
 		if (js2me.config.src) {
 			var request = new XMLHttpRequest;
 			request.onreadystatechange = function() {
@@ -170,6 +152,36 @@
 			// blob didn't work in phantomjs
 			request.responseType = 'arraybuffer';
 			request.send();
+		} else {
+			var jarList = document.getElementById('jar-list');
+			var storage = navigator.getDeviceStorage('sdcard');
+			var cursor = storage.enumerate();
+
+			cursor.onsuccess = function () {
+				if (this.result.name.lastIndexOf('.jar') === this.result.name.length - 4) {
+					var file = this.result;
+					var item = document.createElement('div');
+					item.className = 'item';
+					item.innerHTML = file.name.substring(file.name.lastIndexOf('/') + 1)
+					item.addEventListener('click', function () {
+						js2me.loadJAR(file, function () {
+						document.getElementById('screen').innerHTML = '';
+						loadConfig('width');
+						loadConfig('height');
+						loadConfig('fullHeight');
+						js2me.launchMidlet(1);
+					});
+					});
+					jarList.appendChild(item);
+				}
+				if (!this.done) {
+					this.continue();
+				}
+			};
+
+			cursor.onerror = function () {
+				console.error("No file found: " + this.error);
+			};
 		}
 	};
 	js2me.setFullscreen = function (enabled) {
