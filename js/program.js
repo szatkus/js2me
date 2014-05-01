@@ -29,55 +29,51 @@ js2me.generateProgram = function (data) {
 	};
 	
 	function generateArrayLoad() {
-		return 'var index = context.stack.pop();\n' +
-			'var array = context.stack.pop();\n' +
-			'if (array == null) {\n' +
-			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-			'}\n' +
-			'if (index < 0 || index >= array.length) {\n' +
-			'	throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException(index + "/" + array.length);\n' +
-			'}\n' +
-			'context.stack.push(array[index]);\n';
+		return function (context) {
+			var index = context.stack.pop();
+			var array = context.stack.pop();
+			if (array == null) {
+				throw new javaRoot.$java.$lang.$NullPointerException();
+			}
+			if (index < 0 || index >= array.length) {
+				throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException(index + "/" + array.length);
+			}
+			context.stack.push(array[index]);
+		};
 	}
 	function generateArrayStore(isObject) {
-		var body = 'var value = context.stack.pop();\n' +
-			'var index = context.stack.pop();\n' +
-			'var array = context.stack.pop();\n' +
-			'if (array == null) {\n' +
-			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-			'}\n' +
-			'if (index < 0 || index >= array.length) {\n' +
-			'	throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException(index + "/" + array.length);\n' +
-			'}\n';
-		if (isObject) {
-			body += 'if (value && value.constructor !== Array && !value.isImplement(array.className)) {\n' +
-				'	throw new javaRoot.$java.$lang.$ArrayStoreException();\n' +
-				'}\n';
-		}
-		body += 'array[index] = value;\n';
-		return body;	
-	}
-	function generateAB(code) {
-		return function () {
-			return 'var b = context.stack.pop();\n' +
-				'var a = context.stack.pop();\n' +
-				code;
+		return function (context) {
+			var value = context.stack.pop();
+			var index = context.stack.pop();
+			var array = context.stack.pop();
+			if (array == null) {
+				throw new javaRoot.$java.$lang.$NullPointerException();
+			}
+			if (index < 0 || index >= array.length) {
+				throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException(index + "/" + array.length);
+			}
+			if (isObject && value && value.constructor !== Array && !value.isImplement(array.className)) {
+				throw new javaRoot.$java.$lang.$ArrayStoreException();
+			}
+			array[index] = value;
 		};
 	}
 	function generateReturn() {
-		return 'var functionResult = context.stack.pop();\n' +
-			'context.result = functionResult;\n' +
-			'context.finish = true;\n' +
-			'return functionResult;\n';
+		return function (context) {
+			var functionResult = context.stack.pop();
+			context.result = functionResult;
+			context.finish = true;
+			return functionResult;
+		};
 	}
-	/*// aaload
+	// aaload
 	generators[0x32] = function (context) {
 		return generateArrayLoad();
 	}
 	// aastore
 	generators[0x53] = function () {
 		return generateArrayStore(true);
-	}*/
+	}
 	// aconst_null
 	generators[0x01] = function (context) {
 		context.stack.push(null);
@@ -108,29 +104,32 @@ js2me.generateProgram = function (data) {
 	generators[0x2d] = function () {
 		return generateLoad(3);
 	};
-	/*// anewarray
+	// anewarray
 	generators[0xbd] = function () {
 		var type = constantPool[stream.readUint16()];
-		//if (type.className == 'javaRoot.$javax.$microedition.$media.$Player') debugger;
-		return 'var length = context.stack.pop();\n' +
-			'if (length < 0) {\n' +
-			'	throw new javaRoot.$java.$lang.$NegativeArraySizeException();\n' +
-			'}\n' +
-			'var array = new Array(length);\n' +
-			'array.className = "' + type.className + '";\n' +
-			'for (var i = 0; i < array.length; i++) array[i] = null;\n' +
-			'context.stack.push(array);\n';
+		return function (context) {
+			var length = context.stack.pop();
+			if (length < 0) {
+				throw new javaRoot.$java.$lang.$NegativeArraySizeException();
+			}
+			var array = new Array(length);
+			array.className = type.className;
+			for (var i = 0; i < array.length; i++) array[i] = null;
+			context.stack.push(array);
+		}
 	};
 	// areturn
 	generators[0xb0] = generateReturn;
 	// arraylength
 	generators[0xbe] = function () {
-		return 'var array = context.stack.pop();\n' +
-			'if (array == null) {\n' +
-			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-			'}\n' +
-			'context.stack.push(array.length);\n';
-	};*/
+		return function (context) {
+			var array = context.stack.pop();
+			if (array == null) {
+				throw new javaRoot.$java.$lang.$NullPointerException();
+			}
+			context.stack.push(array.length);
+		};
+	};
 	// astore
 	generators[0x3a] = function () {
 		var index = stream.readUint8();
@@ -747,10 +746,12 @@ js2me.generateProgram = function (data) {
 	// ifnonnull
 	generators[0xc7] = generateGoto(function (context) {
 		return context.stack.pop() != null;
-	});/*
+	});
 	// ifnull
-	generators[0xc6] = generateGoto('== null');
-	// iinc*/
+	generators[0xc6] = generateGoto(function (context) {
+		return context.stack.pop() == null;
+	});
+	// iinc
 	generators[0x84] = function () {
 		var index = stream.readUint8();
 		var inc = stream.readInt8();
