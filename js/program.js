@@ -379,43 +379,49 @@ js2me.generateProgram = function (data) {
 		context.stack.push(tmp);
 		context.stack.push(tmp);
 	};
-	/*// dup_x1
-	generators[0x5a] = 'var a = context.stack.pop();\n' +
-		'var b = context.stack.pop();\n' +
-		'context.stack.push(a);\n' +
-		'context.stack.push(b);\n' +
-		'context.stack.push(a);\n';
+	// dup_x1
+	generators[0x5a] = function (context) {
+		var a = context.stack.pop();
+		var b = context.stack.pop();
+		context.stack.push(a);
+		context.stack.push(b);
+		context.stack.push(a);
+	};
 	// dup_x2
-	generators[0x5b] = 'var a = context.stack.pop();\n' +
-		'var b = context.stack.pop();\n' +
-		'var c = context.stack.pop();\n' +
-		'if (a.hi == null && a.double == null) {\n' +
-		'	var stack0 = a;\n' +
-		'	var stack1 = c;\n' +
-		'	var stack2 = b;\n' +
-		'	var stack3 = a;\n' +
-		'} else {\n' +
-		'	var stack0 = c;\n' +
-		'	var stack1 = a;\n' +
-		'	var stack2 = b;\n' +
-		'	var stack3 = a;\n' +
-		'}\n' +
-		'context.stack.push(stack0);\n' +
-		'context.stack.push(stack1);\n' +
-		'context.stack.push(stack2);\n' +
-		'context.stack.push(stack3);\n';
+	generators[0x5b] = function (context) {
+		var a = context.stack.pop();
+		var b = context.stack.pop();
+		var c = context.stack.pop();
+		if (a.hi == null && a.double == null) {
+			var stack0 = a;
+			var stack1 = c;
+			var stack2 = b;
+			var stack3 = a;
+		} else {
+			var stack0 = c;
+			var stack1 = a;
+			var stack2 = b;
+			var stack3 = a;
+		}
+		context.stack.push(stack0);
+		context.stack.push(stack1);
+		context.stack.push(stack2);
+		context.stack.push(stack3);
+	};
 	// dup2
-	generators[0x5c] = 'var a = context.stack.pop();\n' +
-		'if (a.hi == null && a.double == null) {//STOP\n' +
-		'	var b = context.stack.pop();\n' +
-		'	context.stack.push(b);\n' +
-		'	context.stack.push(a);\n' +
-		'	context.stack.push(b);\n' +
-		'	context.stack.push(a);\n' +
-		'} else {\n' +
-		'	context.stack.push(a);\n' +
-		'	context.stack.push(a);\n' +
-		'}//STOP\n';
+	generators[0x5c] = function (context) {
+		var a = context.stack.pop();
+		if (a.hi == null && a.double == null) {
+			var b = context.stack.pop();
+			context.stack.push(b);
+			context.stack.push(a);
+			context.stack.push(b);
+			context.stack.push(a);
+		} else {
+			context.stack.push(a);
+			context.stack.push(a);
+		}
+	};
 	// dup2_x1
 	generators[0x5d] = function (context) {
 		var a = context.stack.pop();
@@ -575,7 +581,7 @@ js2me.generateProgram = function (data) {
 		var b = context.stack.pop();
 		var a = context.stack.pop();
 		context.stack.push(a - b);
-	};*/
+	};
 	// getfield
 	generators[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
@@ -627,16 +633,16 @@ js2me.generateProgram = function (data) {
 	// goto
 	generators[0xa7] = generateGoto(function () {return true});
 	// i2l
-	/*generators[0x85] = function () {
-		return 'var value = context.stack.pop();\n' +
-			'var result;\n' +
-			'if (value >= 0) {\n' +
-			'	result = {hi: 0, lo: value};\n' +
-			'} else {\n' +
-			'	result = {hi: 0xffffffff, lo: value + 4294967296};\n' +
-			'}\n' +
-			'context.stack.push(result);\n';
-	};*/
+	generators[0x85] = function (context) {
+		var value = context.stack.pop();
+		var result;
+		if (value >= 0) {
+			result = {hi: 0, lo: value};
+		} else {
+			result = {hi: 0xffffffff, lo: value + 4294967296};
+		}
+		context.stack.push(result);
+	};
 	// i2f
 	generators[0x86] = function () {};
 	// i2d
@@ -728,12 +734,18 @@ js2me.generateProgram = function (data) {
 		value = checkOverflow(value, 32);
 		context.stack.push(value);
 	};
-	/*// if_acmpeq
-	generators[0xa5] = generateGoto('===');
+	// if_acmpeq
+	generators[0xa5] = generateGoto(function (context) {
+		return context.stack.pop() === context.stack.pop();
+	});
 	// if_acmpne
-	generators[0xa6] = generateGoto('!==');
+	generators[0xa6] = generateGoto(function (context) {
+		return context.stack.pop() !== context.stack.pop();
+	});
 	// if_icmpeq
-	generators[0x9f] = generateGoto('===');*/
+	generators[0x9f] = generateGoto(function (context) {
+		return context.stack.pop() === context.stack.pop();
+	});
 	// if_icmpne
 	generators[0xa0] = generators[0xc7] = generateGoto(function (context) {
 		return context.stack.pop() !== context.stack.pop();
@@ -745,12 +757,16 @@ js2me.generateProgram = function (data) {
 	// if_icmpge
 	generators[0xa2] = generateGoto(function (context) {
 		return context.stack.pop() <= context.stack.pop();
-	});/*
+	});
 	// if_icmpgt
-	generators[0xa3] = generateGoto('>');
+	generators[0xa3] = generateGoto(function (context) {
+		return context.stack.pop() < context.stack.pop();
+	});
 	// if_icmple
-	generators[0xa4] = generateGoto('<=');
-	// ifeq*/
+	generators[0xa4] = generateGoto(function (context) {
+		return context.stack.pop() >= context.stack.pop();
+	});
+	// ifeq
 	generators[0x99] = generateGoto(function (context) {
 		return context.stack.pop() === 0;
 	});
@@ -820,12 +836,12 @@ js2me.generateProgram = function (data) {
 		var value = a * b;
 		value = checkOverflow(value, 32);
 		context.stack.push(value);
-	};/*
+	};
 	// ineg
-	generators[0x74] = function () {
-		return 'var value = -context.stack.pop();\n' +
-			js2me.generateOverflowChecking(32) +
-			'context.stack.push(value);\n';
+	generators[0x74] = function (context) {
+		var value = -context.stack.pop();
+		value = checkOverflow(value, 32);
+		context.stack.push(value);
 	};
 	// instanceof
 	generators[0xc1] = function () {
@@ -849,7 +865,7 @@ js2me.generateProgram = function (data) {
 				context.stack.push(0);
 			}
 		};
-	}*/
+	}
 	function generateInvoke(isStatic, isVirtual, isGarbage) {
 		try {
 			var methodInfo = constantPool[stream.readUint16()];
@@ -963,26 +979,30 @@ js2me.generateProgram = function (data) {
 	generators[0x3e] = function () {
 		return generateStore(3);
 	};
-	/*// isub
-	generators[0x64] = 'var b = context.stack.pop();\n' +
-		'var a = context.stack.pop();\n' +
-		'context.stack.push(a - b);\n';
+	// isub
+	generators[0x64] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a - b);
+	};
 	// iushr
-	generators[0x7c] = 'var shift = context.stack.pop() % 32;\n' + 
-		'var value = context.stack.pop();\n' +
-		'var result;\n' +
-		'if (value >= 0) {\n' +
-		'	result = value >> shift;\n' +
-		'} else {\n' +
-		'	result = (value >> shift) + (2 << ~shift);\n' +
-		'}\n' +
-		'context.stack.push(result);\n';*/
+	generators[0x7c] = function (context) {
+		var shift = context.stack.pop() % 32;
+		var value = context.stack.pop();
+		var result;
+		if (value >= 0) {
+			result = value >> shift;
+		} else {
+			result = (value >> shift) + (2 << ~shift);
+		}
+		context.stack.push(result);
+	};
 	// ixor
 	generators[0x82] = function (context) {
 		var b = context.stack.pop();
 		var a = context.stack.pop();
 		context.stack.push(a ^ b);
-	};/*
+	};
 	// l2d
 	generators[0x8a] = function (context) {
 		var value = context.stack.pop();
@@ -995,16 +1015,20 @@ js2me.generateProgram = function (data) {
 		context.stack.push({double: double});
 	};
 	// l2i
-	generators[0x88] = 'var value = context.stack.pop();\n' +
-		'var int = value.lo;\n' +
-		'if (int >= 0x80000000) {\n' +
-		'	int -= 0x100000000;\n' +
-		'}\n' +
-		'context.stack.push(int);\n';
+	generators[0x88] = function (context) {
+		var value = context.stack.pop();
+		var int = value.lo;
+		if (int >= 0x80000000) {
+			int -= 0x100000000;
+		}
+		context.stack.push(int);
+	};
 	// ladd
-	generators[0x61] = 'var b = context.stack.pop();\n' +
-		'var a = context.stack.pop();\n' +
-		'context.stack.push(js2me.ladd(a, b));\n';
+	generators[0x61] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(js2me.ladd(a, b));
+	};
 	// laload
 	generators[0x2f] = function (context) {
 		var index = context.stack.pop();
@@ -1012,16 +1036,18 @@ js2me.generateProgram = function (data) {
 		context.stack.push(array[index]);
 	};
 	// land
-	generators[0x7f] = 'var b = context.stack.pop();\n' +
-		'var a = context.stack.pop();\n' +
-		'context.stack.push({hi: a.hi & b.hi, lo: a.lo & b.lo});\n';
+	generators[0x7f] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push({hi: a.hi & b.hi, lo: a.lo & b.lo});
+	};
 	// lastore
 	generators[0x50] = function (context) {
 		var value = context.stack.pop();
 		var index = context.stack.pop();
 		var array = context.stack.pop();
 		array[index] = value;
-	};*/
+	};
 	// lcmp
 	generators[0x94] = function (context) {
 		var b = context.stack.pop();
@@ -1049,10 +1075,14 @@ js2me.generateProgram = function (data) {
 		return function (context) {
 			context.stack.push(context.constantPool[index]);
 		};
-	};/*
+	};
 	// ldiv
-	generators[0x6d] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
-		'context.stack.push(js2me.ldiv(a, b).div);\n');*/
+	generators[0x6d] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");
+		context.stack.push(js2me.ldiv(a, b).div);
+	};
 	// lload
 	generators[0x16] = function () {
 		var index = stream.readUint8();
@@ -1073,14 +1103,18 @@ js2me.generateProgram = function (data) {
 	// lload_3
 	generators[0x21] = function () {
 		return generateLoad(3);
-	};/*
+	};
 	// lmul
-	generators[0x69] = 'var b = context.stack.pop();\n' +
-		'var a = context.stack.pop();\n' +
-		'context.stack.push(js2me.lmul(a, b));\n'
+	generators[0x69] = function (context)  {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(js2me.lmul(a, b));
+	};
 	// lneg
-	generators[0x75] = 'var a = context.stack.pop();\n' +
-		'context.stack.push(js2me.lneg(a));\n'
+	generators[0x75] = function (context) {
+		var a = context.stack.pop();
+		context.stack.push(js2me.lneg(a));
+	};
 	// lookupswitch
 	generators[0xab] = function () {
 		var start = stream.index - 1;
@@ -1091,19 +1125,18 @@ js2me.generateProgram = function (data) {
 		jumpTo[def]++;
 		var count = stream.readInt32();
 		var table = [];
-		var body = 'var i = context.stack.pop();\n';
 		for (var i = 0; i < count; i++) {
 			var match = stream.readInt32();
 			var value = start + stream.readInt32();
 			table[match] = value;
 			jumpTo[value]++;
-			body += 'if (i === ' + match + ') {\n' +
-				
-				'}\n';
 		}
 		
-		return body;
-	}
+		return function (context) {
+			var index = context.stack.pop();
+			context.position = positionMapping[table[index]];
+		};
+	}/*
 	// lor
 	generators[0x81] = 'var b = context.stack.pop();\n' +
 		'var a = context.stack.pop();' +
@@ -1128,12 +1161,12 @@ js2me.generateProgram = function (data) {
 		'if (sign) {\n' +
 		'	result = js2me.lneg(result);\n' +
 		'}\n' +
-		'context.stack.push(result);\n';
+		'context.stack.push(result);\n';*/
 	// lstore
 	generators[0x37] = function () {
 		var index = stream.readUint8();
 		return generateStore(index);
-	};*/
+	};
 	// lstore_0
 	generators[0x3f] = generateStore(0);
 	// lstore_1
