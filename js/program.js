@@ -1144,7 +1144,11 @@ js2me.generateProgram = function (data) {
 		
 		return function (context) {
 			var index = context.stack.pop();
-			context.position = positionMapping[table[index]];
+			var position = table[index];
+			if (position === undefined) {
+				position = def;
+			}
+			context.position = positionMapping[position];
 		};
 	}
 	// lor
@@ -1419,7 +1423,11 @@ js2me.generateProgram = function (data) {
 		}
 		return function (context) {
 			var index = context.stack.pop();
-			context.position = positionMapping[table[index]];
+			var position = table[index]
+			if (position === undefined) {
+				position = def;
+			}
+			context.position = positionMapping[position];
 		};
 	}/*
 	// wide
