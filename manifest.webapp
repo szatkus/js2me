@@ -4,7 +4,10 @@
     "description": "Java Mobile Edition emulator for Firefox OS.",
     "type": "privileged",
     "permissions": {
-        "device-storage:sdcard":{ "access": "readonly" }
+        "device-storage:sdcard":{ 
+	    "access": "readonly",
+	    "description": "JARs"
+	}
     },
     "launch_path": "/index.html",
     "orientation": ["portrait"],
