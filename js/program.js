@@ -288,16 +288,22 @@ js2me.generateProgram = function (data) {
 	// dcmpl
 	generators[0x97] = function (context) {
 		return generateCompareFloats(true, -1);
-	};
+	};*/
 	// dconst_0
-	generators[0x0e] = 'context.stack.push(js2me.dconst0);\n';
+	generators[0x0e] = function (context) {
+		context.stack.push(js2me.dconst0);
+	};
 	// dconst_1
-	generators[0x0f] = 'context.stack.push(js2me.dconst1);\n';
+	generators[0x0f] =  function (context) {
+		context.stack.push(js2me.dconst1);
+	};
 	// ddiv
 	generators[0x6f] = function () {
-		return 'var b = context.stack.pop();\n' + 
-			'var a = context.stack.pop();\n' +
-			'context.stack.push({double: a.double / b.double});\n';
+		return function (context) {
+			var b = context.stack.pop();
+			var a = context.stack.pop();
+			context.stack.push({double: a.double / b.double});
+		}
 	};
 	// dload
 	generators[0x18] = function () {
@@ -321,21 +327,21 @@ js2me.generateProgram = function (data) {
 		return generateLoad(3);
 	};
 	// dmul
-	generators[0x6b] = function () {
-		return 'var b = context.stack.pop();\n' + 
-			'var a = context.stack.pop();\n' +
-			'context.stack.push({double: a.double * b.double});\n';
+	generators[0x6b] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push({double: a.double * b.double});
 	};
 	// dneg
-	generators[0x77] = function () {
-		return 'var value = context.stack.pop();\n' +
-			'context.stack.push({double: -value.double});\n';
+	generators[0x77] = function (context) {
+		var value = context.stack.pop();
+		context.stack.push({double: -value.double});
 	};
 	// drem
-	generators[0x73] = function () {
-		return 'var b = context.stack.pop();\n' + 
-			'var a = context.stack.pop();\n' +
-			'context.stack.push({double: a.double % b.double});';
+	generators[0x73] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push({double: a.double % b.double});
 	};
 	// dreturn
 	generators[0xaf] = generateReturn;
@@ -361,11 +367,11 @@ js2me.generateProgram = function (data) {
 		return generateStore(3);
 	};
 	// dsub
-	generators[0x67] = function () {
-		return 'var b = context.stack.pop();\n' + 
-			'var a = context.stack.pop();\n' +
-			'context.stack.push({double: a.double - b.double});\n';
-	};*/
+	generators[0x67] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push({double: a.double - b.double});
+	};
 	// dup
 	generators[0x59] = function (context) {
 		var tmp = context.stack.pop();
@@ -718,11 +724,15 @@ js2me.generateProgram = function (data) {
 	// if_icmpne
 	generators[0xa0] = generators[0xc7] = generateGoto(function (context) {
 		return context.stack.pop() !== context.stack.pop();
-	});/*
+	});
 	// if_icmplt
-	generators[0xa1] = generateGoto('<');
+	generators[0xa1] = generateGoto(function (context) {
+		return context.stack.pop() > context.stack.pop();
+	});
 	// if_icmpge
-	generators[0xa2] = generateGoto('>=');
+	generators[0xa2] = generateGoto(function (context) {
+		return context.stack.pop() <= context.stack.pop();
+	});/*
 	// if_icmpgt
 	generators[0xa3] = generateGoto('>');
 	// if_icmple
@@ -734,15 +744,23 @@ js2me.generateProgram = function (data) {
 	// ifne
 	generators[0x9a] = generators[0xc7] = generateGoto(function (context) {
 		return context.stack.pop() !== 0;
-	});/*
+	});
 	// iflt
-	generators[0x9b] = generateGoto('< 0');
+	generators[0x9b] = generateGoto(function (context) {
+		return context.stack.pop() < 0;
+	});
 	// ifge
-	generators[0x9c] = generateGoto('>= 0');
+	generators[0x9c] = generateGoto(function (context) {
+		return context.stack.pop() >= 0;
+	});
 	// ifgt
-	generators[0x9d] = generateGoto('> 0');
+	generators[0x9d] = generateGoto(function (context) {
+		return context.stack.pop() > 0;
+	});
 	// ifle
-	generators[0x9e] = generateGoto('<= 0');*/
+	generators[0x9e] = generateGoto(function (context) {
+		return context.stack.pop() <= 0;
+	});
 	// ifnonnull
 	generators[0xc7] = generateGoto(function (context) {
 		return context.stack.pop() != null;
@@ -781,11 +799,15 @@ js2me.generateProgram = function (data) {
 	// iload_3
 	generators[0x1d] = function () {
 		return generateLoad(3);
-	}/*
+	}
 	// imul
-	generators[0x68] = generateAB('var value = a * b;\n' +
-		js2me.generateOverflowChecking(32) + 
-		'context.stack.push(value);\n');
+	generators[0x68] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		var value = a * b;
+		value = checkOverflow(value, 32);
+		context.stack.push(value);
+	};/*
 	// ineg
 	generators[0x74] = function () {
 		return 'var value = -context.stack.pop();\n' +
@@ -1088,13 +1110,13 @@ js2me.generateProgram = function (data) {
 	// lstore_2
 	generators[0x41] = generateStore(2);
 	// lstore_3
-	generators[0x42] = generateStore(3);/*
+	generators[0x42] = generateStore(3);
 	// lsub
 	generators[0x65] = function (context) {
-		return 'var b = context.stack.pop();\n' +
-			'var a = context.stack.pop();\n' +
-			'context.stack.push(js2me.lsub(a, b));\n';
-	};
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(js2me.lsub(a, b));
+	};/*
 	// lushr
 	generators[0x7d] = function (context) {
 		var shift = context.stack.pop() % 64;
