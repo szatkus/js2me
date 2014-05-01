@@ -151,8 +151,10 @@ js2me.generateProgram = function (data) {
 	generators[0x4e] = function () {
 		return generateStore(3);
 	};
-	/*// athrow
-	generators[0xbf] = 'throw context.stack.pop();\n';
+	// athrow
+	generators[0xbf] = function (context) {
+		throw context.stack.pop();
+	};
 	// baload
 	generators[0x33] = function (context) {
 		return generateArrayLoad();
@@ -160,7 +162,7 @@ js2me.generateProgram = function (data) {
 	// bastore
 	generators[0x54] = function (context) {
 		return generateArrayStore();
-	};*/
+	};
 	// bipush
 	generators[0x10] = function () {
 		var value = stream.readInt8();
@@ -245,41 +247,40 @@ js2me.generateProgram = function (data) {
 		var b = context.stack.pop();
 		var a = context.stack.pop();
 		context.stack.push({double: a.double + b.double});
-	};/*
+	};
 	// daload
-	generators[0x31] = function (context) {
+	generators[0x31] = function () {
 		return generateArrayLoad();
 	};
 	// dastore
-	generators[0x52] = function (context) {
+	generators[0x52] = function () {
 		return generateArrayStore();
 	};
 	function generateCompareFloats(isDouble, onNaN) {
-		var body = 'var b = context.stack.pop()';
-		if (isDouble) {
-			body += '.double';
-		}
-		body += ';\n';
-		body += 'var a = context.stack.pop()';
-		if (isDouble) {
-			body += '.double';
-		}
-		body += ';\n';
-		body += 'var result;\n';
-		body += 'if (isNaN(a) || isNaN(b)) {\n';
-		body += '	result = ' + onNaN + ';\n';
-		body += '}\n'
-		body += 'if (a > b) {\n';
-		body += '	result = 1;\n';
-		body += '}\n';
-		body += 'if (a === b) {\n';
-		body += '	result = 0;\n';
-		body += '}\n';
-		body += 'if (a < b) {\n';
-		body += '	result = -1;\n';
-		body += '}\n';
-		body += 'context.stack.push(result);\n';
-		return body;
+		return function (context) {
+			var b = context.stack.pop();
+			if (isDouble) {
+				b = b.double;
+			}
+			var a = context.stack.pop();
+			if (isDouble) {
+				a = a.double;
+			}
+			var result;
+			if (isNaN(a) || isNaN(b)) {
+				result = onNaN;
+			}
+			if (a > b) {
+				result = 1;
+			}
+			if (a === b) {
+				result = 0;
+			}
+			if (a < b) {
+				result = -1;
+			}
+			context.stack.push(result);
+		};
 	}
 	// dcmpg
 	generators[0x98] = function (context) {
@@ -288,7 +289,7 @@ js2me.generateProgram = function (data) {
 	// dcmpl
 	generators[0x97] = function (context) {
 		return generateCompareFloats(true, -1);
-	};*/
+	};
 	// dconst_0
 	generators[0x0e] = function (context) {
 		context.stack.push(js2me.dconst0);
@@ -635,42 +636,54 @@ js2me.generateProgram = function (data) {
 			'	result = {hi: 0xffffffff, lo: value + 4294967296};\n' +
 			'}\n' +
 			'context.stack.push(result);\n';
-	};
+	};*/
 	// i2f
-	generators[0x86] = '\n';
+	generators[0x86] = function () {};
 	// i2d
-	generators[0x87] = 'var value = context.stack.pop();\n' +
-		'context.stack.push({double: value});\n';
+	generators[0x87] = function (context) {
+		var value = context.stack.pop();
+		context.stack.push({double: value});
+	};
 	// f2i
-	generators[0x8b] = 'var value = context.stack.pop();\n' +
-		'context.stack.push(~~value);\n';
+	generators[0x8b] = function (context) {
+		var value = context.stack.pop();
+		context.stack.push(~~value);
+	};
 	// f2d
-	generators[0x8d] = 'var value = context.stack.pop();\n' +
-		'context.stack.push({double: value});\n';
+	generators[0x8d] = function (context) {
+		var value = context.stack.pop();
+		context.stack.push({double: value});
+	};
 	// i2b
-	generators[0x91] = 'var value = context.stack.pop();\n' +
-		'value = (value + 2147483648) % 256;\n' +
-		'var result;\n' +
-		'if (value > 127) {\n' +
-		'	result = value - 256;\n' +
-		'} else {\n' +
-		'	result = value;\n' +
-		'}\n' +
-		'context.stack.push(result)\n';
+	generators[0x91] = function (context) {
+		var value = context.stack.pop();
+		value = (value + 2147483648) % 256;
+		var result;
+		if (value > 127) {
+			result = value - 256;
+		} else {
+			result = value;
+		}
+		context.stack.push(result);
+	};
 	// i2c
-	generators[0x92] = 'var value = context.stack.pop();\n' +
-		'context.stack.push(value);\n';
+	generators[0x92] = function (context) {
+		var value = context.stack.pop();
+		context.stack.push(value);
+	};
 	// i2s
-	generators[0x93] = 'var value = context.stack.pop();\n' +
-		'value = (value + 2147483648) % 65536;\n' +
-		'var result;\n' +
-		'if (value > 32767) {\n' +
-		'	result = value - 65536;\n' +
-		'} else {\n' +
-		'	result = value;\n' +
-		'}\n' +
-		'context.stack.push(result)\n';
-	// iadd*/
+	generators[0x93] = function (context) {
+		var value = context.stack.pop();
+		value = (value + 2147483648) % 65536;
+		var result;
+		if (value > 32767) {
+			result = value - 65536;
+		} else {
+			result = value;
+		}
+		context.stack.push(result)
+	};
+	// iadd
 	generators[0x60] = function (context) {
 		var b = context.stack.pop();
 		var a = context.stack.pop();
@@ -897,17 +910,33 @@ js2me.generateProgram = function (data) {
 	generators[0xb6] = function () {
 		return generateInvoke(false, true);
 	};
-	/*// ior
-	generators[0x80] = generateAB('js2me.stat++;context.stack.push(a | b);\n');
+	// ior
+	generators[0x80] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a | b);
+	};
 	// irem
-	generators[0x70] = generateAB('if (b === 0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' + 
-		'context.stack.push(a % b);\n');
+	generators[0x70] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		if (b === 0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");
+		context.stack.push(a % b);
+	};
 	// ireturn
 	generators[0xac] = generateReturn;
 	// ishl
-	generators[0x78] = generateAB('context.stack.push(a << (b % 32));\n');
+	generators[0x78] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a << (b % 32));
+	};
 	// ishr
-	generators[0x7a] = generateAB('context.stack.push(a >> (b % 32));\n');*/
+	generators[0x7a] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a >> (b % 32));
+	};
 	function generateStore(index) {
 		return function (context) {
 			context.locals[index] = context.stack.pop();
@@ -947,11 +976,13 @@ js2me.generateProgram = function (data) {
 		'} else {\n' +
 		'	result = (value >> shift) + (2 << ~shift);\n' +
 		'}\n' +
-		'context.stack.push(result);\n';
+		'context.stack.push(result);\n';*/
 	// ixor
-	generators[0x82] = 'var b = context.stack.pop();\n' +
-		'var a = context.stack.pop();\n' +
-		'context.stack.push(a ^ b);\n';
+	generators[0x82] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a ^ b);
+	};/*
 	// l2d
 	generators[0x8a] = function (context) {
 		var value = context.stack.pop();
@@ -1163,7 +1194,7 @@ js2me.generateProgram = function (data) {
 				}, 1);
 			}
 		}
-	};
+	};*/
 	// multinewarray
 	generators[0xc5] = function () {
 		var type = constantPool[stream.readUint16()].className;
@@ -1206,7 +1237,7 @@ js2me.generateProgram = function (data) {
 			setLength(array, 0, className);
 			context.stack.push(array);
 		};
-	};*/
+	};
 	// new
 	generators[0xbb] = function () {
 		var classInfo = constantPool[stream.readUint16()];
@@ -1223,24 +1254,27 @@ js2me.generateProgram = function (data) {
 			var instance = new constructor();
 			context.stack.push(instance);
 		};
-	};/*
+	};
 	// newarray
 	generators[0xbc] = function () {
 		var type = stream.readUint8();
-		var body = 'var length = context.stack.pop();\n' +
-			'var array = new Array(length);\n';
-		body += 'for (var i = 0; i < length; i++) {\n';
+		var def;
 		if (type == 7) {
-			body += 'array[i] = js2me.dconst0;\n';
+			def = js2me.dconst0;
 		} else if (type == 11) {
-			body += 'array[i] = {hi: 0, lo: 0};\n';
+			def = {hi: 0, lo: 0};
 		} else {
-			body += 'array[i] = 0;\n';
+			def = 0;
 		}
-		body += '}\n';
-		body += 'context.stack.push(array);\n';
-		return body;
-	}*/
+		return function (context) {
+			var length = context.stack.pop();
+			var array = new Array(length);
+			for (var i = 0; i < length; i++) {
+				array[i] = def;
+			}
+			context.stack.push(array);
+		};
+	}
 	// noop
 	generators[0x00] = function () {};
 	// pop
