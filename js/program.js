@@ -169,7 +169,7 @@ js2me.generateProgram = function (data) {
 		return function (context) {
 			context.stack.push(value);
 		};
-	};/*
+	};
 	// caload
 	generators[0x34] = function (context) {
 		return generateArrayLoad();
@@ -241,7 +241,7 @@ js2me.generateProgram = function (data) {
 			var result = new js2me.Long(Math.floor(value / 0x100000000), Math.floor(value % 0x100000000));
 			context.stack.push(result);
 		}
-	};*/
+	};
 	// dadd
 	generators[0x63] = function (context) {
 		var b = context.stack.pop();
@@ -696,16 +696,26 @@ js2me.generateProgram = function (data) {
 		var value = a + b;
 		value = checkOverflow(value, 32);
 		context.stack.push(value);
-	};/*
+	};
 	// iand
-	generators[0x7e] = generateAB('context.stack.push(a & b);\n');
+	generators[0x7e] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a & b);
+	};
 	// iaload
-	generators[0x2e] = generateAB('context.stack.push(a[b]);\n');
+	generators[0x2e] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a[b]);
+	};
 	// iastore
-	generators[0x4f] = 'var value = context.stack.pop();\n' +
-		'var index = context.stack.pop();\n' +
-		'var array = context.stack.pop();\n' +
-		'array[index] = value;\n';*/
+	generators[0x4f] = function (context) {
+		var value = context.stack.pop();
+		var index = context.stack.pop();
+		var array = context.stack.pop();
+		array[index] = value;
+	};
 	function generateConst(constant) {
 		return function (context) {
 			context.stack.push(constant);
@@ -1136,32 +1146,42 @@ js2me.generateProgram = function (data) {
 			var index = context.stack.pop();
 			context.position = positionMapping[table[index]];
 		};
-	}/*
+	}
 	// lor
-	generators[0x81] = 'var b = context.stack.pop();\n' +
-		'var a = context.stack.pop();' +
-		'context.stack.push({hi: a.hi | b.hi, lo: a.lo | b.lo});';
+	generators[0x81] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push({hi: a.hi | b.hi, lo: a.lo | b.lo});
+	};
 	// lrem
-	generators[0x71] = generateAB('if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");\n' +
-		'context.stack.push(js2me.ldiv(a, b).rem);\n');
+	generators[0x71] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		if (b.hi === 0 && b.lo ===0) throw new javaRoot.$java.$lang.$ArithmeticException("/ by zero");
+		context.stack.push(js2me.ldiv(a, b).rem);
+	};
 	// lreturn
 	generators[0xad] = generateReturn;
 	// lshl
-	generators[0x79] = 'var shift = context.stack.pop() % 64;\n' +
-		'var value = context.stack.pop();\n' +
-		'context.stack.push(js2me.lshl(value, shift));\n';
+	generators[0x79] = function (context) {
+		var shift = context.stack.pop() % 64;
+		var value = context.stack.pop();
+		context.stack.push(js2me.lshl(value, shift));
+	};
 	// lshr
-	generators[0x7b] = 'var shift = context.stack.pop() % 64;\n' +
-		'var value = context.stack.pop();\n' +
-		'var sign = value.hi >= 2147483648;\n' +
-		'if (sign) {\n' +
-		'	value = js2me.lneg(value);\n' +
-		'}\n' +
-		'var result = js2me.lshr(value, shift);\n' +
-		'if (sign) {\n' +
-		'	result = js2me.lneg(result);\n' +
-		'}\n' +
-		'context.stack.push(result);\n';*/
+	generators[0x7b] = function (context) {
+		var shift = context.stack.pop() % 64;
+		var value = context.stack.pop();
+		var sign = value.hi >= 2147483648;
+		if (sign) {
+			value = js2me.lneg(value);
+		}
+		var result = js2me.lshr(value, shift);
+		if (sign) {
+			result = js2me.lneg(result);
+		}
+		context.stack.push(result);
+	};
 	// lstore
 	generators[0x37] = function () {
 		var index = stream.readUint8();
@@ -1348,38 +1368,38 @@ js2me.generateProgram = function (data) {
 	generators[0xb1] = function (context) {
 		context.finish = true;
 	};
-	/*// saload
-	generators[0x35] = function () {
-		return 'var index = context.stack.pop();\n' +
-			'var array = context.stack.pop();\n' +
-			'if (array == null) {\n' +
-			'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-			'}\n' +
-			'if (index > array.length) {\n' +
-			'	throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();\n' +
-			'}\n' +
-			'context.stack.push(array[index]);\n';
-	}
+	// saload
+	generators[0x35] = function (context) {
+		var index = context.stack.pop();
+		var array = context.stack.pop();
+		if (array == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		if (index > array.length) {
+			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
+		}
+		context.stack.push(array[index]);
+	};
 	// sastore
-	generators[0x56] = function () {
-		return 'var value = context.stack.pop();\n' +
-			'var index = context.stack.pop();\n' +
-			'var array = context.stack.pop();\n' +
-			'array[index] = value;\n'
-	}*/
+	generators[0x56] = function (context) {
+		var value = context.stack.pop();
+		var index = context.stack.pop();
+		var array = context.stack.pop();
+		array[index] = value;
+	};
 	// sipush
 	generators[0x11] = function () {
 		var value = stream.readInt16();
 		return function (context) {
-			context.stack.push(' + value + ');
+			context.stack.push(value);
 		};
-	};/*
+	};
 	// swap
-	generators[0x5f] = function () {
-		return 'var b = context.stack.pop();\n' +
-			'var a = context.stack.pop();\n' +
-			'context.stack.push(a);\n' +
-			'context.stack.push(b);\n';
+	generators[0x5f] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(a);
+		context.stack.push(b);
 	}
 	// tableswitch
 	generators[0xaa] = function () {
@@ -1393,15 +1413,15 @@ js2me.generateProgram = function (data) {
 		var high = stream.readInt32();
 		var count = high - low + 1;
 		var table = [];
-		var body = 'var i = context.stack.pop();\n';
 		for (var i = 0; i < count; i++) {
 			table[low + i] = start + stream.readInt32();
 			jumpTo[table[low + i]]++;
-			body += 'if (i === ' + (low + i) + ') {\n' +
-				'}\n';
 		}
-		return body;
-	}
+		return function (context) {
+			var index = context.stack.pop();
+			context.position = positionMapping[table[index]];
+		};
+	}/*
 	// wide
 	generators[0xc4] = function (context) {
 		var op = stream.readUint8();
