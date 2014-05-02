@@ -1,17 +1,17 @@
 {
-    "version": "0.8",
-    "name": "JayME",
+    "version": "1.0",
+    "name": "JayME X",
     "description": "Java Mobile Edition emulator for Firefox OS.",
     "launch_path": "/index.html",
     "orientation": ["portrait"],
     "installs_allowed_from": [
-      "*"
+	"*"
     ],
     "icons": {
-		"128": "/img/icon128.png"
-	},
-	"developer": {
-		"name": "Tomasz Szatkowski",
-		"url": "http://www.szatkus.pl"
-	}
+	"128": "/img/icon128.png"
+    },
+    "developer": {
+	"name": "Tomasz Szatkowski",
+	"url": "http://www.szatkus.pl"
+    }
 }
