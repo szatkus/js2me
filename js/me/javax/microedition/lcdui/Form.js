@@ -48,6 +48,7 @@ js2me.createClass({
 	$append$Ljavax_microedition_lcdui_Image_$I: function (image) {
 		var item = new javaRoot.$javax.$microedition.$lcdui.$ImageItem();
 		item._init$Ljava_lang_String_Ljavax_microedition_lcdui_Image_ILjava_lang_String_$V(null, image, 0, null);
+		this.$append$Ljavax_microedition_lcdui_Item_$I(item);
 	},
 	/*
 	 * public int size()

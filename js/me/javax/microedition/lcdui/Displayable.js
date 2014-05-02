@@ -3,47 +3,15 @@ js2me.createClass({
 		this.choiceButton = document.getElementById('choice');
 		this.backButton = document.getElementById('back');
 		this.commands = [];
-		this.commandListener = null;
 		this.choiceCommands = [];
 		this.backCommands = [];
 		var displayable = this;
 		displayable.currentCommands = [];
-		var moreMenuListener = {
-	/*
-	 * 
-	 */
-			$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V: function () {
-				var command = displayable.currentCommands[displayable.moreList.$getSelectedIndex$$I()];
-				displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable);
-				displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(command, displayable);
-			}
-		};
 		if (this.moreList == null) {
 			javaRoot.$javax.$microedition.$lcdui.$Displayable.prototype.moreList = {};
 			var list = new javaRoot.$javax.$microedition.$lcdui.$List();
 			javaRoot.$javax.$microedition.$lcdui.$Displayable.prototype.moreList = list;
 		}
-		this.choiceButton.addEventListener('mousedown', function () {
-			if (displayable.commandListener && displayable.active) {
-				displayable.currentCommands = displayable.choiceCommands;
-				if (displayable.choiceCommands.length == 1) {
-					displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(displayable.choiceCommands[0], displayable);
-				}
-				if (displayable.choiceCommands.length > 1) {
-					displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable.moreList);
-					displayable.moreList.$setCommandListener$Ljavax_microedition_lcdui_CommandListener_$V(moreMenuListener);
-					displayable.moreList.$deleteAll$$V();
-					for (var i = 0; i < displayable.currentCommands.length; i++) {
-						displayable.moreList.$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I(displayable.currentCommands[i].label, null);
-					}
-				}
-			}
-		});
-		this.backButton.addEventListener('mousedown', function () {
-			if (displayable.backCommands.length == 1 && displayable.commandListener) {
-				displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(displayable.backCommands[0], displayable);
-			}
-		});
 	},
 	/*
 	 * public void setTitle(String s)

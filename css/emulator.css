@@ -30,6 +30,7 @@ html, body {
 }
 #keypad {
 	text-align: center;
+	position: relative;
 }
 .key, .softkey, #joypad {
 	font-size: 6mm;
@@ -37,17 +38,14 @@ html, body {
 	margin: 1px;
 	height: 10mm;
 	line-height: 10mm;
-}
-.softkey {
 	width: 30%;
 }
-#joypad {
-	width: 30%;
-}
+
 .num {
 	width: 30%;
 	padding-top: 1px;
 }
+
 #frame {
 	display: inline-block;
 	overflow: hidden;
@@ -67,7 +65,7 @@ html, body {
 	overflow: auto;
 }
 
-#screen canvas {
+#screen > canvas {
 	height: 100%;
 	max-width: 100%;
 	margin: auto;
@@ -182,4 +180,13 @@ html, body {
 #settings aside {
 	color: #333;
 	font-size: 4mm;
+}
+
+#keypad #joypad {
+	position: absolute;
+    width: 100%;
+    height: 32mm;
+    top: -35mm;
+    left: 0;
+    opacity: 0.4;
 }
