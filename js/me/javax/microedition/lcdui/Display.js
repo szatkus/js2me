@@ -43,6 +43,18 @@ js2me.createClass({
 		return midlet.display;
 	},
 	/*
+	 * public int numAlphaLevels()
+	 */
+	$numAlphaLevels$$I: function () {
+		return 256;
+	},
+	/*
+	 * public int numColors()
+	 */
+	$numColors$$I: function () {
+		return 65536;
+	},
+	/*
 	 * public void setCurrent(Displayable nextDisplayable)
 	 */
 	$setCurrent$Ljavax_microedition_lcdui_Displayable_$V: function (displayable) {

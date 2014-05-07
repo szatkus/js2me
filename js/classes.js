@@ -145,7 +145,11 @@
 							}
 						};
 						element.onerror = function () {
-							js2me.showError('Error loading ' + className + ' class.');
+							console.error('Error loading ' + className + ' class.');
+							remain--;
+							if (remain == 0) {
+								callback(true);
+							}
 						}
 						document.head.appendChild(element);
 					})(className);
@@ -218,7 +222,9 @@
 				limit = 10;
 			}
 			if (limit == 0) {
-				throw new Error('Dependencies cannot be satisfied.');
+				callback();
+				return;
+				//throw new Error('Dependencies cannot be satisfied.');
 			}
 			var classes = {};
 			iterateClasses(javaRoot, 'javaRoot', function (obj) {
