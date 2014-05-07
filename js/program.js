@@ -1204,7 +1204,7 @@ js2me.generateProgram = function (data) {
 		var b = context.stack.pop();
 		var a = context.stack.pop();
 		context.stack.push(js2me.lsub(a, b));
-	};/*
+	};
 	// lushr
 	generators[0x7d] = function (context) {
 		var shift = context.stack.pop() % 64;
@@ -1251,7 +1251,7 @@ js2me.generateProgram = function (data) {
 				}, 1);
 			}
 		}
-	};*/
+	};
 	// multinewarray
 	generators[0xc5] = function () {
 		var type = constantPool[stream.readUint16()].className;
