@@ -4,5 +4,8 @@ js2me.createClass({
 	 */
 	_init$B$V: function (value) {
 		this.value = value;
+	},
+	$byteValue$$B: function () {
+		return this.value;
 	}
 });

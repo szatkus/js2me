@@ -24,6 +24,18 @@ js2me.createClass({
 	$getString$$Ljava_lang_String_: function () {
 		return new javaRoot.$java.$lang.$String(this.element.value);
 	},
+	/*
+	 * public int setMaxSize(int maxSize)
+	 */
+	$setMaxSize$I$I: function (maxSize) {
+		//TODO: constraints are ignored
+	},
+	/*
+	 * public void setString(String text)
+	 */
+	$setString$Ljava_lang_String_$V: function (text) {
+		this.element.value = text;
+	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Screen'
 });
 

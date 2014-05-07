@@ -7,8 +7,52 @@ js2me.createClass({
 			midlet.display = new javaRoot.$javax.$microedition.$lcdui.$Display();
 			var element = document.getElementById('screen');
 			midlet.display.element = element;
+			this.choiceButton = document.getElementById('choice');
+			this.backButton = document.getElementById('back');
+			this.choiceButton.addEventListener('mousedown', function () {
+				var displayable = midlet.display.current;
+				var moreMenuListener = {
+					$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V: function () {
+						var command = displayable.currentCommands[displayable.moreList.$getSelectedIndex$$I()];
+						displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable);
+						displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(command, displayable);
+					}
+				};
+				if (displayable && displayable.commandListener) {
+					displayable.currentCommands = displayable.choiceCommands;
+					if (displayable.choiceCommands.length == 1) {
+						displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(displayable.choiceCommands[0], displayable);
+					}
+					if (displayable.choiceCommands.length > 1) {
+						displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable.moreList);
+						displayable.moreList.$setCommandListener$Ljavax_microedition_lcdui_CommandListener_$V(moreMenuListener);
+						displayable.moreList.$deleteAll$$V();
+						for (var i = 0; i < displayable.currentCommands.length; i++) {
+							displayable.moreList.$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I(displayable.currentCommands[i].label, null);
+						}
+					}
+				}
+			});
+			this.backButton.addEventListener('mousedown', function () {
+				var displayable = midlet.display.current;
+				if (displayable && displayable.backCommands.length == 1 && displayable.commandListener) {
+					displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(displayable.backCommands[0], displayable);
+				}
+			});
 		}
 		return midlet.display;
+	},
+	/*
+	 * public int numAlphaLevels()
+	 */
+	$numAlphaLevels$$I: function () {
+		return 256;
+	},
+	/*
+	 * public int numColors()
+	 */
+	$numColors$$I: function () {
+		return 65536;
 	},
 	/*
 	 * public void setCurrent(Displayable nextDisplayable)
@@ -19,6 +63,7 @@ js2me.createClass({
 		if (this.current) {
 			this.current.active = false;
 		}
+		this.lastDisplayable = this.current;
 		this.current = displayable;
 		if (displayable != null) {
 			displayable.display = this;
