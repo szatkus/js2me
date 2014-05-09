@@ -1,14 +1,32 @@
 {
     "version": "1.0",
+<<<<<<< HEAD
     "name": "JayME X",
+=======
+    "name": "JayME",
+>>>>>>> privileged
     "description": "Java Mobile Edition emulator for Firefox OS.",
+    "type": "privileged",
+    "permissions": {
+        "device-storage:sdcard":{ 
+	    "access": "readonly",
+	    "description": "JARs"
+	}
+    },
     "launch_path": "/index.html",
     "orientation": ["portrait"],
     "installs_allowed_from": [
+<<<<<<< HEAD
 	"*"
     ],
     "icons": {
 	"128": "/img/icon128.png"
+=======
+        "*"
+    ],
+    "icons": {
+        "128": "/img/icon128.png"
+>>>>>>> privileged
     },
     "developer": {
 	"name": "Tomasz Szatkowski",

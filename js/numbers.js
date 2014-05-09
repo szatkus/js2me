@@ -246,18 +246,6 @@ js2me.lsub = function (a, b) {
 	
 	return {hi: hi, lo: lo};
 };
-js2me.generateOverflowChecking = function (bits) {
-	var base = 1;
-	for (var i = 0; i < bits - 1; i++) {
-		base *= 2;
-	}
-	return 'while (value >= ' + base + ') {\n' +
-		'	value -= ' + (base * 2) + ';\n' +
-		'}\n' +
-		'while (value < -' + base + ') {\n' +
-		'	value += ' + (base * 2) + ';\n' +
-		'}\n';
-};
 js2me.dataToFloat = function (value) {
 	var sign = (value & 0x80000000) != 0;
 	var exponent = ((value & 0x7f800000) >> 23) - 127;

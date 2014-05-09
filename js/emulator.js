@@ -18,7 +18,7 @@
 	mapping[88] = -7;
 	mapping[90] = -6;
 	document.onkeydown = function (e) {
-		//console.log(e.which);
+		console.log(e.which);
 		if (mapping[e.which]) {
 			js2me.sendKeyPressEvent(mapping[e.which]);
 		}
@@ -36,6 +36,8 @@
 		var settingsDialog = document.getElementById('settings');
 		var screenSizeSelector = document.querySelector('select.screen-size');
 		var generateMethodsButton = document.querySelector('button.generate-methods');
+		var joypad = document.getElementById('joypad');
+		joypad.style.display = 'none';
 		document.getElementById('settings-button').addEventListener('click', function () {
 			settingsDialog.style.top = 0;
 			var screenSize = loadConfig('width') + ',';
@@ -48,6 +50,14 @@
 				}
 			}
 			generateMethodsButton.disabled = (js2me.manifest == null);
+		});
+		document.getElementById('open-joypad').addEventListener('click', function () {
+			
+			if (joypad.style.display === 'none') {
+				joypad.style.display = '';
+			} else {
+				joypad.style.display = 'none';
+			}
 		});
 		generateMethodsButton.addEventListener('click', function () {
 			generateMethodsButton.innerHTML = 'Please wait...';
@@ -69,6 +79,11 @@
 			js2me.sendKeyReleasedEvent();
 		});
 		var buttonsMapping = {
+			up: -1,
+			down: -2,
+			left: -3,
+			right: -4,
+			ok: -5,
 			choice: -6,
 			back: -7,
 			num1: 49,
@@ -113,7 +128,6 @@
 			js2me.config[parts[i].split('=')[0]] = value;
 		}
 		var buttons = document.getElementsByTagName('a');
-		var selector = document.getElementById('file-selector');
 		if (localStorage.getItem('height') == null) {
 			localStorage.setItem('height', js2me.config.height)
 		}
@@ -127,23 +141,6 @@
 			return (js2me.config[name] = parseInt(localStorage.getItem(js2me.storageName + name)) ||
 					parseInt(localStorage.getItem(name)));
 		}
-		selector.addEventListener('click', function () {
-			var pick = new MozActivity({
-				name: 'pick',
-				data: {
-				   //type: ['*/*']
-				 }
-			});
-			pick.onsuccess = function () {
-				js2me.loadJAR(this.result.blob, function () {
-					document.getElementById('screen').innerHTML = '';
-					loadConfig('width');
-					loadConfig('height');
-					loadConfig('fullHeight');
-					js2me.launchMidlet(1);
-				});
-			};
-		});
 		if (js2me.config.src) {
 			var request = new XMLHttpRequest;
 			request.onreadystatechange = function() {
@@ -170,6 +167,40 @@
 			// blob didn't work in phantomjs
 			request.responseType = 'arraybuffer';
 			request.send();
+		} else {
+			var jarList = document.getElementById('jar-list');
+			var storage = navigator.getDeviceStorage('sdcard');
+			var cursor = storage.enumerate();
+			var isClearList = true;
+			cursor.onsuccess = function () {
+				if (this.result.name.lastIndexOf('.jar') === this.result.name.length - 4) {
+					if (isClearList) {
+						isClearList = false;
+						jarList.innerHTML = '';
+					}
+					var file = this.result;
+					var item = document.createElement('div');
+					item.className = 'item';
+					item.innerHTML = file.name.substring(file.name.lastIndexOf('/') + 1)
+					item.addEventListener('click', function () {
+						js2me.loadJAR(file, function () {
+							document.getElementById('screen').innerHTML = '';
+							loadConfig('width');
+							loadConfig('height');
+							loadConfig('fullHeight');
+							js2me.launchMidlet(1);
+						});
+					});
+					jarList.appendChild(item);
+				}
+				if (!this.done) {
+					this.continue();
+				}
+			};
+
+			cursor.onerror = function () {
+				console.error("No file found: " + this.error);
+			};
 		}
 	};
 	js2me.setFullscreen = function (enabled) {

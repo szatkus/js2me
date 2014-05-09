@@ -157,6 +157,23 @@ js2me.createClass({
 		return new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 	},
 	/*
+	 * public void getRGB(int[] rgbData, int offset, int scanlength, int x, int y, int width, int height)
+	 */
+	$getRGB$_IIIIIII$V: function (rgbData, offset, scanlength, x, y, width, height) {
+		var context = this.element.getContext('2d');
+		var imageData = context.getImageData(x, y, width, height);
+		for (var i = 0; i < width * height; i++) {
+			var value = imageData.data[i * 4] << 24;
+			value += imageData.data[i * 4 + 1] << 16;
+			value += imageData.data[i * 4 + 2] << 8;
+			value += imageData.data[i * 4 + 3];
+			if (value >= 0x100000000) {
+				value -= 0x100000000;
+			}
+			rgbData[offset + (i % width - x) + (Math.floor(i / width) - y) * scanlength] = value;
+		}
+	},
+	/*
 	 * public int getWidth()
 	 */
 	$getWidth$$I: function () {
