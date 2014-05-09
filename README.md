@@ -5,7 +5,7 @@ It's implementation of Java ME in JavaScript for Firefox OS.
 
 Compatibility
 ---------------
-Hard to say. There's a lot of different classes in J2ME ecosystem, not only MIDP. Currently it supports most of Java bytecode, part of MIDP and it's able to run few JS2ME games and application.
+Hard to say. There's a lot of different classes in J2ME ecosystem, not only MIDP. Currently it supports most of Java bytecode, part of MIDP and it's able to run few J2ME games and application.
 
 Performance
 ---------------
@@ -18,6 +18,11 @@ It exists. You only have to clone this repository and push to your phone. If you
 Contribution
 --------------
 Feel free to submit a pull requests. There's also [short guide](tree/js/me) how to write your own pseudo-Java classes.
+
+Why there are  two versions of app?
+-----------------------------------
+Normal edition is privileged Firefox OS app with more working features, but it's slower.
+X edition is faster, but has less features. It's good enough for gaming.
 
 Milestones
 --------------
@@ -64,10 +69,14 @@ Milestone 1.0
  * Run Ginger (done)
  * Run JaduGadu (no, this doesn't work anyway)
  * Priviliged app (fuck!, looks like we need two versions of app) (done)
- * Rewrite the compiler... two times, with JIT (master branch) and as interpreter (privileged branch) (1/2)
+ * Rewrite the compiler... two times, with JIT (master branch) and as interpreter (privileged branch) (1/2, good enough)
  * Make forms work perfectly, with nice tests and candies (naaahh, too lazy)
+ 
+Milestone 1.1
+ * Run Opera Mini
+ * Release X edition
 
-Milestone X
+Somewhere in future...
 
  * MIDI support
  * M3G
