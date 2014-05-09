@@ -137,10 +137,27 @@
 		if (localStorage.getItem('fullHeight') == null) {
 			localStorage.setItem('fullHeight', js2me.config.fullHeight)
 		}
+		
+		var script = document.createElement('script');
+		if (js2me.config.turbo) {
+			script.src = 'js/program_timon.js';
+		} else {
+			script.src = 'js/program_pumba.js';
+		}
+		document.head.appendChild(script);
+		
 		function loadConfig(name) {
 			return (js2me.config[name] = parseInt(localStorage.getItem(js2me.storageName + name)) ||
 					parseInt(localStorage.getItem(name)));
 		}
+		
+		var screen = document.getElementById('screen');			
+		if (js2me.config.turbo) {
+			screen.innerHTML = 'Select JAR file:<br><img id="file-selector" src="img/arrow_up.png" width="128" height="128">';
+		} else {
+			screen.innerHTML = '<div id="jar-list">No JARs found on SD card</div>';
+		}
+		
 		if (js2me.config.src) {
 			var request = new XMLHttpRequest;
 			request.onreadystatechange = function() {
@@ -168,38 +185,57 @@
 			request.responseType = 'arraybuffer';
 			request.send();
 		} else {
-			var jarList = document.getElementById('jar-list');
-			var storage = navigator.getDeviceStorage('sdcard');
-			var cursor = storage.enumerate();
-			var isClearList = true;
-			cursor.onsuccess = function () {
-				if (this.result.name.lastIndexOf('.jar') === this.result.name.length - 4) {
-					if (isClearList) {
-						isClearList = false;
-						jarList.innerHTML = '';
-					}
-					var file = this.result;
-					var item = document.createElement('div');
-					item.className = 'item';
-					item.innerHTML = file.name.substring(file.name.lastIndexOf('/') + 1)
-					item.addEventListener('click', function () {
-						js2me.loadJAR(file, function () {
-							document.getElementById('screen').innerHTML = '';
-							loadConfig('width');
-							loadConfig('height');
-							loadConfig('fullHeight');
-							js2me.launchMidlet(1);
-						});
+			if (js2me.config.turbo) {
+				 document.getElementById('file-selector').addEventListener('click', function () {
+				var pick = new MozActivity({
+					name: 'pick',
+					data: {
+					   //type: ['*/*']
+					 }
+				});
+				pick.onsuccess = function () {
+					js2me.loadJAR(this.result.blob, function () {
+						document.getElementById('screen').innerHTML = '';
+						loadConfig('width');
+						loadConfig('height');
+						loadConfig('fullHeight');
+						js2me.launchMidlet(1);
 					});
-					jarList.appendChild(item);
+				};
+			});
+			} else {
+				var jarList = document.getElementById('jar-list');
+				var storage = navigator.getDeviceStorage('sdcard');
+				var cursor = storage.enumerate();
+				var isClearList = true;
+				cursor.onsuccess = function () {
+					if (this.result.name.lastIndexOf('.jar') === this.result.name.length - 4) {
+						if (isClearList) {
+							isClearList = false;
+							jarList.innerHTML = '';
+						}
+						var file = this.result;
+						var item = document.createElement('div');
+						item.className = 'item';
+						item.innerHTML = file.name.substring(file.name.lastIndexOf('/') + 1)
+						item.addEventListener('click', function () {
+							js2me.loadJAR(file, function () {
+								document.getElementById('screen').innerHTML = '';
+								loadConfig('width');
+								loadConfig('height');
+								loadConfig('fullHeight');
+								js2me.launchMidlet(1);
+							});
+						});
+						jarList.appendChild(item);
+					}
+					if (!this.done) {
+						this.continue();
+					}
 				}
-				if (!this.done) {
-					this.continue();
-				}
-			};
-
-			cursor.onerror = function () {
-				console.error("No file found: " + this.error);
+				cursor.onerror = function () {
+					console.error("No file found: " + this.error);
+				};
 			};
 		}
 	};
