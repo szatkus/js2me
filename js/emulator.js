@@ -18,7 +18,6 @@
 	mapping[88] = -7;
 	mapping[90] = -6;
 	document.onkeydown = function (e) {
-		console.log(e.which);
 		if (mapping[e.which]) {
 			js2me.sendKeyPressEvent(mapping[e.which]);
 		}

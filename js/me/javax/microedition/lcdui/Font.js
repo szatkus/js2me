@@ -77,7 +77,7 @@ js2me.createClass({
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
 		this.context.font = this.getCSS();
-		return this.context.measureText(str.text).width;
+		return Math.ceil(this.context.measureText(str.text).width);
 	},
 	/*
 	 * public int substringWidth(String str, int offset, int len)
@@ -87,14 +87,14 @@ js2me.createClass({
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
 		this.context.font = this.getCSS();
-		return this.context.measureText(str.text.substr(offset, length)).width;
+		return Math.ceil(this.context.measureText(str.text.substr(offset, length)).width);
 	},
 	/*
 	 * public int charWidth(char ch)
 	 */
 	$charWidth$C$I: function (char) {
 		this.context.font = this.getCSS();
-		return this.context.measureText(String.fromCharCode(char)).width;
+		return Math.ceil(this.context.measureText(String.fromCharCode(char)).width);
 	},
 	/*
 	 * public int charsWidth(char[] ch, int offset, int length)

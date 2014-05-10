@@ -240,7 +240,16 @@ js2me.createClass({
 	 * public int lastIndexOf(int ch)
 	 */
 	$lastIndexOf$I$I: function (charCode) {
-		for (var i = this.text.length - 1; i >= 0; i--) {
+		return this.$lastIndexOf$II$I(charCode, this.text.length - 1);
+	},
+	/*
+	 * public int lastIndexOf(int ch, int fromIndex)
+	 */
+	$lastIndexOf$II$I: function (charCode, fromIndex) {
+		if (fromIndex > this.text.length - 1) {
+			fromIndex = this.text.length - 1;
+		}
+		for (var i = fromIndex; i >= 0; i--) {
 			if (this.text.charCodeAt(i) == charCode) {
 				return i;
 			}

@@ -11,6 +11,10 @@ js2me.createClass({
 	$hashCode$$I: function () {
 		return this.value;
 	},
-	package: 'javaRoot.$java.$lang',
-	name: '$Short'
+	/*
+	 * public short shortValue()
+	 */
+	$shortValue$$S: function () {
+		return this.value;
+	}
 });

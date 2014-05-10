@@ -6,6 +6,16 @@ js2me.createClass({
 		this.value = value;
 	},
 	/*
+	 * public static boolean isDigit(char ch)
+	 */
+	$isDigit$C$Z: function (char) {
+		if (char >= 48 && char <= 57) {
+			return 1;
+		} else {
+			return 0;
+		}
+	},
+	/*
 	 * public static char toUpperCase(char ch)
 	 */
 	$toUpperCase$C$C: function (char) {

@@ -902,13 +902,23 @@ js2me.generateProgram = function (data) {
 				context.saveResult = (methodInfo.type.returnType != 'V');
 				var result;
 				if (isVirtual) {
-					result = obj[methodInfo.name].apply(obj, args);
+					try {
+						result = obj[methodInfo.name].apply(obj, args);
+					} catch (e) {
+						console.error(e);
+						console.error(obj.className + ' ' + methodInfo.name);
+					}
 				} else {
 					var classObj = js2me.findClass(methodInfo.className);
-					if (isStatic) {
-						result = classObj.prototype[methodInfo.name].apply(classObj.prototype, args);
-					} else {
-						result = classObj.prototype[methodInfo.name].apply(obj, args);
+					try {
+						if (isStatic) {
+							result = classObj.prototype[methodInfo.name].apply(classObj.prototype, args);
+						} else {
+							result = classObj.prototype[methodInfo.name].apply(obj, args);
+						}
+					} catch (e) {
+						console.error(e);
+						console.error(classObj.prototype.className + ' ' + methodInfo.name);
 					}
 				}
 				

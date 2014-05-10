@@ -59,7 +59,7 @@ js2me.createClass({
 	$getProperty$Ljava_lang_String_$Ljava_lang_String_: function (key) {
 		console.log('Asking for property ' + key.text);
 		if (key.text == 'microedition.platform') {
-			return new javaRoot.$java.$lang.$String('js2me/m4');
+			return new javaRoot.$java.$lang.$String('js2me/1.1');
 		}
 	}
 });

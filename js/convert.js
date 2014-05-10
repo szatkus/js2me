@@ -6,7 +6,9 @@ js2me.lastFieldId = 1;
  */
 js2me.convertClass = function (stream) {
 	var newClass = function () {
-		
+		if (this.construct) {
+			this.construct();
+		}
 	};
 	var constantPool = [];
 	newClass.prototype.pool = constantPool;

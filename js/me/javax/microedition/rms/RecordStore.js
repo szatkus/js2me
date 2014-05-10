@@ -27,6 +27,7 @@ js2me.createClass({
 	 * 
 	 */
 	$deleteRecord$I$V: function () {
+		console.warn('delete record');
 	},
 	/*
 	 * 
@@ -42,12 +43,13 @@ js2me.createClass({
 		return  {hi: Math.floor(time / 0x100000000), lo: time % 0x100000000};
 	},
 	/*
-	 * public void addRecordListener(RecordListener listener)
+	 * public int addRecord(byte[] data, int offset, int numBytes) throws RecordStoreNotOpenException, RecordStoreException, RecordStoreFullException
 	 */
 	$addRecord$_BII$I: function (data, offset, numBytes) {
-		var id = parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
-		localStorage.setItem(this.storageName + 'size', id);
-		this.$setRecord$I_BII$V(id - 1, data, offset, numBytes);
+		var id = parseInt(localStorage.getItem(this.storageName + 'size'));
+		localStorage.setItem(this.storageName + 'size', id + 1);
+		this.$setRecord$I_BII$V(id, data, offset, numBytes);
+		return id;
 	},
 	/*
 	 * 
@@ -84,9 +86,19 @@ js2me.createClass({
 		return enumeration;
 	},
 	/*
+	 * public int getSizeAvailable() throws RecordStoreNotOpenException
+	 */
+	$getSizeAvailable$$I: function () {
+		if (this.isClosed) {
+			throw new javaRoot.$javax.$microedition.$rms.$RecordStoreNotOpenException();
+		}
+		return this.updateSize(0);
+	},
+	/*
 	 * 
 	 */
 	$closeRecordStore$$V: function () {
+		this.isClosed = true;
 	},
 	/*
 	 * public static String[] listRecordStores()
@@ -115,15 +127,35 @@ js2me.createClass({
 		}
 	},
 	/*
-	 * 
+	 * public void setRecord(int recordId, byte[] newData, int offset, int numBytes) throws RecordStoreNotOpenException, InvalidRecordIDException, RecordStoreException, RecordStoreFullException
 	 */
 	$setRecord$I_BII$V: function (id, data, offset, numBytes) {
+		if (this.isClosed) {
+			throw new javaRoot.$javax.$microedition.$rms.$RecordStoreNotOpenException();
+		}
+		if (id >= parseInt(localStorage.getItem(this.storageName + 'size'))) {
+			throw new javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException();
+		}
 		var str = '';
 		if (data) {
 			str = data.slice(offset, offset + numBytes).toString();
 		}
+		var change = str.length;
+		if (localStorage[this.storageName + id]) {
+			change -= localStorage[this.storageName + id].length;
+		}
+		if (this.updateSize(change) < 0) {
+			throw new javaRoot.$javax.$microedition.$rms.$RecordStoreFullException();
+		}
 		localStorage.setItem(this.storageName + id, str);
-		localStorage.setItem(this.storageName + 'lastModified', (new Date()).getTime());
+		localStorage.setItem(this.storageName + 'lastModified', Date.now());
+		
+	},
+	updateSize: function (change) {
+		if (localStorage['freeSpace'] === undefined) {
+			localStorage['freeSpace'] = 1024 * 1024 * 1024;
+		}
+		return localStorage['freeSpace'] = parseInt(localStorage['freeSpace']) + change;
 	},
 	require: [
 		'javaRoot.$javax.$microedition.$rms.$RecordEnumerationImpl', 

@@ -7,7 +7,10 @@
         "device-storage:sdcard":{ 
 	    "access": "readonly",
 	    "description": "JARs"
-	}
+	},
+        "tcp-socket" : {
+            "description" : "Emulate sockets."
+        }
     },
     "launch_path": "/index.html",
     "orientation": ["portrait"],
