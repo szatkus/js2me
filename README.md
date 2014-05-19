@@ -17,7 +17,7 @@ It exists. You only have to clone this repository and push to your phone. If you
 
 Contribution
 --------------
-Feel free to submit a pull requests. There's also [short guide](https://github.com/szatkus/js2me/blob/master/js/me/README) how to write your own pseudo-Java classes.
+Feel free to submit a pull requests. There's also [short guide](https://github.com/szatkus/js2me/blob/master/js/me/README.md) how to write your own pseudo-Java classes.
 
 Why there are  two versions of app?
 -----------------------------------
