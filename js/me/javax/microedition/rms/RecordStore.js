@@ -46,8 +46,8 @@ js2me.createClass({
 	 * public int addRecord(byte[] data, int offset, int numBytes) throws RecordStoreNotOpenException, RecordStoreException, RecordStoreFullException
 	 */
 	$addRecord$_BII$I: function (data, offset, numBytes) {
-		var id = parseInt(localStorage.getItem(this.storageName + 'size'));
-		localStorage.setItem(this.storageName + 'size', id + 1);
+		var id = parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
+		localStorage.setItem(this.storageName + 'size', id);
 		this.$setRecord$I_BII$V(id, data, offset, numBytes);
 		return id;
 	},
@@ -133,7 +133,7 @@ js2me.createClass({
 		if (this.isClosed) {
 			throw new javaRoot.$javax.$microedition.$rms.$RecordStoreNotOpenException();
 		}
-		if (id >= parseInt(localStorage.getItem(this.storageName + 'size'))) {
+		if (id > parseInt(localStorage.getItem(this.storageName + 'size'))) {
 			throw new javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException();
 		}
 		var str = '';
