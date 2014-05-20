@@ -353,9 +353,9 @@ js2me.createClass({
 	 * public String trim()
 	 */
 	$trim$$Ljava_lang_String_: function () {
-		for (var i = 0; i < this.text.length && this.text.charCodeAt(i) <= 20; i++);
+		for (var i = 0; i < this.text.length && this.text.charCodeAt(i) <= 32; i++);
 		var start = i;
-		for (var i = this.text.length - 1; i >= 0 && this.text.charCodeAt(i) <= 20; i--);
+		for (var i = this.text.length - 1; i >= 0 && this.text.charCodeAt(i) <= 32; i--);
 		var end = i + 1;
 		var result;
 		if (end <= start) {

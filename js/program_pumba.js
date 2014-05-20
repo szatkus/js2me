@@ -905,7 +905,7 @@ js2me.generateProgram = function (data) {
 					try {
 						result = obj[methodInfo.name].apply(obj, args);
 					} catch (e) {
-						console.error(e);
+						console.error(e.message);
 						console.error(obj.className + ' ' + methodInfo.name);
 					}
 				} else {
