@@ -196,6 +196,45 @@ js2me.convertClass = function (stream) {
 				if (tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 					var constant = constantPool[index];
 					var methodPath = constant.className + '.prototype.' + constant.name;
+					/*var methodPath = constant.className.replace('javaRoot.', '').replace('$', '');
+					if (constant.name.indexOf('_init') === 0) {
+						methodPath += '.<init>';
+					} else {
+						methodPath += '.' + constant.name.split('$')[1];
+					}
+					methodPath += '(';
+					for (var t in constant.type.argumentsTypes) {
+						var typeName = constant.type.argumentsTypes[t];
+						var arrays = 0;
+						while (typeName.indexOf('[') === 0) {
+							arrays++;
+							typeName = typeName.substring(1);
+						}
+						if (typeName === 'Z') {
+							methodPath += 'boolean';
+						} else if (typeName === 'I') {
+							methodPath += 'int';
+						} else if (typeName === 'B') {
+							methodPath += 'byte';
+						} else if (typeName === 'D') {
+							methodPath += 'double';
+						} else if (typeName === 'F') {
+							methodPath += 'float';
+						} else if (typeName === 'J') {
+							methodPath += 'long';
+						} else if (typeName === 'C') {
+							methodPath += 'char';
+						} else {
+							methodPath += typeName.replace(/\//g, '.').substring(1, typeName.length - 1);
+						}
+						for (var tt = 0; tt < arrays; tt++) {
+							methodPath += '[]';
+						}
+						if (t < constant.type.argumentsTypes.length - 1) {
+							methodPath += ',';
+						}
+					}
+					methodPath += ')';*/
 					js2me.usedMethods[methodPath] = true;
 				}
 			}

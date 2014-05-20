@@ -1,6 +1,8 @@
 js2me.createClass({
 	construct: function (action) {
-		this.$run$$V = action;
+		if (action instanceof Function) {
+			this.$run$$V = action;
+		}
 	},
 	/*
 	 * public Thread()
