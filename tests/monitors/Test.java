@@ -14,12 +14,12 @@ class t extends Thread {
 	public void run() {
 		try {
 			wait();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		synchronized (this) {
 			try {
-				wait();
+				this.wait();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -44,6 +44,7 @@ public class Test extends TestMidlet {
 		} catch (IllegalMonitorStateException e) {
 			check(true);
 		}
+		o.a();
 		o.a();
 		System.out.println("end");
 		finish();

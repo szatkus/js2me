@@ -57,6 +57,12 @@ js2me.createClass({
 		return js2me.threads[js2me.currentThread];
 	},
 	/*
+	 * public void interrupt()
+	 */
+	$interrupt$$V: function () {
+		//TODO
+	},
+	/*
 	 * public final boolean isAlive()
 	 */
 	$isAlive$$Z: function () {
