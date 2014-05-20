@@ -1219,7 +1219,10 @@ js2me.generateProgram = function (data) {
 	generators[0x7d] = function (context) {
 		var shift = context.stack.pop() % 64;
 		var value = context.stack.pop();
-		var result = value.shr(shift);
+		var result = js2me.lshr(value, shift);
+		if (js2me.lcmp(value, {hi: 0, lo: 0}) === -1) {
+			result = js2me.ladd(result, js2me.lshl(js2me.lneg(value), 2));
+		}
 		context.stack.push(result);
 	};
 	// monitoenter
