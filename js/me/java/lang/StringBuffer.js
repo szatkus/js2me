@@ -126,6 +126,20 @@ js2me.createClass({
 		this.capacity = capacity;
 	},
 	/*
+	 * public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
+	 */
+	$getChars$II_CI$V: function (srcBegin, srcEnd, dst, dstBegin) {
+		if (dst == null) {
+			throw new javaRoot.$java.$lang.$NullPointerException();
+		}
+		if (srcBegin < 0 || dstBegin < 0 || srcBegin > srcEnd || srcEnd > this.string.length || dstBegin + srcEnd - srcBegin > dst.length) {
+			throw new javaRoot.$java.$lang.$IndexOutOfBoundsException();
+		}
+		for (var i = 0; i < srcEnd - srcBegin; i++) {
+			dst[dstBegin + i] = this.string.charCodeAt(srcBegin + i);
+		}
+	},
+	/*
 	 * public StringBuffer insert(int offset, char c)
 	 */
 	$insert$IC$Ljava_lang_StringBuffer_: function (offset, value) {
