@@ -1,4 +1,7 @@
 js2me.createClass({
+	construct: function (date) {
+		this.date = date || new Date();
+	},
 	/*
 	 * public Date()
 	 */
