@@ -1442,23 +1442,29 @@ js2me.generateProgram = function (data) {
 			}
 			context.position = positionMapping[position];
 		};
-	}/*
+	}
 	// wide
 	generators[0xc4] = function (context) {
 		var op = stream.readUint8();
 		var index = stream.readUint16();
 		if (op >= 21 && op <= 25) {
-			return new Function('context', 'context.push(context.locals[' + index + ']);'); 
+			return function (context) {
+				context.push(context.locals[index]); 
+			};
 		}
 		if (op >= 54 && op <= 58) {
-			return new Function('context', 'context.locals[' + index + '] = context.pop();'); 
+			return function (context) {
+				context.locals[index] = context.pop();
+			};
 		}
 		if (op == 0x84) {
 			var value = stream.readInt16();
-			return new Function('context', 'context.locals[' + index + '] += ' + value + ';'); 
+			return function (context) {
+				context.locals[index] += value;
+			};
 		}
 		throw new Error('wide: unkown op ' + index);
-	}*/
+	}
 	var program = [];
 	var calls = [];
 	var positionMapping = new Array(stream.getRemaining());
