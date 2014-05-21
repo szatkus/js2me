@@ -5,7 +5,26 @@ js2me.createClass({
 	$abs$D$D: function (value) {
 		return {double: Math.abs(value.double)};
 	},
-	$abs$I$I: Math.abs,
+	/*
+	 * public static int abs(int a)
+	 */
+	$abs$I$I: function (value) {
+		if (value >= 0 || value === -2147483648) {
+			return value;
+		} else {
+			return -value;
+		}
+	},
+	/*
+	 * public static long abs(long a)
+	 */
+	$abs$J$J: function (value) {
+		if (js2me.lcmp(value, {hi:0, lo:0}) === 1 || js2me.lcmp(value, {hi: 0x80000000, lo: 0}) === 0) {
+			return value;
+		} else {
+			return js2me.lneg(value);
+		}
+	},
 	$min$II$I: Math.min,
 	$max$II$I: Math.max,
 	/*
