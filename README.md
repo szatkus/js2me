@@ -2,6 +2,7 @@ JS2ME
 =============
 
 It's implementation of Java ME in JavaScript for Firefox OS.
+[Available at Firefox OS Marketplace](https://marketplace.firefox.com/app/jayme/)
 
 Compatibility
 ---------------
