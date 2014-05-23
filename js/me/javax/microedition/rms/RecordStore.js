@@ -58,7 +58,7 @@ js2me.createClass({
 		return parseInt(localStorage.getItem(this.storageName + 'size')) + 1;
 	},
 	/*
-	 * 
+	 * public byte[] getRecord(int recordId) throws RecordStoreNotOpenException, InvalidRecordIDException, RecordStoreException
 	 */
 	$getRecord$I$_B: function (id) {
 		try {
@@ -74,6 +74,25 @@ js2me.createClass({
 			result[i] = parseInt(array[i]);
 		}
 		return result;
+	},
+	/*
+	 * public int getRecord(int recordId, byte[] buffer, int offset) throws RecordStoreNotOpenException, InvalidRecordIDException, RecordStoreException
+	 */
+	$getRecord$I_BI$I: function (id, buffer, offset) {
+		var array = this.$getRecord$I$_B(id);
+		if (array.length > buffer.length - offset) {
+			throw new javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException();
+		}
+		for (var i = 0; i < array.length; i++) {
+			buffer[offset + i] = array[i];
+		}
+		return array.length;
+	},
+	/*
+	 * public int getRecordSize(int recordId) throws RecordStoreNotOpenException, InvalidRecordIDException, RecordStoreException
+	 */
+	$getRecordSize$I$I: function (id) {
+		return this.$getRecord$I$_B(id).length;
 	},
 	/*
 	 * 

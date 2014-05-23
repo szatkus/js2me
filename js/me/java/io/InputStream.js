@@ -1,10 +1,16 @@
 js2me.createClass({
 	closed: false,
 	/*
-	 * 
+	 * public void close() throws IOException
 	 */
 	$close$$V: function () {
 		this.closed = true;
+	},
+	/*
+	 * public boolean markSupported()
+	 */
+	$markSupported$$Z: function () {
+		
 	},
 	/*
 	 * public void mark(int readlimit)
