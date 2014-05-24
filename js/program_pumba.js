@@ -1187,13 +1187,7 @@ js2me.generateProgram = function (data) {
 		var shift = context.stack.pop() % 64;
 		var value = context.stack.pop();
 		var sign = value.hi >= 2147483648;
-		if (sign) {
-			value = js2me.lneg(value);
-		}
-		var result = js2me.lshr(value, shift);
-		if (sign) {
-			result = js2me.lneg(result);
-		}
+		var result = js2me.lshr(value, shift, true);
 		context.stack.push(result);
 	};
 	// lstore
@@ -1219,10 +1213,7 @@ js2me.generateProgram = function (data) {
 	generators[0x7d] = function (context) {
 		var shift = context.stack.pop() % 64;
 		var value = context.stack.pop();
-		var result = js2me.lshr(value, shift);
-		if (js2me.lcmp(value, {hi: 0, lo: 0}) === -1) {
-			result = js2me.ladd(result, js2me.lshl(js2me.lneg(value), 2));
-		}
+		var result = js2me.lshr(value, shift, false);
 		context.stack.push(result);
 	};
 	// monitoenter

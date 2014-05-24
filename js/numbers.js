@@ -213,14 +213,19 @@ js2me.lshl = function (a, shift) {
 	hi = hi % 0x100000000 + rest;
 	return {hi: hi, lo: lo};
 };
-js2me.lshr = function (a, shift) {
+js2me.lshr = function (a, shift, isArithmetic) {
 	var lo = a.lo;
 	var hi = a.hi;
 	var base = 1;
 	
 	for (var i = 0; i < shift; i++) {
 		lo /= 2;
-		hi /= 2;
+		if (isArithmetic && hi >= 0x80000000) {
+			hi /= 2;
+			hi += 0x80000000;
+		} else {
+			hi /= 2;
+		}
 		base *= 2;
 	}
 	var rest = a.hi % base;
