@@ -3,6 +3,8 @@ JS2ME
 
 It's implementation of Java ME in JavaScript for Firefox OS.
 
+[Available at Firefox OS Marketplace](https://marketplace.firefox.com/app/jayme/)
+
 Compatibility
 ---------------
 Hard to say. There's a lot of different classes in J2ME ecosystem, not only MIDP. Currently it supports most of Java bytecode, part of MIDP and it's able to run few J2ME games and application.

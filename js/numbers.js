@@ -110,13 +110,20 @@ js2me.ladd = function (a, b) {
 	return result;
 };
 js2me.lcmp = function (a, b) {
-	if (a.hi == b.hi && a.lo == b.lo) {
+	function normalize(x) {
+		if (x >= 0x80000000) {
+			return x -= 0x100000000;
+		} else {
+			return x;
+		}
+	}
+	if (a.hi === b.hi && a.lo === b.lo) {
 		return 0;
 	}
-	if (a.hi > b.hi) {
+	if (normalize(a.hi) > normalize(b.hi)) {
 		return 1;
 	}
-	if (a.hi == b.hi && a.lo > b.lo) {
+	if (normalize(a.hi) === normalize(b.hi) && normalize(a.lo) > normalize(b.lo)) {
 		return 1;
 	}
 	return -1;
@@ -206,14 +213,19 @@ js2me.lshl = function (a, shift) {
 	hi = hi % 0x100000000 + rest;
 	return {hi: hi, lo: lo};
 };
-js2me.lshr = function (a, shift) {
+js2me.lshr = function (a, shift, isArithmetic) {
 	var lo = a.lo;
 	var hi = a.hi;
 	var base = 1;
 	
 	for (var i = 0; i < shift; i++) {
 		lo /= 2;
-		hi /= 2;
+		if (isArithmetic && hi >= 0x80000000) {
+			hi /= 2;
+			hi += 0x80000000;
+		} else {
+			hi /= 2;
+		}
 		base *= 2;
 	}
 	var rest = a.hi % base;
