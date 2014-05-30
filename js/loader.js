@@ -14,13 +14,14 @@ js2me.loadJAR = function (file, callback) {
 					var content = js2me.UTF8ToString(js2me.resources['META-INF/MANIFEST.MF']);
 					js2me.manifest = js2me.parseManifest(content);
 					js2me.storageName = js2me.manifest['midlet-vendor'] + '/' +js2me.manifest['midlet-name'] + '//' + file.size + '/';
-					for (var name in js2me.resources) {
+					/*for (var name in js2me.resources) {
 						if (name.lastIndexOf('class') >= 0 && name.lastIndexOf('class') == name.length - 5) {
 							js2me.loadJavaClass(new js2me.BufferStream(js2me.resources[name]));
 						}
 						
 					}
-					js2me.checkClasses(callback);
+					js2me.checkClasses(callback);*/
+					callback();
 				});
 			});
 		}, function (message) {

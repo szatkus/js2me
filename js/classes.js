@@ -3,11 +3,34 @@
 	 * Loads a class from a stream into Java root.
 	 * @param {BufferStream} stream The class file format compliant with JVM specifications.
 	 */
-	js2me.loadJavaClass = function (stream) {
+	function loadJavaClass(stream) {
 		var newClass = js2me.convertClass(stream);
 		var className = newClass.prototype.className;
 		var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
 		package[className.substr(className.lastIndexOf('.') + 1)] = newClass;
+		return newClass;
+	}
+	/**
+	 * Loads a class (native or Javaish).
+	 * @param {string} className Name of the class.
+	 * @param {function(class)} callback Call after loading the class.
+	 */
+	js2me.loadClass = function (className, callback) {
+		try {
+			var classObj = js2me.findClass(className);
+			callback(classObj);
+		} catch (e) {
+			var resourceName = className.replace('javaRoot.', '').replace(/\$/g, '').replace(/\./g, '/') + '.class';
+			if (js2me.resources[resourceName]) {
+				var classObj = loadJavaClass(new js2me.BufferStream(js2me.resources[resourceName]));
+				initializeClass(classObj, callback);
+			} else {
+				loadNativeClasses([className], function() {
+					var classObj = js2me.findClass(className);
+					initializeClass(classObj, callback);
+				});
+			}
+		}
 	}
 	/**
 	 * Finds a package by its name.
@@ -109,12 +132,18 @@
 	 */
 	function loadNativeClasses(classes, callback) {
 			var remain = 0;
-			if (classes.constructor == Array) {
+			var require = [];
+			if (classes.constructor === Array) {
 				var array = classes;
 				classes = {};
 				for (var i in array) {
 					classes[array[i]] = true;
 				}
+			}
+			function checkRequirements(loaded) {
+				loadNativeClasses(require, function () {
+					callback(loaded);
+				});
 			}
 			for (var className in classes) {
 				try {
@@ -136,61 +165,88 @@
 							proto.package = className.substring(0, splitPoint);
 							proto.name = className.substring(splitPoint + 1);
 							var package = js2me.findPackage(proto.package, window);
-							package[proto.name] = js2me.classBucket;
+							var classObj = package[proto.name] = js2me.classBucket;
 							
 							js2me.classBucket = null;
-							remain--;
-							if (remain == 0) {
-								callback(true);
+							classObj.prototype.implicitInitList = [];
+							for (var i in classObj.prototype) {
+								if (classObj.prototype[i] != null && classObj.prototype[i].constructor == Function) {
+									var source = classObj.prototype[i].toString();
+									var requirements = source.match(new RegExp('javaRoot(\\.\\$[a-zA-Z]+)+', 'g'));
+									for (var j = 0; requirements && j < requirements.length; j++) {
+										require.push(requirements[j]);
+										classObj.prototype.implicitInitList.push(requirements[j]);
+									}
+								}
 							}
+							if (classObj.prototype.interfaces instanceof Array) {
+								require = require.concat(classObj.prototype.interfaces);
+							}
+							if (classObj.prototype.superClass) {
+								require.push(classObj.prototype.superClass);
+							}
+							remain--;
+							if (remain === 0) {
+								checkRequirements(true);
+							}
+							
 						};
 						element.onerror = function () {
 							console.error('Error loading ' + className + ' class.');
 							remain--;
 							if (remain == 0) {
-								callback(true);
+								checkRequirements(true);
 							}
 						}
 						document.head.appendChild(element);
 					})(className);
 				}
 			}
-			if (remain == 0) {
+			if (remain === 0) {
 				callback(false);
 			}
 		}
 		/**
 		 * Initializes given class.
 		 * @param {constructor} classObj Class constructor.
-		 * @param {function} callback Function to execute when class is ready to use.
+		 * @param {function(class)} callback Function to execute when class is ready to use.
 		 */
-		js2me.initializeClass = function (classObj, callback) {
-			
+		function initializeClass(classObj, callback) {
+			console.log(classObj.prototype.className);
 			function retry() {
-				js2me.initializeClass(classObj, callback);
+				initializeClass(classObj, callback);
 			}
-			if (classObj.prototype && !classObj.prototype.initialized) {
-				if (!classObj.prototype.superClass && classObj != javaRoot.$java.$lang.$Object) {
-					classObj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
-				}
-				if (classObj.prototype.superClass) {
-					var superClass = js2me.findClass(classObj.prototype.superClass);
-					classObj.prototype.__proto__ = superClass.prototype;
-					if (!superClass.prototype.initialized) {
-						js2me.initializeClass(superClass, retry);
-						return;
-					}
-				}
-				
-				if (classObj.prototype._clinit$$V && !classObj.prototype.initializing) {
-					classObj.prototype.initializing = true;
-					classObj.prototype._clinit$$V(retry);
+			
+			if (classObj === javaRoot.$java.$lang.$Object || classObj.prototype.initialized) {
+				classObj.prototype.initialized = true;
+				callback(classObj);
+				return;
+			}
+			
+			if (!classObj.prototype.superClass) {
+				classObj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
+			}
+			js2me.loadClass(classObj.prototype.superClass, function (superClass) {
+				classObj.prototype.__proto__ = superClass.prototype;
+				if (!superClass.prototype.initialized) {
+					initializeClass(superClass, retry);
 					return;
 				}
-				
-			}
-			classObj.prototype.initialized = true;
-			callback();
+				if (classObj.prototype.implicitInitList && classObj.prototype.implicitInitList.length > 0) {
+					var className = classObj.prototype.implicitInitList.pop();
+					var reqClass = js2me.findClass(className);
+					initializeClass(reqClass, retry);
+					return;
+				}
+				classObj.prototype.initialized = true;
+				if (classObj.prototype._clinit$$V) {
+					js2me.launchThread(function () {
+						classObj.prototype._clinit$$V(retry);
+					});
+				} else {
+					callback(classObj);
+				}
+			});
 		};
 		/**
 		 * Initializes all classes from Java root.
@@ -296,16 +352,16 @@
 			js2me.usedByteCodes = {};
 			javaRoot = {};
 			var standardClasses = [
-			'javaRoot.$java.$lang.$Object',
-			'javaRoot.$java.$lang.$String',
-			'javaRoot.$java.$lang.$Thread',
-			'javaRoot.$java.$lang.$ClassNotFoundException',
-			'javaRoot.$java.$lang.$ClassCastException',
-			'javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException',
-			'javaRoot.$java.$lang.$NegativeArraySizeException',
-			'javaRoot.$java.$lang.$ArrayObject',
-			'javaRoot.$java.$lang.$ArithmeticException',
-			'javaRoot.$java.$lang.$ArrayStoreException'
+				'javaRoot.$java.$lang.$Object',
+				'javaRoot.$java.$lang.$String',
+				'javaRoot.$java.$lang.$Thread',
+				'javaRoot.$java.$lang.$ClassNotFoundException',
+				'javaRoot.$java.$lang.$ClassCastException',
+				'javaRoot.$java.$lang.$ArrayIndexOutOfBoundsException',
+				'javaRoot.$java.$lang.$NegativeArraySizeException',
+				'javaRoot.$java.$lang.$ArrayObject',
+				'javaRoot.$java.$lang.$ArithmeticException',
+				'javaRoot.$java.$lang.$ArrayStoreException'
 			];
 			loadNativeClasses(standardClasses, callback);
 		};
