@@ -15,12 +15,12 @@
 	 * @param {string} className Name of the class.
 	 * @param {function(class)} callback Call after loading the class.
 	 */
-	js2me.loadClass = function (className, callback) {
+	js2me.loadClass = function (className, callback, errorCallback) {
 		try {
 			var classObj = js2me.findClass(className);
 			callback(classObj);
 		} catch (e) {
-			var resourceName = className.replace('javaRoot.', '').replace(/\$/g, '').replace(/\./g, '/') + '.class';
+			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
 			if (js2me.resources[resourceName]) {
 				js2me.loadResource(resourceName, function (data) {
 					var classObj = loadJavaClass(new js2me.BufferStream(data));
@@ -28,8 +28,12 @@
 				});
 			} else {
 				loadNativeClasses([className], function() {
-					var classObj = js2me.findClass(className);
-					initializeClass(classObj, callback);
+					try {
+						var classObj = js2me.findClass(className);
+						initializeClass(classObj, callback);
+					} catch (e) {
+						errorCallback()
+					}
 				});
 			}
 		}
@@ -242,9 +246,7 @@
 				}
 				classObj.prototype.initialized = true;
 				if (classObj.prototype._clinit$$V) {
-					js2me.launchThread(function () {
-						classObj.prototype._clinit$$V(retry);
-					});
+					classObj.prototype._clinit$$V(retry);
 				} else {
 					callback(classObj);
 				}

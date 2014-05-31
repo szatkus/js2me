@@ -1,32 +1,64 @@
 js2me.createClass({
-	construct: function (className) {
-		this.classObj = js2me.findClass(className);
-		if (this.classObj == null) {
-			throw new javaRoot.$java.$lang.ClassNotFoundException();
-		}
+	construct: function (classObj) {
+		this.classObj = classObj;
 	},
 	/*
 	 * 
 	 */
-	$forName$Ljava_lang_String_$Ljava_lang_Class_: function (name) {
+	$forName$Ljava_lang_String_$Ljava_lang_Class_: js2me.markUnsafe(function (name) {
 		var innerName = ('javaRoot.' + name.text).replace(/\./g, '.$');
-		return new javaRoot.$java.$lang.$Class(innerName);
-	},
+		var result;
+		var async = true;
+		js2me.loadClass(innerName, function (classObj) {
+			async = false;
+			result = new javaRoot.$java.$lang.$Class(classObj);
+			js2me.restoreThread(threadId);
+		}, function () {
+			result = null;
+			js2me.restoreThread(threadId);
+		});
+		if (async) {
+			js2me.suspendThread = true;
+			var threadId = js2me.currentThread;
+			js2me.restoreStack[threadId] = [function () {
+				if (result == null) {
+					throw new javaRoot.$java.$lang.$ClassNotFoundException();
+				}
+				return result;
+			}];
+		} else {
+			return result;
+		}
+	}),
 	/*
 	 * public InputStream getResourceAsStream(String name)
 	 */
-	$getResourceAsStream$Ljava_lang_String_$Ljava_io_InputStream_: function (name) {
+	$getResourceAsStream$Ljava_lang_String_$Ljava_io_InputStream_: js2me.markUnsafe(function (name) {
 		var resourceName = name.text;
 		if (resourceName.charAt(0) == '/') {
 			resourceName = resourceName.substr(1);
 		}
-		var resource = js2me.resources[resourceName];
-		if (resource == null) {
-			return null;
+		var stream;
+		var async = true;
+		js2me.loadResource(name.text, function (resource) {
+			async = false;
+			if (resource == null) {
+				stream = null;
+				return;
+			}
+			stream = new javaRoot.$java.$io.$BufferStream(new js2me.BufferStream(resource));
+			js2me.restoreThread(threadId);
+		});
+		if (async) {
+			js2me.suspendThread = true;
+			var threadId = js2me.currentThread;
+			js2me.restoreStack[threadId] = [function () {
+				return stream;
+			}];
+		} else {
+			return stream;
 		}
-		var stream = new js2me.BufferStream(resource);
-		return new javaRoot.$java.$io.$BufferStream(stream);
-	},
+	}),
 	/*
 	 * public String getName()
 	 */

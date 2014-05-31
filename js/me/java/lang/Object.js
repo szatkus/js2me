@@ -11,7 +11,7 @@ js2me.createClass({
 	$getClass$$Ljava_lang_Class_: function () {
 		var cls = this.classCache[this.className];
 		if (cls == null) {
-			cls = new javaRoot.$java.$lang.$Class(this.className);
+			cls = new javaRoot.$java.$lang.$Class(js2me.findClass(this.className));
 			this.classCache[this.className] = cls;
 		}
 		return cls;

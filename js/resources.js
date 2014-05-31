@@ -38,9 +38,13 @@ js2me.loadResource = function (name, callback) {
 	if (js2me.resources[name] instanceof Uint8Array) {
 		callback(js2me.resources[name]);
 	} else {
-		js2me.resources[name].getData(new zip.ArrayBufferWriter(), function (content) {
-			js2me.resources[name] = new Uint8Array(content);
-			callback(js2me.resources[name]);
-		});
+		if (js2me.resources[name] == null) {
+			callback(null);
+		} else {
+			js2me.resources[name].getData(new zip.ArrayBufferWriter(), function (content) {
+				js2me.resources[name] = new Uint8Array(content);
+				callback(js2me.resources[name]);
+			});
+		}
 	}
 };
