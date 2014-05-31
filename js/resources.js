@@ -28,3 +28,19 @@ js2me.loadResources = function (entries, callback) {
 	js2me.resources = {};
 	addResource(entries[i]);
 };
+js2me.addResources = function (entries) {
+	js2me.resources = {};
+	for (var i in entries) {
+		js2me.resources[entries[i].filename] = entries[i];
+	}
+};
+js2me.loadResource = function (name, callback) {
+	if (js2me.resources[name] instanceof Uint8Array) {
+		callback(js2me.resources[name]);
+	} else {
+		js2me.resources[name].getData(new zip.ArrayBufferWriter(), function (content) {
+			js2me.resources[name] = new Uint8Array(content);
+			callback(js2me.resources[name]);
+		});
+	}
+};

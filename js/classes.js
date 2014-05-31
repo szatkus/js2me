@@ -22,8 +22,10 @@
 		} catch (e) {
 			var resourceName = className.replace('javaRoot.', '').replace(/\$/g, '').replace(/\./g, '/') + '.class';
 			if (js2me.resources[resourceName]) {
-				var classObj = loadJavaClass(new js2me.BufferStream(js2me.resources[resourceName]));
-				initializeClass(classObj, callback);
+				js2me.loadResource(resourceName, function (data) {
+					var classObj = loadJavaClass(new js2me.BufferStream(data));
+					initializeClass(classObj, callback);
+				});
 			} else {
 				loadNativeClasses([className], function() {
 					var classObj = js2me.findClass(className);
