@@ -20,11 +20,13 @@
 			var classObj = js2me.findClass(className);
 			callback(classObj);
 		} catch (e) {
+			console.debug(className);
 			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
 			if (js2me.resources[resourceName]) {
 				js2me.loadResource(resourceName, function (data) {
 					var classObj = loadJavaClass(new js2me.BufferStream(data));
 					initializeClass(classObj, callback);
+					console.debug(className + '+');
 				});
 			} else {
 				loadNativeClasses([className], function() {
@@ -218,9 +220,16 @@
 		 * @param {function(class)} callback Function to execute when class is ready to use.
 		 */
 		function initializeClass(classObj, callback) {
-			console.log(classObj.prototype.className);
 			function retry() {
-				initializeClass(classObj, callback);
+				var threadId = js2me.currentThread;
+				if (!js2me.restoreStack[threadId]) {
+					initializeClass(classObj, callback);
+				} else {
+					js2me.restoreStack[threadId].unshift(function () {
+						initializeClass(classObj, callback);
+					});
+					js2me.restoreThread(threadId);
+				}
 			}
 			
 			if (classObj === javaRoot.$java.$lang.$Object || classObj.prototype.initialized) {
@@ -232,25 +241,29 @@
 			if (!classObj.prototype.superClass) {
 				classObj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
 			}
-			js2me.loadClass(classObj.prototype.superClass, function (superClass) {
-				classObj.prototype.__proto__ = superClass.prototype;
-				if (!superClass.prototype.initialized) {
-					initializeClass(superClass, retry);
-					return;
-				}
-				if (classObj.prototype.implicitInitList && classObj.prototype.implicitInitList.length > 0) {
-					var className = classObj.prototype.implicitInitList.pop();
-					var reqClass = js2me.findClass(className);
-					initializeClass(reqClass, retry);
-					return;
-				}
-				classObj.prototype.initialized = true;
-				if (classObj.prototype._clinit$$V) {
-					classObj.prototype._clinit$$V(retry);
-				} else {
-					callback(classObj);
-				}
-			});
+			if (classObj.prototype.__proto__ === Object.prototype) {
+				js2me.loadClass(classObj.prototype.superClass, function (superClass) {
+					classObj.prototype.__proto__ = superClass.prototype;
+					if (!superClass.prototype.initialized) {
+						initializeClass(superClass, retry);
+						return;
+					}
+					retry();
+				});
+				return;
+			}
+			if (classObj.prototype.implicitInitList && classObj.prototype.implicitInitList.length > 0) {
+				var className = classObj.prototype.implicitInitList.pop();
+				var reqClass = js2me.findClass(className);
+				initializeClass(reqClass, retry);
+				return;
+			}
+			classObj.prototype.initialized = true;
+			if (classObj.prototype._clinit$$V) {
+				classObj.prototype._clinit$$V(retry);
+			} else {
+				callback(classObj);
+			}
 		};
 		/**
 		 * Initializes all classes from Java root.

@@ -903,6 +903,7 @@ js2me.generateProgram = function (data) {
 						result = obj[methodInfo.name].apply(obj, args);
 					} catch (e) {
 						console.error(e.message);
+						console.error(e.stack);
 						console.error(obj.className + ' ' + methodInfo.name);
 					}
 				} else {
@@ -914,6 +915,7 @@ js2me.generateProgram = function (data) {
 						}
 					} catch (e) {
 						console.error(e.message);
+						console.error(e.stack);
 						console.error(classObj.prototype.className + ' ' + methodInfo.name);
 					}
 				}
@@ -1305,9 +1307,6 @@ js2me.generateProgram = function (data) {
 				loaded = true;
 				js2me.suspendThread = false;
 				callback(context, classObj);
-				if (async) {
-					js2me.restoreThread(threadId);
-				}
 			});
 			if (!loaded) {
 				async = true;

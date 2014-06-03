@@ -34,12 +34,37 @@ js2me.createClass({
 		if (name == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
-		var input = javaRoot.$java.$lang.$Class.prototype.$getResourceAsStream$Ljava_lang_String_$Ljava_io_InputStream_(name);
-		if (input == null) {
-			throw new javaRoot.$java.$io.$IOException();
+		var resourceName = name.text;
+		if (resourceName.charAt(0) == '/') {
+			resourceName = resourceName.substr(1);
 		}
-		var data = new Int8Array(input.stream.array);
-		return javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
+		var data;
+		var async = true;
+		js2me.loadResource(name.text, function (resource) {
+			async = false;
+			if (resource == null) {
+				data = null;
+				return;
+			}
+			data = new Int8Array(resource);
+			js2me.restoreThread(threadId);
+		});
+		if (async) {
+			js2me.suspendThread = true;
+			var threadId = js2me.currentThread;
+			js2me.restoreStack[threadId] = [function () {
+				if (data == null) {
+					throw new javaRoot.$java.$io.$IOException();
+				}
+				javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
+			}];
+		} else {
+			if (data == null) {
+				throw new javaRoot.$java.$io.$IOException();
+			}
+			javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$_BII$Ljavax_microedition_lcdui_Image_(data, 0, data.length);
+		}
+		
 	}),
 	/*
 	 * public static Image createImage(int width, int height)
