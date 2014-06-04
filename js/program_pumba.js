@@ -1298,7 +1298,12 @@ js2me.generateProgram = function (data) {
 		};
 	};
 	function generateLoadClass(className, callback) {
+		var classCache = null;
 		return function (context) {
+			if (classCache) {
+				callback(context, classCache);
+				return;
+			}
 			context.saveResult = false;
 			var loaded = false;
 			var async = false;
@@ -1306,6 +1311,7 @@ js2me.generateProgram = function (data) {
 			js2me.loadClass(className, function (classObj) {
 				loaded = true;
 				js2me.suspendThread = false;
+				classCache = classObj;
 				callback(context, classObj);
 			});
 			if (!loaded) {
