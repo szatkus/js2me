@@ -35,6 +35,9 @@ js2me.addResources = function (entries) {
 	}
 };
 js2me.loadResource = function (name, callback) {
+	if (name.indexOf('/') === 0) {
+		name = name.substring(1);
+	}
 	if (js2me.resources[name] instanceof Uint8Array) {
 		callback(js2me.resources[name]);
 	} else {
