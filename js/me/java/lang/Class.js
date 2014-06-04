@@ -12,20 +12,26 @@ js2me.createClass({
 		js2me.loadClass(innerName, function (classObj) {
 			async = false;
 			result = new javaRoot.$java.$lang.$Class(classObj);
-			js2me.restoreThread(threadId);
+			var threadId = js2me.currentThread;
+			js2me.restoreStack[threadId] = [function () {
+				return result;
+			}];
+			js2me.suspendThread = true;
+			setTimeout(function () {
+				js2me.restoreThread(threadId);
+			}, 1);
 		}, function () {
-			result = null;
-			js2me.restoreThread(threadId);
+			var threadId = js2me.currentThread;
+			js2me.restoreStack[threadId].unshift(function () {
+				throw new javaRoot.$java.$lang.$ClassNotFoundException();
+			});
+			js2me.suspendThread = true;
+			setTimeout(function () {
+				js2me.restoreThread(threadId);
+			}, 1);
 		});
 		if (async) {
 			js2me.suspendThread = true;
-			var threadId = js2me.currentThread;
-			js2me.restoreStack[threadId] = [function () {
-				if (result == null) {
-					throw new javaRoot.$java.$lang.$ClassNotFoundException();
-				}
-				return result;
-			}];
 		} else {
 			return result;
 		}
