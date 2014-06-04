@@ -564,13 +564,24 @@ js2me.generateProgram = function (data) {
 	// getfield
 	generators[0xb4] = function () {
 		var field = constantPool[stream.readUint16()];
-		var classObj = js2me.findClass(field.className);
-		var fieldId = classObj.prototype[field.name];
-		return 'var obj = context.stack.pop();\n' +
-				'if (obj == null) {\n' +
-				'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
-				'}\n' +
-				'context.stack.push(obj.$' + fieldId + ');\n';
+		try {
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			return 'var obj = context.stack.pop();\n' +
+					'if (obj == null) {\n' +
+					'	throw new javaRoot.$java.$lang.$NullPointerException();\n' +
+					'}\n' +
+					'context.stack.push(obj.$' + fieldId + ');\n';
+		} catch (e) {}
+		return function (context) {
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			var obj = context.stack.pop();
+			if (obj == null) {
+				throw new javaRoot.$java.$lang.$NullPointerException();
+			}
+			context.stack.push(obj['$' + fieldId]);
+		};
 	};
 	// getstatic
 	generators[0xb2] = function () {
@@ -1271,11 +1282,20 @@ js2me.generateProgram = function (data) {
 	// putfield
 	generators[0xb5] = function () {
 		var field = constantPool[stream.readUint16()];
-		var classObj = js2me.findClass(field.className);
-		var fieldId = classObj.prototype[field.name];
-		return 'var value = context.stack.pop();\n' +
-			'var obj = context.stack.pop();\n' +
-			'obj.$' + fieldId + ' = value;\n';
+		try {
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			return 'var value = context.stack.pop();\n' +
+				'var obj = context.stack.pop();\n' +
+				'obj.$' + fieldId + ' = value;\n';
+		} catch (e) {}
+		return function (context) {
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			var value = context.stack.pop();
+			var obj = context.stack.pop();
+			obj['$' + fieldId] = value;
+		};
 	}
 	// putstatic
 	generators[0xb3] = function () {
