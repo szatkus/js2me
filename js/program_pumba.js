@@ -905,6 +905,7 @@ js2me.generateProgram = function (data) {
 						console.error(e.message);
 						console.error(e.stack);
 						console.error(obj.className + ' ' + methodInfo.name);
+						throw e;
 					}
 				} else {
 					try {
@@ -917,6 +918,7 @@ js2me.generateProgram = function (data) {
 						console.error(e.message);
 						console.error(e.stack);
 						console.error(classObj.prototype.className + ' ' + methodInfo.name);
+						throw e;
 					}
 				}
 				

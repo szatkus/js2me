@@ -17,12 +17,14 @@
 	 * @param {function(class)} callback Call after loading the class.
 	 */
 	js2me.loadClass = function (className, callback, errorCallback) {
+		var error = null;
 		try {
 			var classObj = js2me.findClass(className);
 			try {
 				callback(classObj);
 			} catch (e) {
 				console.error(e);
+				error = e;
 			}
 		} catch (e) {
 			console.debug(className + ' + ' + js2me.currentThread);
@@ -70,6 +72,9 @@
 					initializeClass(classObj, done);
 				});
 			}
+		}
+		if (error) {
+			throw error;
 		}
 	}
 	/**

@@ -424,6 +424,9 @@ js2me.createClass({
 		if (obj == null) {
 			return new javaRoot.$java.$lang.$String('null');
 		}
+		if (obj.constructor === Array) {
+			return new javaRoot.$java.$lang.$String('[');
+		}
 		return obj.$toString$$Ljava_lang_String_();
 	},
 	/*
