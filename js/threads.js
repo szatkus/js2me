@@ -20,7 +20,6 @@ js2me.restoreThread = function (threadId) {
 			return js2me.execute.apply(js2me, restoreStack);
 		}
 	}
-	js2me.suspendThread = false;
 };
 /**
  * Launch new thread.

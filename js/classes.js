@@ -10,6 +10,7 @@
 		package[className.substr(className.lastIndexOf('.') + 1)] = newClass;
 		return newClass;
 	}
+	var classLock = {};
 	/**
 	 * Loads a class (native or Javaish).
 	 * @param {string} className Name of the class.
@@ -18,24 +19,55 @@
 	js2me.loadClass = function (className, callback, errorCallback) {
 		try {
 			var classObj = js2me.findClass(className);
-			callback(classObj);
+			try {
+				callback(classObj);
+			} catch (e) {
+				console.error(e);
+			}
 		} catch (e) {
-			console.debug(className);
+			console.debug(className + ' + ' + js2me.currentThread);
+			var threadId = js2me.currentThread;
+			if (classLock[className] instanceof Array) {
+				classLock[className].push({
+					threadId: threadId,
+					successCallback: callback,
+					errorCallback: errorCallback
+				});
+				return;
+			}
+			classLock[className] = [];
+			function done(classObj) {
+				callback(classObj);
+				for (var i in classLock[className]) {
+					var lock = classLock[className][i];
+					(function (lock) {
+						js2me.restoreStack[lock.threadId].unshift(function () {
+							lock.successCallback(classObj);
+						});
+						setTimeout(function () {
+							js2me.restoreThread(lock.threadId);
+						}, 1);
+					})(lock);
+				}
+			}
 			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
 			if (js2me.resources[resourceName]) {
 				js2me.loadResource(resourceName, function (data) {
+					js2me.currentThread = threadId;
 					var classObj = loadJavaClass(new js2me.BufferStream(data));
-					initializeClass(classObj, callback);
-					console.debug(className + '+');
+					initializeClass(classObj, done);
+					console.debug(className + ' - ' + js2me.currentThread);
 				});
 			} else {
 				loadNativeClasses([className], function() {
+					js2me.currentThread = threadId;
 					try {
 						var classObj = js2me.findClass(className);
-						initializeClass(classObj, callback);
 					} catch (e) {
-						errorCallback()
+						errorCallback();
+						return;
 					}
+					initializeClass(classObj, done);
 				});
 			}
 		}
@@ -189,6 +221,7 @@
 							}
 							if (classObj.prototype.interfaces instanceof Array) {
 								require = require.concat(classObj.prototype.interfaces);
+								classObj.prototype.implicitInitList = classObj.prototype.implicitInitList.concat(classObj.prototype.interfaces);
 							}
 							if (classObj.prototype.superClass) {
 								require.push(classObj.prototype.superClass);
@@ -202,7 +235,7 @@
 						element.onerror = function () {
 							console.error('Error loading ' + className + ' class.');
 							remain--;
-							if (remain == 0) {
+							if (remain === 0) {
 								checkRequirements(true);
 							}
 						}
@@ -222,7 +255,7 @@
 		function initializeClass(classObj, callback) {
 			function retry() {
 				var threadId = js2me.currentThread;
-				if (!js2me.restoreStack[threadId]) {
+				if (!js2me.restoreStack[threadId] || js2me.restoreStack[threadId].length === 0) {
 					initializeClass(classObj, callback);
 				} else {
 					js2me.restoreStack[threadId].unshift(function () {
@@ -255,8 +288,10 @@
 			if (classObj.prototype.implicitInitList && classObj.prototype.implicitInitList.length > 0) {
 				var className = classObj.prototype.implicitInitList.pop();
 				var reqClass = js2me.findClass(className);
-				initializeClass(reqClass, retry);
-				return;
+				if (reqClass instanceof Function) {
+					initializeClass(reqClass, retry);
+					return;
+				}
 			}
 			classObj.prototype.initialized = true;
 			if (classObj.prototype._clinit$$V) {
@@ -281,7 +316,11 @@
 			});
 			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
 				var classObj = js2me.findClass(name);
-				initializeClass(classObj, finish);
+				if (classObj instanceof Function) {
+					initializeClass(classObj, finish);
+				} else {
+					finish();
+				}
 			});
 			
 		}
@@ -380,6 +419,8 @@
 				'javaRoot.$java.$lang.$ArithmeticException',
 				'javaRoot.$java.$lang.$ArrayStoreException'
 			];
-			loadNativeClasses(standardClasses, callback);
+			loadNativeClasses(standardClasses, function () {
+				js2me.initClasses(callback);
+			});
 		};
 })();
