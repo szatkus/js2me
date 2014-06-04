@@ -575,18 +575,17 @@ js2me.generateProgram = function (data) {
 	// getstatic
 	generators[0xb2] = function () {
 		var field = constantPool[stream.readUint16()];
-		var classObj = js2me.findClass(field.className);
-		var fieldId = classObj.prototype[field.name];
-		if (classObj.prototype && classObj.prototype.initialized) {
-			return 'context.stack.push(' + field.className + '.prototype.$' + fieldId+ ');\n'
-		} else {
-			return function (context) {
-				var obj = js2me.findClass(field.className);
-				js2me.initializeClass(obj, function () {
-					context.stack.push(obj.prototype['$' + fieldId]);
-				});
-			};
-		}
+		try {
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			if (classObj.prototype && classObj.prototype.initialized) {
+				return 'context.stack.push(' + field.className + '.prototype.$' + fieldId+ ');\n'
+			}
+		} catch (e) {}
+		return generateLoadClass(field.className, function (context, classObj) {
+			var fieldId = classObj.prototype[field.name];
+			context.stack.push(classObj.prototype['$' + fieldId]);
+		});
 	};
 	function generateGoto(type) {
 		return function () {
@@ -840,18 +839,22 @@ js2me.generateProgram = function (data) {
 				}
 			}
 			var result;
-			var classObj = js2me.findClass(methodInfo.className);
-			var isInvocationSafe = true;
-			if (isVirtual) {
-				var subclasses = js2me.findSubclasses(methodInfo.className);
-			} else {
-				var subclasses = [js2me.findClass(methodInfo.className)];
-			}
-			for (var i = 0; i < subclasses.length; i++) {
-				if (subclasses[i].prototype[methodInfo.name] && subclasses[i].prototype[methodInfo.name].isUnsafe) {
-					isInvocationSafe = false;
+			var classObj;
+			var isInvocationSafe = false;
+			try {
+				classObj = js2me.findClass(methodInfo.className);
+				isInvocationSafe = true;
+				if (isVirtual) {
+					var subclasses = js2me.findSubclasses(methodInfo.className);
+				} else {
+					var subclasses = [js2me.findClass(methodInfo.className)];
 				}
-			}
+				for (var i = 0; i < subclasses.length; i++) {
+					if (subclasses[i].prototype[methodInfo.name] && subclasses[i].prototype[methodInfo.name].isUnsafe) {
+						isInvocationSafe = false;
+					}
+				}
+			} catch (e) {}
 			if (isInvocationSafe) {
 				if (isSaveResult) {
 					body += 'context.stack.push(result);\n';
@@ -869,7 +872,14 @@ js2me.generateProgram = function (data) {
 				jumpFrom[currentOpIndex]++;
 				isSubfunctionSafe = false;
 			}
-			return body;
+			if (classObj) {
+				return body;
+			} else {
+				var func = new Function('context', body);
+				return generateLoadClass(methodInfo.className, function (context, classObj) {
+					func(context);
+				});
+			}
 		}  catch (e) {
 			console.error(e.message);
 		}
@@ -1188,26 +1198,47 @@ js2me.generateProgram = function (data) {
 			context.stack.push(array);
 		};
 	};
+	function generateLoadClass(className, callback) {
+		var classCache = null;
+		return function (context) {
+			if (classCache) {
+				callback(context, classCache);
+				return;
+			}
+			context.saveResult = false;
+			var loaded = false;
+			var async = false;
+			var threadId = js2me.currentThread;
+			js2me.loadClass(className, function (classObj) {
+				loaded = true;
+				js2me.suspendThread = false;
+				classCache = classObj;
+				callback(context, classObj);
+			});
+			if (!loaded) {
+				async = true;
+				js2me.suspendThread = true;
+				js2me.restoreStack[threadId] = [];
+			}
+		};
+	}
 	// new
 	generators[0xbb] = function () {
 		var classInfo = constantPool[stream.readUint16()];
-		var constructor = js2me.findClass(classInfo.className);
+		
 		// probably useless...
 		require.push(classInfo.className);
-		if (constructor.prototype.initialized) {
-			return 'var instance = new ' + classInfo.className + '();\n' +
-				'context.stack.push(instance);\n';
-		}
-		return function (context) {
+		try {
 			var constructor = js2me.findClass(classInfo.className);
-			
-			if (!constructor) {
-				console.error('Not implemented: ' + classInfo.className);
+			if (constructor.prototype.initialized) {
+				return 'var instance = new ' + classInfo.className + '();\n' +
+					'context.stack.push(instance);\n';
 			}
-			js2me.initializeClass(constructor, function () {});
-			var instance = new constructor();
+		} catch (e) {}
+		return generateLoadClass(classInfo.className, function (context, classObj) {
+			var instance = new classObj();
 			context.stack.push(instance);
-		};
+		});
 	};
 	// newarray
 	generators[0xbc] = function () {
@@ -1249,20 +1280,18 @@ js2me.generateProgram = function (data) {
 	// putstatic
 	generators[0xb3] = function () {
 		var field = constantPool[stream.readUint16()];
-		var classObj = js2me.findClass(field.className);
-		var fieldId = classObj.prototype[field.name];
-		if (classObj.prototype && classObj.prototype.initialized) {
-			return field.className + '.prototype.$' + fieldId + ' = context.stack.pop();\n'
-		} else {
-			return function (context) {
-				var value = context.stack.pop();
-				var obj = js2me.findClass(field.className);
-				
-				js2me.initializeClass(obj, function () {
-					obj.prototype['$' + fieldId] = value;
-				});
-			};
-		}
+		try{
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			if (classObj.prototype && classObj.prototype.initialized) {
+				return field.className + '.prototype.$' + fieldId + ' = context.stack.pop();\n'
+			}
+		} catch (e) {}
+		return generateLoadClass(field.className, function (context, classObj) {
+			var value = context.stack.pop();
+			var fieldId = classObj.prototype[field.name];
+			classObj.prototype['$' + fieldId] = value;
+		});
 	}
 	// return
 	generators[0xb1] = 'context.finish = true;\n' +
