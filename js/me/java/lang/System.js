@@ -1,4 +1,10 @@
 js2me.createClass({
+	properties: {
+		'microedition.configuration': 'cdc',
+		'microedition.encoding': 'UTF-8',
+		'microedition.locale': 'en-US',
+		'microedition.platform': 'js2me/1.1'
+	},
 	$outLjava_io_PrintStream_: 'out',
 	/*
 	 * public static long currentTimeMillis()
@@ -58,8 +64,10 @@ js2me.createClass({
 	 */
 	$getProperty$Ljava_lang_String_$Ljava_lang_String_: function (key) {
 		console.log('Asking for property ' + key.text);
-		if (key.text == 'microedition.platform') {
-			return new javaRoot.$java.$lang.$String('js2me/1.1');
+		if (this.properties[key.text]) {
+			return new javaRoot.$java.$lang.$String(this.properties[key.text]);
+		} else {
+			return null;
 		}
 	}
 });

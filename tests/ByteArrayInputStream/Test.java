@@ -28,6 +28,7 @@ public class Test extends TestMidlet {
 			check(s.read() == i*i);
 		}
 		check(s.read() == -1);
+		check(s.read(bb, 1, 3) == -1);
 		check(s.available() == 0);
 		s.reset();
 		s.read();

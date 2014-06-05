@@ -24,6 +24,9 @@ js2me.createClass({
 				}
 				buffer[offset + i] = value;
 			} else {
+				if (i === 0) {
+					return -1;
+				}
 				return i;
 			}
 		}
