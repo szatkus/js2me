@@ -879,6 +879,7 @@ js2me.generateProgram = function (data) {
 			} else {
 				body += 'if (context.saveResult && !js2me.suspendThread) {\n' +
 					'	context.stack.push(result);\n' +
+					'	context.saveResult = false;\n' +
 					'}\n';
 				jumpFrom[currentOpIndex]++;
 				isSubfunctionSafe = false;

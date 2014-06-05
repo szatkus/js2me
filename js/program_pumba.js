@@ -924,6 +924,7 @@ js2me.generateProgram = function (data) {
 				
 				if (context.saveResult && !js2me.suspendThread) {
 					context.stack.push(result);
+					context.saveResult = false;
 				}
 			});
 		}  catch (e) {
@@ -1313,7 +1314,7 @@ js2me.generateProgram = function (data) {
 				loaded = true;
 				js2me.suspendThread = false;
 				classCache = classObj;
-				callback(context, classObj);
+				return callback(context, classObj);
 			});
 			if (!loaded) {
 				async = true;

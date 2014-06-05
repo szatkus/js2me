@@ -20,16 +20,15 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	};
 	js2me.suspendThread = false;
 	if (restoreInfo) {
-		context.stack = restoreInfo.stack;
-		context.position = restoreInfo.position;
-		context.saveResult = restoreInfo.saveResult;
+		context = restoreInfo.context;
+		context.finish = false;
 		callback = restoreInfo.callback;
 		try {
 			var result = js2me.restoreThread(js2me.currentThread);
 			if (js2me.suspendThread) {
 				suspendCall();
 			} else {
-				if (restoreInfo.saveResult) {
+				if (context.saveResult) {
 					context.stack.push(result);
 				}
 			}
@@ -45,9 +44,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		}
 		var restoreStack = js2me.restoreStack[js2me.currentThread];
 		restoreStack.push([program, locals, constantPool, exceptions, { 
-			stack: context.stack,
-			position: context.position,
-			saveResult: context.saveResult,
+			context: context,
 			callback: callback
 		}]);
 		context.finish = true;
