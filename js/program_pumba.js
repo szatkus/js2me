@@ -1186,7 +1186,6 @@ js2me.generateProgram = function (data) {
 	generators[0x7b] = function (context) {
 		var shift = context.stack.pop() % 64;
 		var value = context.stack.pop();
-		var sign = value.hi >= 2147483648;
 		var result = js2me.lshr(value, shift, true);
 		context.stack.push(result);
 	};

@@ -1091,14 +1091,7 @@ js2me.generateProgram = function (data) {
 	// lshr
 	generators[0x7b] = 'var shift = context.stack.pop() % 64;\n' +
 		'var value = context.stack.pop();\n' +
-		'var sign = value.hi >= 2147483648;\n' +
-		'if (sign) {\n' +
-		'	value = js2me.lneg(value);\n' +
-		'}\n' +
-		'var result = js2me.lshr(value, shift);\n' +
-		'if (sign) {\n' +
-		'	result = js2me.lneg(result);\n' +
-		'}\n' +
+		'var result = js2me.lshr(value, shift, true);\n' +
 		'context.stack.push(result);\n';
 	// lstore
 	generators[0x37] = function () {
@@ -1120,12 +1113,10 @@ js2me.generateProgram = function (data) {
 			'context.stack.push(js2me.lsub(a, b));\n';
 	};
 	// lushr
-	generators[0x7d] = function (context) {
-		var shift = context.stack.pop() % 64;
-		var value = context.stack.pop();
-		var result = value.shr(shift);
-		context.stack.push(result);
-	};
+	generators[0x7d] = 'var shift = context.stack.pop() % 64;\n' +
+		'var value = context.stack.pop();\n' +
+		'var result = js2me.lshr(value, shift, false);\n' +
+		'context.stack.push(result);\n';
 	// monitoenter
 	generators[0xc2] = function () {
 		isSubfunctionSafe = false;
