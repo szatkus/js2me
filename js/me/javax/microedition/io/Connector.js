@@ -3,9 +3,12 @@ js2me.createClass({
 	 * public static Connection open(String name) throws IOException
 	 */
 	$open$Ljava_lang_String_$Ljavax_microedition_io_Connection_: function (url) {
-		var parts = url.text.slice(':');
-		if (parts[0] === 'socket') {
+		var parts = url.text.split(':');
+		/*if (parts[0] === 'socket') {
 			return new javaRoot.$javax.$microedition.$io.$SocketConnectionImpl(parts[1], parseInt(parts[2]));
+		}*/
+		if (parts[0] === 'localmsg') {
+			return new javaRoot.$com.$nokia.$mid.$s40.$io.$LocalMessageProtocolConnection(parts[1]);
 		}
 		throw new Error('Unsupported protocol: ' + url.text);
 	},

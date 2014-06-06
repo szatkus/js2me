@@ -217,7 +217,7 @@
 							for (var i in classObj.prototype) {
 								if (classObj.prototype[i] != null && classObj.prototype[i].constructor == Function) {
 									var source = classObj.prototype[i].toString();
-									var requirements = source.match(new RegExp('javaRoot(\\.\\$[a-zA-Z]+)+', 'g'));
+									var requirements = source.match(new RegExp('javaRoot(\\.\\$[a-zA-Z0-9]+)+', 'g'));
 									for (var j = 0; requirements && j < requirements.length; j++) {
 										require.push(requirements[j]);
 										classObj.prototype.implicitInitList.push(requirements[j]);

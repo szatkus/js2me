@@ -14,7 +14,8 @@ js2me.createClass({
 		} else {
 			if (createIfNecessary) {
 				localStorage.setItem(storageName, '0');
-				localStorage.setItem(storageName + 'size', 0)
+				localStorage.setItem(storageName + 'size', 0);
+				localStorage.setItem(storageName + 'version', 0)
 				localStorage.setItem(storageName + 'lastModified', 0);
 				return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);
 			} else {
@@ -28,6 +29,7 @@ js2me.createClass({
 	 */
 	$deleteRecord$I$V: function () {
 		console.warn('delete record');
+		this.increaseVersion();
 	},
 	/*
 	 * 
@@ -41,6 +43,12 @@ js2me.createClass({
 	$getLastModified$$J: function () {
 		var time = parseInt(localStorage.getItem(this.storageName + 'lastModified'));
 		return  {hi: Math.floor(time / 0x100000000), lo: time % 0x100000000};
+	},
+	/*
+	 * public int getVersion() throws RecordStoreNotOpenException
+	 */
+	$getVersion$$I: function () {
+		return parseInt(localStorage.getItem(this.storageName + 'version'));
 	},
 	/*
 	 * public int addRecord(byte[] data, int offset, int numBytes) throws RecordStoreNotOpenException, RecordStoreException, RecordStoreFullException
@@ -168,7 +176,12 @@ js2me.createClass({
 		}
 		localStorage.setItem(this.storageName + id, str);
 		localStorage.setItem(this.storageName + 'lastModified', Date.now());
+		this.increaseVersion();
 		
+	},
+	increaseVersion: function () {
+		var version = parseInt(localStorage.getItem(this.storageName + 'version')) + 1;
+		localStorage.setItem(this.storageName + 'version', version);
 	},
 	updateSize: function (change) {
 		if (localStorage['freeSpace'] === undefined) {
