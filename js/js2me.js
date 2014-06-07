@@ -6,9 +6,11 @@ var js2me = {
 	calledMethods: {},
 	profile: false,
 	storageName: '',
+	libraryPath: 'js/me',
 	config: {
 		app: true,
 		turbo: false,
+		workers: false,
 		width: 240,
 		height: 266,
 		fullHeight: 320

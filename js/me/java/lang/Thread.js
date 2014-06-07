@@ -39,6 +39,10 @@ js2me.createClass({
 		setTimeout(function () {
 			js2me.restoreThread(threadId);
 		}, miliseconds.lo);
+		/*var time = Date.now();
+		var count = 0;
+		while (Date.now() - time < miliseconds.lo) {count++};
+		console.log(count);*/
 	}),
 	/*
 	 * public static void yield()

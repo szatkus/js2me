@@ -195,12 +195,11 @@
 					js2me.findClass(className);
 				} catch (e) {
 					(function (className) {
-						//console.log(className);
+						console.log(className);
 						remain++;
-						var classPath = className.replace(js2me.JAVA_ROOT, 'js/me').replace(/\$/g, '').replace(/\./g, '/') + '.js';
-						var element = document.createElement('script');
-						element.src = classPath;
-						element.onload = function () {
+						var classPath = className.replace('javaRoot', js2me.libraryPath).replace(/\$/g, '').replace(/\./g, '/') + '.js';
+						js2me.loadScript(classPath, function () {
+							console.log(className);
 							if (js2me.classBucket == null) {
 								throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
 							}
@@ -236,15 +235,13 @@
 								checkRequirements(true);
 							}
 							
-						};
-						element.onerror = function () {
+						}, function () {
 							console.error('Error loading ' + className + ' class.');
 							remain--;
 							if (remain === 0) {
 								checkRequirements(true);
 							}
-						}
-						document.head.appendChild(element);
+						});
 					})(className);
 				}
 			}
@@ -316,10 +313,10 @@
 					callback();
 				}
 			}
-			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
+			iterateClasses(javaRoot, 'javaRoot', function (obj, name) {
 				remain++;
 			});
-			iterateClasses(javaRoot, js2me.JAVA_ROOT, function (obj, name) {
+			iterateClasses(javaRoot, 'javaRoot', function (obj, name) {
 				var classObj = js2me.findClass(name);
 				if (classObj instanceof Function) {
 					initializeClass(classObj, finish);
@@ -413,6 +410,8 @@
 			js2me.usedByteCodes = {};
 			javaRoot = {};
 			var standardClasses = [
+				'javaRoot.$java.$lang.$String',
+				'javaRoot.$java.$lang.$System',
 				'javaRoot.$java.$lang.$Object',
 				'javaRoot.$java.$lang.$String',
 				'javaRoot.$java.$lang.$Thread',

@@ -17,3 +17,14 @@ js2me.launchMidlet = function (id) {
 		}, 100);
 	});
 };
+js2me.launchJAR = function (blob) {
+	if (js2me.config.workers) {
+		js2me.worker.postMessage(['launchJAR', blob]);
+	} else {
+		js2me.loadScript(js2me.engine, function () {
+			js2me.loadJAR(blob, function () {
+				js2me.launchMidlet(1);
+			});
+		});
+	}
+};

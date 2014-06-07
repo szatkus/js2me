@@ -19,15 +19,23 @@
 	mapping[90] = -6;
 	document.onkeydown = function (e) {
 		if (mapping[e.which]) {
-			js2me.sendKeyPressEvent(mapping[e.which]);
+			if (js2me.config.workers) {
+				js2me.worker.postMessage(['sendKeyPressEvent', mapping[e.which]]);
+			} else {
+				js2me.sendKeyPressEvent(mapping[e.which]);
+			}
 		}
 	};
 	document.onkeyup = function (e) {
 		if (mapping[e.which]) {
-			js2me.sendKeyReleasedEvent(mapping[e.which]);
+			if (js2me.config.workers) {
+				js2me.worker.postMessage(['sendKeyReleasedEvent', mapping[e.which]]);
+			} else {
+				js2me.sendKeyReleasedEvent(mapping[e.which]);
+			}
 		}
 	};
-	window.onload = function () {
+	window.addEventListener('load', function () {
 		document.getElementById('alert').style.display = 'none';
 		document.getElementById('alert').addEventListener('click', function () {
 			document.getElementById('alert').style.display = 'none';
@@ -137,14 +145,6 @@
 			localStorage.setItem('fullHeight', js2me.config.fullHeight)
 		}
 		
-		var script = document.createElement('script');
-		if (js2me.config.turbo) {
-			script.src = 'js/program_timon.js';
-		} else {
-			script.src = 'js/program_pumba.js';
-		}
-		document.head.appendChild(script);
-		
 		function loadConfig(name) {
 			return (js2me.config[name] = parseInt(localStorage.getItem(js2me.storageName + name)) ||
 					parseInt(localStorage.getItem(name)));
@@ -156,6 +156,17 @@
 		} else {
 			screen.innerHTML = '<div id="jar-list">No JARs found on SD card</div>';
 		}
+		
+		if (js2me.config.turbo) {
+			js2me.engine = 'js/program_timon.js';
+		} else {
+			js2me.engine = 'js/program_pumba.js';
+		}
+		
+		loadConfig('width');
+		loadConfig('height');
+		loadConfig('fullHeight');
+		document.getElementById('screen').innerHTML = '';
 		
 		if (js2me.config.src) {
 			var request = new XMLHttpRequest;
@@ -170,13 +181,7 @@
 					} else {
 						blob = new Blob([request.response]);
 					}
-					js2me.loadJAR(blob, function () {
-						document.getElementById('screen').innerHTML = '';
-						loadConfig('width');
-						loadConfig('height');
-						loadConfig('fullHeight');
-						js2me.launchMidlet(1);
-					});
+					js2me.launchJAR(blob);
 				}
 			};
 			request.open('GET', js2me.config.src);
@@ -193,13 +198,7 @@
 					 }
 				});
 				pick.onsuccess = function () {
-					js2me.loadJAR(this.result.blob, function () {
-						document.getElementById('screen').innerHTML = '';
-						loadConfig('width');
-						loadConfig('height');
-						loadConfig('fullHeight');
-						js2me.launchMidlet(1);
-					});
+					js2me.launchJAR(this.result.blob);
 				};
 			});
 			} else {
@@ -218,13 +217,7 @@
 						item.className = 'item';
 						item.innerHTML = file.name.substring(file.name.lastIndexOf('/') + 1)
 						item.addEventListener('click', function () {
-							js2me.loadJAR(file, function () {
-								document.getElementById('screen').innerHTML = '';
-								loadConfig('width');
-								loadConfig('height');
-								loadConfig('fullHeight');
-								js2me.launchMidlet(1);
-							});
+							js2me.launchJAR(file);
 						});
 						jarList.appendChild(item);
 					}
@@ -237,7 +230,7 @@
 				};
 			};
 		}
-	};
+	});
 	js2me.setFullscreen = function (enabled) {
 		//TODO
 		var screen = document.getElementById('screen');

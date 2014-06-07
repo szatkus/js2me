@@ -185,7 +185,7 @@ js2me.convertClass = function (stream) {
 			}
 			if (tag == TAG_STRING) {
 				var text = resolveConstant(constant.stringIndex);
-				constantPool[index] = new window[js2me.JAVA_ROOT].$java.$lang.$String(text);
+				constantPool[index] = new javaRoot.$java.$lang.$String(text);
 			}
 			if (tag == TAG_FIELDREF || tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 				constantPool[index] = {

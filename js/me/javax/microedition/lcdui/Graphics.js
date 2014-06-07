@@ -228,6 +228,8 @@ js2me.createClass({
 	 * public void drawImage(Image img, int x, int y, int anchor)
 	 */
 	$drawImage$Ljavax_microedition_lcdui_Image_III$V: function (img, x, y, anchor) {
+		//console.debug(img.element.width);
+		//console.debug(img.element.height);
 		this.loadContext();
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;

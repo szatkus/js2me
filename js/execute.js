@@ -73,7 +73,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	var length = program.content.length;
 	while (context.position < length && !context.finish) {
 		try {
-			var func = program.content[context.position]
+			var func = program.content[context.position];
 			context.position++;
 			func(context);
 		} catch (exception) {

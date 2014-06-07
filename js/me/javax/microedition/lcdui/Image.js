@@ -118,20 +118,22 @@ js2me.createClass({
 			throw new Error('Unsupported image format');
 		}
 		var image = new javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(100, 100);
-		var imageElement = new Image();
-		imageElement.onload = function () {
+		var imageElement = document.createElement('img');
+		imageElement.addEventListener('load', function () {
+			console.debug(imageElement.width);
+			console.debug(imageElement.height);
 			image.element.width = imageElement.width;
 			image.element.height = imageElement.height;
 			image.element.getContext('2d').drawImage(imageElement, 0, 0);
 			js2me.restoreThread(threadId);
-		};
+		});
 		var isError = false;
-		imageElement.onerror = function () {
+		imageElement.addEventListener('error', function () {
 			isError = true;
 			js2me.restoreThread(threadId);
-		};
+		});
 		var url = js2me.bytesToDataURI(data, offset, length, mime);
-		imageElement.src = url;
+		imageElement.setAttribute('src', url);
 		js2me.suspendThread = true;
 		var threadId = js2me.currentThread;
 		js2me.restoreStack[threadId] = [function () {

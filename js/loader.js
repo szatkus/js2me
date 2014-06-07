@@ -4,7 +4,6 @@
  * @param {function} callback Function to execute when loading is over.
  */
 js2me.loadJAR = function (file, callback) {
-	document.getElementById('screen').innerHTML = 'Loading file...';
 	function loadReader(reader) {
 		zip.useWebWorkers = false;
 		zip.workerScriptsPath = 'js/zip/';
@@ -31,7 +30,13 @@ js2me.loadJAR = function (file, callback) {
 	}
 	
 	js2me.setupJVM(function () {
-		console.log(file);
 		loadReader(new zip.BlobReader(file));
 	});
 }
+js2me.loadScript = function (filename, successCallback, errorCallback) {
+	var element = document.createElement('script');
+	element.src = filename;
+	element.onload = successCallback;
+	element.onerror = errorCallback;
+	document.head.appendChild(element);
+};
