@@ -213,6 +213,11 @@ public class Test extends TestMidlet {
 			check(String.valueOf(2000001000000L).equals("2000001000000"));
 			check(String.valueOf(1.5f).equals("1.5"));
 			check(String.valueOf(1.5555).equals("1.5555"));
+			String s1 = "dupa";
+			String s4 = "dupa";
+			String s3 = new String("dupa");
+			check(s1 == s4);
+			check(s1 != s3);
 		} catch (Exception e) {
 			e.printStackTrace();
 			check(false);

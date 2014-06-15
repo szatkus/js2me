@@ -1,6 +1,11 @@
 js2me.createClass({
+	// yes, it's shared between all String instances
+	pool: {},
 	construct: function (text) {
 		this.text = text || '';
+		if (!this.pool[this.text]) {
+			this.pool[this.text] = this;
+		}
 	},
 	/*
 	 * public String()
@@ -235,6 +240,12 @@ js2me.createClass({
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
 		return this.text.indexOf(str.text, start);
+	},
+	/*
+	 * public String intern()
+	 */
+	$intern$$Ljava_lang_String_: function () {
+		return this.pool[this.text];
 	},
 	/*
 	 * public int lastIndexOf(int ch)
