@@ -3,7 +3,8 @@ js2me.createClass({
 		'microedition.configuration': 'cdc',
 		'microedition.encoding': 'UTF-8',
 		'microedition.locale': 'en-US',
-		'microedition.platform': 'js2me/1.1'
+		'microedition.platform': 'js2me/1.1',
+		'fileconn.dir.memorycard': 'file:///sdcard/'
 	},
 	$outLjava_io_PrintStream_: 'out',
 	/*
@@ -64,6 +65,9 @@ js2me.createClass({
 	 */
 	$getProperty$Ljava_lang_String_$Ljava_lang_String_: function (key) {
 		console.log('Asking for property ' + key.text);
+		if (key.text === 'fileconn.dir.private') {
+			return new javaRoot.$java.$lang.$String('file:///dirs/' + js2me.manifest['midlet-name'] + '/');
+		}
 		if (this.properties[key.text]) {
 			return new javaRoot.$java.$lang.$String(this.properties[key.text]);
 		} else {

@@ -1346,9 +1346,9 @@ js2me.generateProgram = function (data) {
 		}
 		return function (context) {
 			var length = context.stack.pop();
-			var array = new Array(length);
-			for (var i = 0; i < length; i++) {
-				array[i] = def;
+			var array = [];
+			while (length--) {
+				array.push(def)
 			}
 			context.stack.push(array);
 		};

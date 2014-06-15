@@ -75,6 +75,19 @@ js2me.createClass({
 		}, 1);
 	},
 	/*
+	 * public final void notifyAll()
+	 */
+	$notifyAll$$V: function () {
+		var threadId;
+		while (threadId = this.waiting.pop()) {
+			(function (threadId) {
+				setTimeout(function () {
+					js2me.restoreThread(threadId);
+				}, 1);
+			})(threadId);
+		}
+	},
+	/*
 	 * public boolean equals(Object obj)
 	 */
 	$equals$Ljava_lang_Object_$Z: function (obj) {
