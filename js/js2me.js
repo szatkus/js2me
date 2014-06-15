@@ -11,6 +11,7 @@ var js2me = {
 		app: true,
 		turbo: false,
 		workers: false,
+		midlet: 1,
 		width: 240,
 		height: 266,
 		fullHeight: 320

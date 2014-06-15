@@ -23,7 +23,7 @@ js2me.launchJAR = function (blob) {
 	} else {
 		js2me.loadScript(js2me.engine, function () {
 			js2me.loadJAR(blob, function () {
-				js2me.launchMidlet(2);
+				js2me.launchMidlet(js2me.config.midlet);
 			});
 		});
 	}
