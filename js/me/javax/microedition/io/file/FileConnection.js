@@ -1,2 +1,2 @@
-js2me.createClass({});
+js2me.createInterface({});
 

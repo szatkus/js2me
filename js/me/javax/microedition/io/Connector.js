@@ -10,6 +10,9 @@ js2me.createClass({
 		if (parts[0] === 'localmsg') {
 			return new javaRoot.$com.$nokia.$mid.$s40.$io.$LocalMessageProtocolConnection(parts[1]);
 		}
+		if (parts[0] === 'file') {
+			return new javaRoot.$javax.$microedition.$io.$file.$FileConnectionImpl(parts[1]);
+		}
 		throw new Error('Unsupported protocol: ' + url.text);
 	},
 	$open$Ljava_lang_String_I$Ljavax_microedition_io_Connection_: function (url) {
