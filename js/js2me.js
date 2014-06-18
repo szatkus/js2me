@@ -1,6 +1,4 @@
 var js2me = {
-	// obsolete
-	JAVA_ROOT: 'javaRoot',
 	debug: false,
 	stat: 0,
 	calledMethods: {},

@@ -295,7 +295,11 @@ js2me.createClass({
 	 * public String replace(char oldChar, char newChar)
 	 */
 	$replace$CC$Ljava_lang_String_: function (oldChar, newChar) {
-		var regexp = new RegExp(String.fromCharCode(oldChar), 'g');
+		var char = String.fromCharCode(oldChar);
+		if (char === '[') {
+			char = '\\' + char;
+		}
+		var regexp = new RegExp(char, 'g');
 		return new javaRoot.$java.$lang.$String(this.text.replace(regexp, String.fromCharCode(newChar)));
 	},
 	/*

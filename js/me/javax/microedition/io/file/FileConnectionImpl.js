@@ -24,12 +24,10 @@ js2me.createClass({
 			store = request.result.createObjectStore('files');
 			store.add({
 				files: [],
-				size: 4096,
 				isDirectory: true
 			}, 'sdcard');
 			store.add({
 				files: ['sdcard'],
-				size: 4096,
 				isDirectory: true
 			}, '');
 		};
@@ -38,6 +36,15 @@ js2me.createClass({
 		js2me.restoreStack[threadId] = [function () {
 			return connection;
 		}];
+	},
+	$close$$V: function () {
+		var store = this.getStore();
+		var request = store.put(this.file, this.filename);
+		js2me.suspendThread = true;
+		var threadId = js2me.currentThread;
+		request.onsuccess = function () {
+			js2me.restoreThread(threadId);
+		};
 	},
 	$create$$V: js2me.markUnsafe(function () {
 		var parentName = '';
@@ -54,8 +61,7 @@ js2me.createClass({
 			var store = connection.getStore();
 			store.put(request.result, parentName);
 			connection.file = {
-				data: [],
-				size: 0
+				data: []
 			};
 			store.add(connection.file, connection.filename);
 			js2me.restoreThread(threadId);
@@ -67,11 +73,27 @@ js2me.createClass({
 	 */
 	$fileSize$$J: js2me.markUnsafe(function () {
 		if (this.file) {
-			return {hi: 0, lo: this.file.size};
+			if (this.file.data) {
+				return {hi: 0, lo: this.file.data.length};
+			} else {
+				return {hi: 0, lo: 4096};
+			}
 		} else {
 			return js2me.lneg({hi: 0, lo: 1});
 		}
 	}),
+	/*
+	 * public java.io.OutputStream openOutputStream(long byteOffset) throws java.io.IOException
+	 */
+	$openOutputStream$J$Ljava_io_OutputStream_: function (offset) {
+		if (offset < 0) {
+			throw new javaRoot.$java.$lang.$IllegalArgumentException();
+		}
+		if (!this.file || !this.file.data) {
+			throw new javaRoot.$java.$lang.$IOException();
+		}
+		return new javaRoot.$java.$io.$DynamicOutputStream(this.file.data, offset);
+	},
 	getStore: function () {
 		return this.db.transaction(['files'], 'readwrite').objectStore('files');
 	},
