@@ -3,12 +3,38 @@
 	 * Loads a class from a stream into Java root.
 	 * @param {BufferStream} stream The class file format compliant with JVM specifications.
 	 */
-	function loadJavaClass(stream) {
+	function loadJavaClass(stream, callback) {
 		var newClass = js2me.convertClass(stream);
 		var className = newClass.prototype.className;
 		var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
 		package[className.substr(className.lastIndexOf('.') + 1)] = newClass;
-		return newClass;
+		var require = [];
+		newClass.prototype.implicitInitList = [];
+		if (newClass.prototype.interfaces instanceof Array) {
+			require = require.concat(newClass.prototype.interfaces);
+			newClass.prototype.implicitInitList = newClass.prototype.implicitInitList.concat(newClass.prototype.interfaces);
+		}
+		if (newClass.prototype.superClass) {
+			require.push(newClass.prototype.superClass);
+		}
+		console.debug(require);
+		loadClasses(require, function () {
+			callback(newClass);
+		});
+	}
+	function loadClasses(classes, callback) {
+		if (classes.length === 0) {
+			callback();
+			return;
+		}
+		var className = classes.pop();
+		js2me.loadClass(className, function () {
+			console.debug(className);
+			console.debug(classes.length);
+			loadClasses(classes, callback);
+		}, function () {
+			debugger;
+		}, true)
 	}
 	var classLock = {};
 	/**
@@ -16,7 +42,7 @@
 	 * @param {string} className Name of the class.
 	 * @param {function(class)} callback Call after loading the class.
 	 */
-	js2me.loadClass = function (className, callback, errorCallback) {
+	js2me.loadClass = function (className, callback, errorCallback, dontInit) {
 		var error = null;
 		try {
 			var classObj = js2me.findClass(className);
@@ -27,7 +53,6 @@
 				error = e;
 			}
 		} catch (e) {
-			console.debug(className + ' + ' + js2me.currentThread);
 			var threadId = js2me.currentThread;
 			if (classLock[className] instanceof Array) {
 				classLock[className].push({
@@ -56,9 +81,13 @@
 			if (js2me.resources[resourceName]) {
 				js2me.loadResource(resourceName, function (data) {
 					js2me.currentThread = threadId;
-					var classObj = loadJavaClass(new js2me.BufferStream(data));
-					initializeClass(classObj, done);
-					console.debug(className + ' - ' + js2me.currentThread);
+					loadJavaClass(new js2me.BufferStream(data), function (classObj) {
+						if (!dontInit) {
+							initializeClass(classObj, done);
+						} else {
+							done(classObj);
+						}
+					});
 				});
 			} else {
 				loadNativeClasses([className], function() {
@@ -69,7 +98,11 @@
 						errorCallback();
 						return;
 					}
-					initializeClass(classObj, done);
+					if (!dontInit) {
+						initializeClass(classObj, done);
+					} else {
+						done(classObj);
+					}
 				});
 			}
 		}
