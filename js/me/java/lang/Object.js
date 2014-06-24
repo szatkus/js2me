@@ -69,22 +69,26 @@ js2me.createClass({
 	 * public final void notify()
 	 */
 	$notify$$V: function () {
-		var threadId = this.waiting.pop();
-		setTimeout(function () {
-			js2me.restoreThread(threadId);
-		}, 1);
+		if (this.waiting) {
+			var threadId = this.waiting.pop();
+			setTimeout(function () {
+				js2me.restoreThread(threadId);
+			}, 1);
+		}
 	},
 	/*
 	 * public final void notifyAll()
 	 */
 	$notifyAll$$V: function () {
-		var threadId;
-		while (threadId = this.waiting.pop()) {
-			(function (threadId) {
-				setTimeout(function () {
-					js2me.restoreThread(threadId);
-				}, 1);
-			})(threadId);
+		if (this.waiting) {
+			var threadId;
+			while (threadId = this.waiting.pop()) {
+				(function (threadId) {
+					setTimeout(function () {
+						js2me.restoreThread(threadId);
+					}, 1);
+				})(threadId);
+			}
 		}
 	},
 	/*
@@ -101,6 +105,7 @@ js2me.createClass({
 		if (this.className == className) {
 			return true;
 		}
+		try{
 		for (var i = 0; this.interfaces && i < this.interfaces.length; i++) {
 			var interface = js2me.findClass(this.interfaces[i]).prototype;
 			if (interface.isImplement(className)) {
@@ -113,6 +118,9 @@ js2me.createClass({
 				return true;
 			}
 		}
+	}catch(e) {
+		debugger;
+	}
 		return false;
 	}
 });
