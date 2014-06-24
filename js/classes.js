@@ -17,7 +17,6 @@
 		if (newClass.prototype.superClass) {
 			require.push(newClass.prototype.superClass);
 		}
-		console.debug(require);
 		loadClasses(require, function () {
 			callback(newClass);
 		});
@@ -29,8 +28,6 @@
 		}
 		var className = classes.pop();
 		js2me.loadClass(className, function () {
-			console.debug(className);
-			console.debug(classes.length);
 			loadClasses(classes, callback);
 		}, function () {
 			debugger;
