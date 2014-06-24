@@ -57,5 +57,11 @@ js2me.createClass({
 	 */
 	$sqrt$D$D: function (value) {
 		return {double: Math.sqrt(value.double)};
+	},
+	/*
+	 * public static double toRadians(double angdeg)
+	 */
+	$toRadians$D$D: function (angle) {
+		return {double: (angle.double / 180) * Math.PI};
 	}
 });
