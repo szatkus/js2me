@@ -199,7 +199,12 @@ js2me.createClass({
 	 * public void drawString(String str, int x, int y, int anchor)
 	 */
 	$drawString$Ljava_lang_String_III$V: function (str, x, y, anchor) {
-		this.loadContext();
+		//this.context.save();
+		if (this.font) {
+			this.context.font = this.font.getCSS();
+		}
+		this.context.fillStyle = this.color;
+		//this.context.translate(this.translateX, this.translateY);
 		if (anchor == 0) {
 			anchor = this.$TOPI | this.$LEFTI;
 		}
@@ -222,7 +227,7 @@ js2me.createClass({
 			x -= this.context.measureText(str.text).width;
 		}
 		this.context.fillText(str.text, x, y);
-		this.context.restore();
+		//this.context.restore();
 	},
 	/*
 	 * public void drawImage(Image img, int x, int y, int anchor)
@@ -283,7 +288,7 @@ js2me.createClass({
 		this.context.rect(x, y, width, height);
 		this.context.clip();
 		this.context.closePath();
-		this.context.translate(-this.translateX, -this.translateY);
+		//this.context.translate(-this.translateX, -this.translateY);
 	},
 	/*
 	 * public int getClipX()
@@ -403,10 +408,7 @@ js2me.createClass({
 		}
 		this.context.fillStyle = this.color;
 		this.context.strokeStyle = this.color;
-		if (this.font) {
-			this.context.font = this.font.getCSS();
-		}
-		this.context.translate(this.translateX, this.translateY);
+		//this.context.translate(this.translateX, this.translateY);
 	},
 	drawArcPath: function (x, y, width, height, startAngle, arcAngle) {
         this.context.beginPath();

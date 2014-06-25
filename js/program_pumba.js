@@ -854,22 +854,25 @@ js2me.generateProgram = function (data) {
 	generators[0xc1] = function () {
 		var type = constantPool[stream.readUint16()];
 		return function (context) {
-			var ref = context.stack.pop();
-			
-			if (ref != null) {
-				if (ref.constructor == Array) {
-					context.stack.push(ref);
-					return;
-				}
-				var refClass = js2me.findClass(ref.className).prototype;
-				var cmpClass = js2me.findClass(type.className).prototype;
-				if (refClass.isImplement(cmpClass.className)) {
-					context.stack.push(1);
+			try {
+				var ref = context.stack.pop();
+				
+				if (ref != null) {
+					if (ref.constructor == Array) {
+						context.stack.push(ref);
+						return;
+					}
+					var refClass = js2me.findClass(ref.className).prototype;
+					if (refClass.isImplement(type.className)) {
+						context.stack.push(1);
+					} else {
+						context.stack.push(0);
+					}
 				} else {
 					context.stack.push(0);
 				}
-			} else {
-				context.stack.push(0);
+			} catch (e) {
+				debugger;
 			}
 		};
 	}
@@ -899,27 +902,27 @@ js2me.generateProgram = function (data) {
 				context.saveResult = (methodInfo.type.returnType != 'V');
 				var result;
 				if (isVirtual) {
-					try {
-						result = obj[methodInfo.name].apply(obj, args);
-					} catch (e) {
+					//try {
+					result = obj[methodInfo.name].apply(obj, args);
+					/*} catch (e) {
 						console.error(e.message);
 						console.error(e.stack);
 						console.error(obj.className + ' ' + methodInfo.name);
 						throw e;
-					}
+					}*/
 				} else {
-					try {
-						if (isStatic) {
-							result = classObj.prototype[methodInfo.name].apply(classObj.prototype, args);
-						} else {
-							result = classObj.prototype[methodInfo.name].apply(obj, args);
-						}
-					} catch (e) {
+					//try {
+					if (isStatic) {
+						result = classObj.prototype[methodInfo.name].apply(classObj.prototype, args);
+					} else {
+						result = classObj.prototype[methodInfo.name].apply(obj, args);
+					}
+					/*} catch (e) {
 						console.error(e.message);
 						console.error(e.stack);
 						console.error(classObj.prototype.className + ' ' + methodInfo.name);
 						throw e;
-					}
+					}*/
 				}
 				
 				if (context.saveResult && !js2me.suspendThread) {

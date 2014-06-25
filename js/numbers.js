@@ -214,26 +214,25 @@ js2me.lshl = function (a, shift) {
 	return {hi: hi, lo: lo};
 };
 js2me.lshr = function (a, shift, isArithmetic) {
+	if (shift === 0) {
+		return a;
+	}
 	var lo = a.lo;
 	var hi = a.hi;
-	var base = 1;
+	var base = Math.pow(2, shift);
+	var fillWithOnes = false;
 	
-	for (var i = 0; i < shift; i++) {
-		lo /= 2;
-		if (isArithmetic && hi >= 0x80000000) {
-			hi /= 2;
-			hi += 0x80000000;
-		} else {
-			hi /= 2;
-		}
-		base *= 2;
+	if (isArithmetic && hi >= 0x80000000) {
+		fillWithOnes = true;
 	}
+	
+	hi = Math.floor(hi / base);
+	if (fillWithOnes) {
+		hi += 0xFFFFFFFF - Math.pow(2, 32 - shift) + 1;
+	}
+	lo = Math.floor(lo / base);
 	var rest = a.hi % base;
-	for (var i = 0; i < (32 - shift); i++) {
-		rest *= 2;
-	}
-	lo = Math.floor(lo);
-	hi = Math.floor(hi);
+	rest *= Math.pow(2, 32 - shift);
 	lo += rest;
 	return {hi: hi, lo: lo};
 };

@@ -608,7 +608,7 @@ js2me.generateProgram = function (data) {
 				if (type.indexOf(' ') === -1) {
 					body = 'var b = context.stack.pop();\n' +
 						'var a = context.stack.pop();\n' +
-						'if (a !== b && a == null && b == null) debugger;\n' +
+						//'if (a !== b && a == null && b == null) debugger;\n' +
 						'//STOP\nif (a ' + type + ' b) {' + body + '}//STOP\n';
 				} else {
 					body = 'var a = context.stack.pop();\n' +
@@ -679,8 +679,7 @@ js2me.generateProgram = function (data) {
 		'}\n' +
 		'context.stack.push(result)\n';
 	// iadd
-	generators[0x60] = generateAB('var value = a + b;\n' +
-		generateOverflowChecking(32) + 
+	generators[0x60] = generateAB('var value = (a + b) | 0;\n' +
 		'context.stack.push(value);\n');	
 	// iand
 	generators[0x7e] = generateAB('context.stack.push(a & b);\n');
@@ -749,8 +748,7 @@ js2me.generateProgram = function (data) {
 	generators[0x84] = function () {
 		var index = stream.readUint8();
 		var value = stream.readInt8();
-		return 'var value = context.locals[' + index + '] + ' + value +';\n' +
-			generateOverflowChecking(32) +
+		return 'var value = (context.locals[' + index + '] + ' + value +') | 0;\n' +
 			'context.locals[' + index + '] = value;\n';
 	};
 	// iload

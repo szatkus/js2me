@@ -166,7 +166,7 @@
 		loadConfig('width');
 		loadConfig('height');
 		loadConfig('fullHeight');
-		document.getElementById('screen').innerHTML = '';
+		//document.getElementById('screen').innerHTML = '';
 		
 		if (js2me.config.src) {
 			var request = new XMLHttpRequest;

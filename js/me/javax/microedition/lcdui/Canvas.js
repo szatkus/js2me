@@ -110,18 +110,18 @@ js2me.createClass({
 	},
 	time: 0,
 	/*
-	 * public final void repaint(t)
+	 * public final void repaint()
 	 */
 	$repaint$$V: function () {
-		if (js2me.profile) {
+		//if (js2me.profile) {
 			this.calls++;
-			var time = +new Date;
+			var time = Date.now();
 			if (time - this.time > 1000) {
 				document.getElementById('title').innerHTML = this.calls;
 				this.time = time;
 				this.calls = 0;
 			}
-		}
+		//}
 		var graphics = new javaRoot.$javax.$microedition.$lcdui.$Graphics(this.element);
 		var canvas = this;
 		js2me.launchThread(function () {
