@@ -45,7 +45,9 @@ js2me.generateAllMethods = function (force) {
 	for (var i in js2me.usedMethods) {
 		var separator = i.indexOf('.prototype.');
 		var className = i.substr(0, separator);
-		var classObj = js2me.findClass(className);
+		try {
+			var classObj = js2me.findClass(className);
+		} catch (e) {}
 		var methodName = i.substr(separator + 11);
 		var data;
 		if (classObj && classObj.prototype[methodName] && (data = classObj.prototype[methodName].data)) {

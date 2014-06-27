@@ -1,4 +1,5 @@
 "use strict";
+js2me.classDependencies = {};
 js2me.generateProgram = function (data) {
 	var generators = [];
 	var stream = data.stream;
@@ -1199,9 +1200,14 @@ js2me.generateProgram = function (data) {
 		};
 	};
 	function generateLoadClass(className, callback) {
+		/*if (!js2me.classDependecies[className]) {
+			js2me.classDependecies[className] = [];
+		}
+		js2me.classDependecies[className].push(*/
 		var classCache = null;
 		return function (context) {
 			if (classCache) {
+				context.regenerate = true;
 				callback(context, classCache);
 				return;
 			}
