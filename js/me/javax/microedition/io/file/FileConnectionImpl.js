@@ -46,28 +46,24 @@ js2me.createClass({
 			js2me.restoreThread(threadId);
 		};
 	},
+	/*
+	 * public void create() throws java.io.IOException
+	 */
 	$create$$V: js2me.markUnsafe(function () {
-		var parentName = '';
-		if (this.filename.indexOf('/') !== -1) {
-			parentName = this.filename.substring(0, this.filename.indexOf('/'));
-		}
-		var connection = this;
-		var store = connection.getStore();
-		var request = store.get(parentName);
-		js2me.suspendThread = true;
-		var threadId = js2me.currentThread;
-		request.onsuccess = function () {
-			request.result.files.push(connection.filename);
-			var store = connection.getStore();
-			store.put(request.result, parentName);
-			connection.file = {
-				data: []
-			};
-			store.add(connection.file, connection.filename);
-			js2me.restoreThread(threadId);
-		};
-		
+		this.create({
+			data: []
+		});		
 	}),
+	/*
+	 * public boolean exists()
+	 */
+	$exists$$Z: function () {
+		if (this.file) {
+			return 1;
+		} else {
+			return 0;
+		}
+	},
 	/*
 	 * public long fileSize() throws java.io.IOException
 	 */
@@ -83,6 +79,15 @@ js2me.createClass({
 		}
 	}),
 	/*
+	 * public void mkdir() throws java.io.IOException
+	 */
+	$mkdir$$V: js2me.markUnsafe(function () {
+		this.create({
+			files: [],
+			isDirectory: true
+		});	
+	}),
+	/*
 	 * public java.io.OutputStream openOutputStream(long byteOffset) throws java.io.IOException
 	 */
 	$openOutputStream$J$Ljava_io_OutputStream_: function (offset) {
@@ -93,6 +98,25 @@ js2me.createClass({
 			throw new javaRoot.$java.$lang.$IOException();
 		}
 		return new javaRoot.$java.$io.$DynamicOutputStream(this.file.data, offset);
+	},
+	create: function (pattern) {
+		var parentName = '';
+		if (this.filename.indexOf('/') !== -1) {
+			parentName = this.filename.substring(0, this.filename.indexOf('/'));
+		}
+		var connection = this;
+		var store = connection.getStore();
+		var request = store.get(parentName);
+		js2me.suspendThread = true;
+		var threadId = js2me.currentThread;
+		request.onsuccess = function () {
+			request.result.files.push(connection.filename);
+			var store = connection.getStore();
+			store.put(request.result, parentName);
+			connection.file = pattern;
+			store.add(connection.file, connection.filename);
+			js2me.restoreThread(threadId);
+		};
 	},
 	getStore: function () {
 		return this.db.transaction(['files'], 'readwrite').objectStore('files');
