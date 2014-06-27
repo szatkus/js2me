@@ -34,11 +34,7 @@ var js2me = {
 	setConfig: function (config) {
 		config.workers = false;
 		js2me.config = config;
-		if (js2me.config.turbo) {
-			js2me.engine = 'program_timon.js';
-		} else {
-			js2me.engine = 'program_pumba.js';
-		}
+		js2me.engine = 'js/program_' + js2me.config.engine + '.js';
 	}
 };
 

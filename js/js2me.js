@@ -7,7 +7,8 @@ var js2me = {
 	libraryPath: 'js/me',
 	config: {
 		app: true,
-		turbo: false,
+		engine: 'pumba',
+		selector: true,
 		workers: false,
 		midlet: 1,
 		width: 240,

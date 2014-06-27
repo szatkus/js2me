@@ -3,7 +3,7 @@
  * @param {number} id Midlet's id.
  */
 js2me.launchMidlet = function (id) {
-	var mainMidlet = js2me.manifest['midlet-1'];
+	var mainMidlet = js2me.manifest['midlet-' + id];
 	var mainClassName = 'javaRoot.$' + mainMidlet.split(',')[2].trim().replace(/\./g, '.$');
 	js2me.loadClass(mainClassName, function (mainClass) {
 		js2me.mainThread = new javaRoot.$java.$lang.$Thread(function () {
