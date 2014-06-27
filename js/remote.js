@@ -16,6 +16,8 @@ var document = (function () {
 		js2me.sharedObjects.push(this);
 		mapProperty(this, 'width');
 		mapProperty(this, 'height');
+		//var style = {};
+		this.style = {};
 	}
 	FakeElement.prototype = {
 		addEventListener: function (eventName, listener) {

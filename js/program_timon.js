@@ -773,8 +773,7 @@ js2me.generateProgram = function (data) {
 		return generateLoad(3);
 	}
 	// imul
-	generators[0x68] = generateAB('var value = a * b;\n' +
-		generateOverflowChecking(32) + 
+	generators[0x68] = generateAB('var value = (a * b) | 0;\n' +
 		'context.stack.push(value);\n');
 	// ineg
 	generators[0x74] = function () {
