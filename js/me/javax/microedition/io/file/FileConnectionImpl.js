@@ -1,7 +1,7 @@
 js2me.createClass({
 	construct: function (filename) {
 		this.filename = filename.replace(/\/+/g, '/').replace(/\/$|^\//g, '');
-		var request = indexedDB.open('js2me', 6);
+		var request = indexedDB.open('js2me', 9);
 		var connection = this;
 		request.onsuccess = function () {
 			connection.db = request.result;
@@ -11,6 +11,16 @@ js2me.createClass({
 					connection.file = fileRequest.result;
 				}
 				js2me.restoreThread(threadId);
+			};
+			var privateDir = 'dirs/' + js2me.manifest['midlet-name'];
+			var privateDirRequest = connection.getStore().get(privateDir);
+			privateDirRequest.onsuccess = function () {
+				if (!privateDirRequest.result) {
+					connection.getStore().add({
+						files: [],
+						isDirectory: true
+					}, privateDir);
+				}	
 			};
 			fileRequest.onerror = function () {
 				console.debug('Error opening "file" ' + connection.filename);
@@ -27,7 +37,11 @@ js2me.createClass({
 				isDirectory: true
 			}, 'sdcard');
 			store.add({
-				files: ['sdcard'],
+				files: [],
+				isDirectory: true
+			}, 'dirs');
+			store.add({
+				files: ['sdcard', 'dirs'],
 				isDirectory: true
 			}, '');
 		};
@@ -79,6 +93,30 @@ js2me.createClass({
 		}
 	}),
 	/*
+	 * public java.util.Enumeration list() throws java.io.IOException
+	 */
+	$list$$Ljava_util_Enumeration_: function () {
+		return this.$list$Ljava_lang_String_Z$Ljava_util_Enumeration_('*', false);
+	},
+	/*
+	 * public java.util.Enumeration list(java.lang.String filter, boolean includeHidden) throws java.io.IOException
+	 */
+	$list$Ljava_lang_String_Z$Ljava_util_Enumeration_: function (filter, includeHidden) {
+		//TODO: support for includeHidden
+		if (filter.text) {
+			filter = filter.text;
+		}
+		filter = new RegExp('^' + filter.replace(/\\/g, '\\\\').replace('*', '.*') + '$');
+		var list = [];
+		for (var i in this.file.files) {
+			var filename = this.file.files[i];
+			if (filter.test(filename)) {
+				list.push(new javaRoot.$java.$lang.$String(filename));
+			}
+		}
+		return new javaRoot.$javax.$microedition.$io.$file.$FileEnumeration(list);
+	},
+	/*
 	 * public void mkdir() throws java.io.IOException
 	 */
 	$mkdir$$V: js2me.markUnsafe(function () {
@@ -101,8 +139,8 @@ js2me.createClass({
 	},
 	create: function (pattern) {
 		var parentName = '';
-		if (this.filename.indexOf('/') !== -1) {
-			parentName = this.filename.substring(0, this.filename.indexOf('/'));
+		if (this.filename.lastIndexOf('/') !== -1) {
+			parentName = this.filename.substring(0, this.filename.lastIndexOf('/'));
 		}
 		var connection = this;
 		var store = connection.getStore();
@@ -110,10 +148,14 @@ js2me.createClass({
 		js2me.suspendThread = true;
 		var threadId = js2me.currentThread;
 		request.onsuccess = function () {
-			request.result.files.push(connection.filename);
+			connection.file = pattern;
+			var filename = connection.filename;
+			if (connection.file.isDirectory) {
+				filename += '/';
+			}
+			request.result.files.push(filename);
 			var store = connection.getStore();
 			store.put(request.result, parentName);
-			connection.file = pattern;
 			store.add(connection.file, connection.filename);
 			js2me.restoreThread(threadId);
 		};
