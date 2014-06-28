@@ -54,12 +54,16 @@
 				threadId: threadId,
 				waiting: []
 			};
-			function done(classObj) {
+			function done(classObj, isError) {
 				for (var i in classLock[className].waiting) {
 					var lock = classLock[className].waiting[i];
 					(function (lock) {
 						js2me.restoreStack[lock.threadId].unshift(function () {
-							lock.successCallback(classObj);
+							if (classObj) {
+								lock.successCallback(classObj);
+							} else {
+								lock.errorCallback();
+							}
 						});
 						setTimeout(function () {
 							js2me.restoreThread(lock.threadId);
@@ -67,7 +71,11 @@
 					})(lock);
 				}
 				delete classLock[className];
-				callback(classObj);
+				if (classObj) {
+					callback(classObj);
+				} else {
+					errorCallback();
+				}
 			}
 			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
 			var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
@@ -102,6 +110,7 @@
 					loadDependecies();
 				}, function () {
 					console.error('Error loading ' + className + ' class.');
+					done();
 				});
 			}
 			function loadDependecies() {

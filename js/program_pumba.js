@@ -188,10 +188,8 @@ js2me.generateProgram = function (data) {
 					context.stack.push(ref);
 					return;
 				}
-				try {
 				var refClass = js2me.findClass(ref.className).prototype;
 				var cmpClass = js2me.findClass(type.className).prototype;
-				}catch (e) {debugger;}
 				if (refClass.isImplement(cmpClass.className)) {
 					context.stack.push(ref);
 				} else {

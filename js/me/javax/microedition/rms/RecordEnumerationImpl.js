@@ -42,8 +42,7 @@ js2me.createClass({
 		if (this.position >= this.result.length) {
 			throw new javaRoot.$javax.$microedition.$rms.InvalidRecordIDException();
 		}
-		return this.result[this.position].data;
-		this.position++;
+		return this.result[this.position++].data;
 	},
 	/*
 	 * 
@@ -55,8 +54,7 @@ js2me.createClass({
 		if (this.position >= this.result.length) {
 			throw new javaRoot.$javax.$microedition.$rms.InvalidRecordIDException();
 		}
-		return this.result[this.position].id;
-		this.position++;
+		return this.result[this.position++].id;
 	},
 	/*
 	 * 

@@ -9,10 +9,10 @@ js2me.createClass({
 		var innerName = ('javaRoot.' + name.text).replace(/\./g, '.$');
 		var result;
 		var async = true;
+		var threadId = js2me.currentThread;
 		js2me.loadClass(innerName, function (classObj) {
 			async = false;
 			result = new javaRoot.$java.$lang.$Class(classObj);
-			var threadId = js2me.currentThread;
 			js2me.restoreStack[threadId] = [function () {
 				return result;
 			}];
@@ -21,7 +21,6 @@ js2me.createClass({
 				js2me.restoreThread(threadId);
 			}, 1);
 		}, function () {
-			var threadId = js2me.currentThread;
 			js2me.restoreStack[threadId].unshift(function () {
 				throw new javaRoot.$java.$lang.$ClassNotFoundException();
 			});
