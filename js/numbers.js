@@ -1,30 +1,4 @@
 "use strict";
-	/*if (hi < 0) {
-		hi += 4294967296;
-	}
-	this.hi = hi;
-	if (lo < 0) {
-		lo += 4294967296;
-	}
-	this.lo = lo;
-	
-	this.abs = function () {
-		if (this.sign()) {
-			return this.neg();
-		}
-		return this.copy();
-	};
-	this.sign = function () {
-		return this.hi >= 2147483648;
-	};
-	this.copy = function () {
-		return new js2me.Long(this.hi, this.lo);
-	};
-	this.toInt = function () {
-		return this.hi * 0x100000000 + this.lo;
-	};
-	*/
-
 js2me.longToString = function (a) {
 	var digits = [];
 	var sign = false;
@@ -256,6 +230,32 @@ js2me.lsub = function (a, b) {
 	}
 	
 	return {hi: hi, lo: lo};
+};
+js2me.lxor = function (a, b) {
+	var hi = 0;
+	var hi1 = a.hi;
+	var hi2 = b.hi;
+	var lo = 0;
+	var lo1 = a.lo;
+	var lo2 = b.lo;
+	var base = 1;
+	for (var i = 0; i < 32; i++) {
+		if (hi1 %2 !== hi2 % 2) {
+			hi += base;
+		}
+		if (lo1 %2 !== lo2 % 2) {
+			lo += base;
+		}
+		base  *= 2;
+		hi1 = Math.floor(hi1 / 2);
+		hi2 = Math.floor(hi2 / 2);
+		lo1 = Math.floor(lo1 / 2);
+		lo2 = Math.floor(lo2 / 2);
+	}
+	return {
+		hi: hi,
+		lo: lo
+	};
 };
 js2me.dataToFloat = function (value) {
 	var sign = (value & 0x80000000) != 0;

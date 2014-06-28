@@ -10,6 +10,8 @@ public class Test extends TestMidlet {
 		compare(l2 >> 8, 39062499L);
 		compare(l2 << 8, 2559999999744L);
 		compare(l2 >>> 8, 39062499L);
+		compare(l ^ (-5L), 5);
+		compare(54795397543579L ^ l2, 54788083373412L);
 		finish();
 	}
 }

@@ -1212,6 +1212,12 @@ js2me.generateProgram = function (data) {
 		var a = context.stack.pop();
 		context.stack.push(js2me.lsub(a, b));
 	};
+	// lxor
+	generators[0x83] = function (context) {
+		var b = context.stack.pop();
+		var a = context.stack.pop();
+		context.stack.push(js2me.lxor(a, b));
+	};
 	// lushr
 	generators[0x7d] = function (context) {
 		var shift = context.stack.pop() % 64;
