@@ -69,7 +69,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 			throw exception;
 		}
 	}
-	
+
 	var length = program.content.length;
 	while (context.position < length && !context.finish) {
 		try {

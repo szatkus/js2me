@@ -28,6 +28,9 @@ js2me.restoreThread = function (threadId) {
 js2me.launchThread = function (func) {
 	var threadId = -js2me.lastThread;
 	js2me.lastThread++;
+	if (!js2me.restoreStack[threadId]) {
+		js2me.restoreStack[threadId] = [];
+	}
 	setTimeout(function () {
 		try {
 			js2me.suspendThread = false;

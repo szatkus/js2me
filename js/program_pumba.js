@@ -188,8 +188,10 @@ js2me.generateProgram = function (data) {
 					context.stack.push(ref);
 					return;
 				}
+				try {
 				var refClass = js2me.findClass(ref.className).prototype;
 				var cmpClass = js2me.findClass(type.className).prototype;
+				}catch (e) {debugger;}
 				if (refClass.isImplement(cmpClass.className)) {
 					context.stack.push(ref);
 				} else {
@@ -1304,26 +1306,22 @@ js2me.generateProgram = function (data) {
 	};
 	function generateLoadClass(className, callback) {
 		var classCache = null;
+		if (className === data.parent.prototype.className) {
+			return function (context) {
+				callback(context, data.parent);
+			};
+		}
 		return function (context) {
 			if (classCache) {
 				callback(context, classCache);
 				return;
 			}
 			context.saveResult = false;
-			var loaded = false;
-			var async = false;
-			var threadId = js2me.currentThread;
 			js2me.loadClass(className, function (classObj) {
-				loaded = true;
 				js2me.suspendThread = false;
 				classCache = classObj;
 				return callback(context, classObj);
 			});
-			if (!loaded) {
-				async = true;
-				js2me.suspendThread = true;
-				js2me.restoreStack[threadId] = [];
-			}
 		};
 	}
 	// new

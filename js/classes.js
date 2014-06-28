@@ -4,34 +4,24 @@
 	 * @param {BufferStream} stream The class file format compliant with JVM specifications.
 	 */
 	function loadJavaClass(stream, callback) {
-		var newClass = js2me.convertClass(stream);
-		var className = newClass.prototype.className;
-		var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
-		package[className.substr(className.lastIndexOf('.') + 1)] = newClass;
-		var require = [];
-		newClass.prototype.implicitInitList = [];
-		if (newClass.prototype.interfaces instanceof Array) {
-			require = require.concat(newClass.prototype.interfaces);
-			newClass.prototype.implicitInitList = newClass.prototype.implicitInitList.concat(newClass.prototype.interfaces);
-		}
-		if (newClass.prototype.superClass) {
-			require.push(newClass.prototype.superClass);
-		}
-		loadClasses(require, function () {
-			callback(newClass);
-		});
+		
+	}
+	function loadNativeClass(className, callback) {
+		
 	}
 	function loadClasses(classes, callback) {
+		var threadId = js2me.currentThread;
 		if (classes.length === 0) {
 			callback();
 			return;
 		}
 		var className = classes.pop();
 		js2me.loadClass(className, function () {
+			js2me.currentThread = threadId;
 			loadClasses(classes, callback);
 		}, function () {
 			debugger;
-		}, true)
+		})
 	}
 	var classLock = {};
 	/**
@@ -39,8 +29,18 @@
 	 * @param {string} className Name of the class.
 	 * @param {function(class)} callback Call after loading the class.
 	 */
-	js2me.loadClass = function (className, callback, errorCallback, dontInit) {
+	js2me.loadClass = function (className, callback, errorCallback) {
 		var error = null;
+		var threadId = js2me.currentThread;
+		if (classLock[className] && threadId !== classLock[className].threadId) {
+			js2me.suspendThread = true;
+			classLock[className].waiting.push({
+				threadId: threadId,
+				successCallback: callback,
+				errorCallback: errorCallback
+			});
+			return;
+		}
 		try {
 			var classObj = js2me.findClass(className);
 			try {
@@ -50,20 +50,13 @@
 				error = e;
 			}
 		} catch (e) {
-			var threadId = js2me.currentThread;
-			if (classLock[className] instanceof Array) {
-				classLock[className].push({
-					threadId: threadId,
-					successCallback: callback,
-					errorCallback: errorCallback
-				});
-				return;
-			}
-			classLock[className] = [];
+			classLock[className] = {
+				threadId: threadId,
+				waiting: []
+			};
 			function done(classObj) {
-				callback(classObj);
-				for (var i in classLock[className]) {
-					var lock = classLock[className][i];
+				for (var i in classLock[className].waiting) {
+					var lock = classLock[className].waiting[i];
 					(function (lock) {
 						js2me.restoreStack[lock.threadId].unshift(function () {
 							lock.successCallback(classObj);
@@ -73,33 +66,58 @@
 						}, 1);
 					})(lock);
 				}
+				delete classLock[className];
+				callback(classObj);
 			}
 			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
+			var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
+			js2me.suspendThread = true;
+			var require = [];
+			var classObj;
 			if (js2me.resources[resourceName]) {
 				js2me.loadResource(resourceName, function (data) {
-					js2me.currentThread = threadId;
-					loadJavaClass(new js2me.BufferStream(data), function (classObj) {
-						if (!dontInit) {
-							initializeClass(classObj, done);
-						} else {
-							done(classObj);
-						}
-					});
+					classObj = js2me.convertClass(new js2me.BufferStream(data));
+					loadDependecies();
 				});
 			} else {
-				loadNativeClasses([className], function() {
-					js2me.currentThread = threadId;
-					try {
-						var classObj = js2me.findClass(className);
-					} catch (e) {
-						errorCallback();
-						return;
+				var classPath = className.replace('javaRoot', js2me.libraryPath).replace(/\$/g, '').replace(/\./g, '/') + '.js';
+				js2me.loadScript(classPath, function () {
+					if (js2me.classBucket == null) {
+						throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
 					}
-					if (!dontInit) {
+					var proto = js2me.classBucket.prototype;
+					proto.className = className;
+					classObj = js2me.classBucket;
+					
+					js2me.classBucket = null;
+					for (var i in classObj.prototype) {
+						if (classObj.prototype[i] != null && classObj.prototype[i].constructor == Function) {
+							var source = classObj.prototype[i].toString();
+							var requirements = source.match(new RegExp('javaRoot(\\.\\$[a-zA-Z0-9]+)+', 'g'));
+							for (var j = 0; requirements && j < requirements.length; j++) {
+								require.push(requirements[j]);
+							}
+						}
+					}
+					loadDependecies();
+				}, function () {
+					console.error('Error loading ' + className + ' class.');
+				});
+			}
+			function loadDependecies() {
+				js2me.currentThread = threadId;
+				package[className.substr(className.lastIndexOf('.') + 1)] = classObj;
+				if (classObj.prototype.interfaces instanceof Array) {
+					require = require.concat(classObj.prototype.interfaces);
+				}
+				if (classObj.prototype.superClass) {
+					require.push(classObj.prototype.superClass);
+				}
+				loadClasses(require, function () {
+					js2me.restoreStack[threadId].unshift(function () {
 						initializeClass(classObj, done);
-					} else {
-						done(classObj);
-					}
+					});
+					js2me.restoreThread(threadId);
 				});
 			}
 		}
@@ -306,29 +324,19 @@
 			if (!classObj.prototype.superClass) {
 				classObj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
 			}
-			if (classObj.prototype.__proto__ === Object.prototype) {
-				js2me.loadClass(classObj.prototype.superClass, function (superClass) {
-					classObj.prototype.__proto__ = superClass.prototype;
-					if (!superClass.prototype.initialized) {
-						initializeClass(superClass, retry);
-						return;
-					}
+			try{
+			var superClass = js2me.findClass(classObj.prototype.superClass);
+			classObj.prototype.__proto__ = superClass.prototype;
+		}catch(e){debugger;}
+			if (classObj.prototype._clinit$$V) {
+				console.debug(classObj.prototype.className);
+				classObj.prototype._clinit$$V(function () {
+					classObj.prototype.initialized = true;
 					retry();
 				});
-				return;
-			}
-			if (classObj.prototype.implicitInitList && classObj.prototype.implicitInitList.length > 0) {
-				var className = classObj.prototype.implicitInitList.pop();
-				var reqClass = js2me.findClass(className);
-				if (reqClass instanceof Function) {
-					initializeClass(reqClass, retry);
-					return;
-				}
-			}
-			classObj.prototype.initialized = true;
-			if (classObj.prototype._clinit$$V) {
-				classObj.prototype._clinit$$V(retry);
 			} else {
+				console.debug(classObj.prototype.className);
+				classObj.prototype.initialized = true;
 				callback(classObj);
 			}
 		};
@@ -434,7 +442,7 @@
 			js2me.resources = {};
 			js2me.threads = [];
 			js2me.currentThread = 0;
-			js2me.restoreStack = [];
+			js2me.restoreStack = [[]];
 			js2me.kill = false;
 			js2me.usedMethods = {};
 			js2me.usedByteCodes = {};
@@ -442,7 +450,6 @@
 			var standardClasses = [
 				'javaRoot.$java.$lang.$String',
 				'javaRoot.$java.$lang.$System',
-				'javaRoot.$java.$lang.$Object',
 				'javaRoot.$java.$lang.$String',
 				'javaRoot.$java.$lang.$Thread',
 				'javaRoot.$java.$lang.$ClassNotFoundException',
@@ -451,10 +458,9 @@
 				'javaRoot.$java.$lang.$NegativeArraySizeException',
 				'javaRoot.$java.$lang.$ArrayObject',
 				'javaRoot.$java.$lang.$ArithmeticException',
-				'javaRoot.$java.$lang.$ArrayStoreException'
+				'javaRoot.$java.$lang.$ArrayStoreException',
+				'javaRoot.$java.$lang.$Object'
 			];
-			loadNativeClasses(standardClasses, function () {
-				js2me.initClasses(callback);
-			});
+			loadClasses(standardClasses, callback);
 		};
 })();
