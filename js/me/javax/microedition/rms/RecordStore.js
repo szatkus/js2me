@@ -6,9 +6,7 @@ js2me.createClass({
 	 * 
 	 */
 	$openRecordStore$Ljava_lang_String_Z$Ljavax_microedition_rms_RecordStore_: function (recordStoreName, createIfNecessary) {
-		var vendorName = js2me.manifest['midlet-vendor'];
-		var suiteName = js2me.manifest['midlet-name'];
-		var storageName = vendorName + '/' + suiteName + '/' + recordStoreName.text + '/';
+		var storageName = this.getStorageName(recordStoreName);
 		if (localStorage.getItem(storageName)) {
 			return new javaRoot.$javax.$microedition.$rms.$RecordStore(storageName);
 		} else {
@@ -145,11 +143,14 @@ js2me.createClass({
 	/*
 	 * 
 	 */
-	$deleteRecordStore$Ljava_lang_String_$V: function (storageName) {
+	$deleteRecordStore$Ljava_lang_String_$V: function (recordStoreName) {
+		var storageName = this.getStorageName(recordStoreName);
 		var size = localStorage.getItem(storageName + 'size')
+		localStorage.removeItem(storageName);
 		localStorage.removeItem(storageName + 'size');
 		localStorage.removeItem(storageName + 'lastModified');
-		for (var i = 0; i < size; i++) {
+		localStorage.removeItem(storageName + 'version');
+		for (var i = 1; i <= size; i++) {
 			localStorage.removeItem(storageName + i);
 		}
 	},
@@ -179,6 +180,11 @@ js2me.createClass({
 		this.increaseVersion();
 		
 	},
+	getStorageName: function (recordStoreName) {
+		var vendorName = js2me.manifest['midlet-vendor'];
+		var suiteName = js2me.manifest['midlet-name'];
+		return vendorName + '/' + suiteName + '/' + recordStoreName.text + '/';
+	},
 	increaseVersion: function () {
 		var version = parseInt(localStorage.getItem(this.storageName + 'version')) + 1;
 		localStorage.setItem(this.storageName + 'version', version);
@@ -188,10 +194,5 @@ js2me.createClass({
 			localStorage['freeSpace'] = 1024 * 1024 * 1024;
 		}
 		return localStorage['freeSpace'] = parseInt(localStorage['freeSpace']) + change;
-	},
-	require: [
-		'javaRoot.$javax.$microedition.$rms.$RecordEnumerationImpl', 
-		'javaRoot.$javax.$microedition.$rms.$RecordStoreNotFoundException',
-		'javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException'
-	]
+	}
 });

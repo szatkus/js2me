@@ -120,8 +120,6 @@ js2me.createClass({
 		var image = new javaRoot.$javax.$microedition.$lcdui.$Image.prototype.$createImage$II$Ljavax_microedition_lcdui_Image_(100, 100);
 		var imageElement = document.createElement('img');
 		imageElement.addEventListener('load', function () {
-			console.debug(imageElement.width);
-			console.debug(imageElement.height);
 			image.element.width = imageElement.width;
 			image.element.height = imageElement.height;
 			image.element.getContext('2d').drawImage(imageElement, 0, 0);

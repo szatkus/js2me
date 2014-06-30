@@ -1111,6 +1111,12 @@ js2me.generateProgram = function (data) {
 			'var a = context.stack.pop();\n' +
 			'context.stack.push(js2me.lsub(a, b));\n';
 	};
+	// lxor
+	generators[0x83] = function (context) {
+		return 'var b = context.stack.pop();\n' +
+			'var a = context.stack.pop();\n' +
+			'context.stack.push(js2me.lxor(a, b));\n';
+	};
 	// lushr
 	generators[0x7d] = 'var shift = context.stack.pop() % 64;\n' +
 		'var value = context.stack.pop();\n' +
@@ -1205,6 +1211,11 @@ js2me.generateProgram = function (data) {
 		}
 		js2me.classDependecies[className].push(*/
 		var classCache = null;
+		if (className === data.parent.prototype.className) {
+			return function (context) {
+				callback(context, data.parent);
+			};
+		}
 		return function (context) {
 			if (classCache) {
 				context.regenerate = true;

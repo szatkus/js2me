@@ -12,6 +12,10 @@ public class Test extends TestMidlet {
 		compare(l2 >>> 8, 39062499L);
 		compare(l ^ (-5L), 5);
 		compare(54795397543579L ^ l2, 54788083373412L);
+		l2 = 1209600000L;
+		compare(7181719286742488885L / l2, 5937267928L);
+		l2 = -86400000L;
+		compare(-840964434L / l2, 9);
 		finish();
 	}
 }

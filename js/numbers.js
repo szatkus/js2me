@@ -116,12 +116,16 @@ js2me.ldiv = function (t, b) {
 	}
 	var c = b;
 	var base = {hi: 0, lo: 1};
-	while (js2me.lcmp(c, a) != 1) {
+	while (js2me.lcmp(c, a) != 1 && c.hi < 0x80000000) {
 		c = js2me.lshl(c, 1);
 		base = js2me.lshl(base, 1);
 	}
 	while (js2me.lcmp(a, b) != -1) {
-		c = js2me.lshr(c, 1);
+		c.lo = Math.floor(c.lo / 2);
+		if (c.hi % 2 === 1) {
+			c.lo += 0x80000000;
+		}
+		c.hi = Math.floor(c.hi / 2);
 		base = js2me.lshr(base, 1);
 		if (js2me.lcmp(c, a) != 1) {
 			a = js2me.lsub(a, c);

@@ -36,9 +36,7 @@ js2me.createClass({
 		js2me.suspendThread = true;
 		if (timeout.lo > 0) {
 			setTimeout(function () {
-				var i = 0;
-				while (waiting[i] != threadId) {
-				}
+				var i = waiting.indexOf(threadId);
 				waiting[i] = waiting[waiting.length - 1];
 				waiting.pop();
 				js2me.restoreThread(threadId);
