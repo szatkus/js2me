@@ -1,9 +1,9 @@
 js2me.createClass({
-	construct: function () {
+	construct: function (noMoreLists) {
 		this.element = document.createElement('div');
 		this.element.className = 'list';
 		this.items = [];
-		this.init();
+		this.init(noMoreLists);
 	},
 	/*
 	 * public List(String title, int listType)

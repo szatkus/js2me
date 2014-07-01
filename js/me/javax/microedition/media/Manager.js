@@ -7,7 +7,8 @@ js2me.createClass({
 			throw new javaRoot.$java.$lang.$IllegalArgumentException();
 		}
 		return new javaRoot.$javax.$microedition.$media.$PlayerImpl(stream, mime.text);
-	})
+	}),
+	require: ['javaRoot.$javax.$microedition.$media.$PlayerImpl']
 });
 	
 

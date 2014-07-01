@@ -73,6 +73,7 @@ js2me.createClass({
 		} else {
 			return null;
 		}
-	}
+	},
+	require: ['javaRoot.$java.$io.$PrintStream', 'javaRoot.$java.$lang.$Runtime']
 });
 

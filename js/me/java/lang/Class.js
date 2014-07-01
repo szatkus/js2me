@@ -125,5 +125,6 @@ js2me.createClass({
 	$toString$$Ljava_lang_String_: function () {
 		var text = 'class ' + this.$getName$$Ljava_lang_String_().text;
 		return new javaRoot.$java.$lang.$String(text);
-	}
+	},
+	require: ['javaRoot.$java.$io.$BufferStream']
 });

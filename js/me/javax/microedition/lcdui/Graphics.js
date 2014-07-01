@@ -425,5 +425,6 @@ js2me.createClass({
 		this.context.quadraticCurveTo(x, y + height, x, y + height - arcHeight);
 		this.context.lineTo(x, y + arcHeight);
 		this.context.quadraticCurveTo(x, y, x + arcWidth, y);
-	}
+	},
+	require: ['javaRoot.$javax.$microedition.$lcdui.$game.$Sprite']
 });

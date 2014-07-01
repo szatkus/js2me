@@ -185,7 +185,7 @@
 			request.responseType = 'arraybuffer';
 			request.send();
 		} else {
-			if (!js2me.config.selector) {
+			if (js2me.config.selector) {
 				document.getElementById('file-selector').addEventListener('click', function () {
 					var pick = new MozActivity({
 						name: 'pick',

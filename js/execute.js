@@ -52,11 +52,17 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		var handler = -1;
 		for (var i = 0; i < exceptions.length && handler == -1; i++) {
 			if (exceptions[i].startPc <= context.position - 1 && exceptions[i].endPc >= context.position - 1) {
-				var obj = {__proto__: exception};
-				while (obj.__proto__.className) {
-					obj = obj.__proto__;
+				var obj = exception;
+				var run = true;
+				while (run) {
 					if (exceptions[i].catchType == null || exceptions[i].catchType.className == obj.className) {
 						handler = exceptions[i].handler;
+						run = false;
+					}
+					if (obj.superClass) {
+						obj = js2me.findClass(obj.superClass).prototype;
+					} else {
+						run = false;
 					}
 				}
 			}

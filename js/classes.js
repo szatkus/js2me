@@ -106,15 +106,6 @@
 					classObj = js2me.classBucket;
 					
 					js2me.classBucket = null;
-					for (var i in classObj.prototype) {
-						if (classObj.prototype[i] != null && classObj.prototype[i].constructor == Function) {
-							var source = classObj.prototype[i].toString();
-							var requirements = source.match(new RegExp('javaRoot(\\.\\$[a-zA-Z0-9]+)+', 'g'));
-							for (var j = 0; requirements && j < requirements.length; j++) {
-								require.push(requirements[j]);
-							}
-						}
-					}
 					loadDependecies();
 				}, function () {
 					console.error('Error loading ' + className + ' class.');
@@ -128,6 +119,9 @@
 				package[className.substr(className.lastIndexOf('.') + 1)] = classObj;
 				if (classObj.prototype.interfaces instanceof Array) {
 					require = require.concat(classObj.prototype.interfaces);
+				}
+				if (classObj.prototype.require instanceof Array) {
+					require = require.concat(classObj.prototype.require);
 				}
 				if (classObj.prototype.superClass) {
 					require.push(classObj.prototype.superClass);
@@ -254,7 +248,12 @@
 			classObj.prototype.superClass = 'javaRoot.$java.$lang.$Object';
 		}
 		var superClass = js2me.findClass(classObj.prototype.superClass);
-		classObj.prototype.__proto__ = superClass.prototype;
+		//classObj.prototype.__proto__ = superClass.prototype;
+		for (var i in superClass.prototype) {
+			if (!classObj.prototype.hasOwnProperty(i)) {
+				classObj.prototype[i] = superClass.prototype[i];
+			}
+		}
 		
 		if (classObj.prototype._clinit$$V) {
 			classObj.prototype._clinit$$V(function () {
@@ -294,7 +293,6 @@
 		js2me.usedByteCodes = {};
 		javaRoot = {};
 		var standardClasses = [
-			'javaRoot.$java.$lang.$String',
 			'javaRoot.$java.$lang.$System',
 			'javaRoot.$java.$lang.$String',
 			'javaRoot.$java.$lang.$Thread',
@@ -305,6 +303,7 @@
 			'javaRoot.$java.$lang.$ArrayObject',
 			'javaRoot.$java.$lang.$ArithmeticException',
 			'javaRoot.$java.$lang.$ArrayStoreException',
+			'javaRoot.$java.$lang.$NullPointerException',
 			'javaRoot.$java.$lang.$Object'
 		];
 		loadClasses(standardClasses, callback);

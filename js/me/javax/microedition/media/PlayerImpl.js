@@ -135,7 +135,8 @@ js2me.createClass({
 		}
 		this.element.pause();
 	},
-	interfaces: ['javaRoot.$javax.$microedition.$media.$Player']
+	interfaces: ['javaRoot.$javax.$microedition.$media.$Player'],
+	require: ['javaRoot.$javax.$microedition.$media.$control.$VolumeControlImpl']
 });
 	
 

@@ -2,7 +2,7 @@
     "version": "1.0",
     "name": "JayME X",
     "description": "Java Mobile Edition emulator for Firefox OS.",
-    "launch_path": "/index.html?turbo=1",
+    "launch_path": "/index.html?engine=timon&selector=1",
     "orientation": ["portrait"],
     "installs_allowed_from": [
 	"*"

@@ -194,5 +194,6 @@ js2me.createClass({
 			localStorage['freeSpace'] = 1024 * 1024 * 1024;
 		}
 		return localStorage['freeSpace'] = parseInt(localStorage['freeSpace']) + change;
-	}
+	},
+	require: ['javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException']
 });

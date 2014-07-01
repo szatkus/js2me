@@ -8,7 +8,7 @@ var js2me = {
 	config: {
 		app: true,
 		engine: 'pumba',
-		selector: true,
+		selector: false,
 		workers: false,
 		midlet: 1,
 		width: 240,
