@@ -24,6 +24,13 @@ js2me.createClass({
 		return this.$buf_B.length - this.$posI;
 	},
 	/*
+	 * public void close() throws IOException
+	 */
+	$close$$V: function () {
+		delete this.$buf_B;
+		this.closed = true;
+	},
+	/*
 	 * public boolean markSupported()
 	 */
 	$mark$I$V: function () {

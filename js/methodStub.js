@@ -6,7 +6,6 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		exceptions: exceptions,
 		parent: newClass,
 		name: escapedName,
-		hints: [],
 		maxLocals: maxLocals,
 		argumentsTypes: argumentsTypes,
 		isStatic: (accessFlags & 8) !== 0

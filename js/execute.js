@@ -12,7 +12,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		stack: [],
 		result: null,
 		locals: locals,
-		hints: [],
 		position: 0,
 		finish: false,
 		saveResult: false,
@@ -52,7 +51,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	function tryCatchException(exception) {
 		var handler = -1;
 		for (var i = 0; i < exceptions.length && handler == -1; i++) {
-			if (program.mapping[exceptions[i].startPc] <= context.position - 1 && program.mapping[exceptions[i].endPc] >= context.position - 1) {
+			if (exceptions[i].startPc <= context.position - 1 && exceptions[i].endPc >= context.position - 1) {
 				var obj = {__proto__: exception};
 				while (obj.__proto__.className) {
 					obj = obj.__proto__;
@@ -64,7 +63,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		}
 		if (handler >= 0) {
 			context.stack.push(exception);
-			context.position = program.mapping[handler];
+			context.position = handler;
 		} else {
 			throw exception;
 		}
@@ -87,7 +86,6 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	}
 	if (context.regenerate) {
 		program.regenerate = true;
-		program.hints = context.hints;
 	}
 	if (callback != null && !js2me.suspendThread) {
 		callback(context.result);

@@ -1146,14 +1146,14 @@ js2me.generateProgram = function (data) {
 			stream.readUint8();
 		}
 		var def = start + stream.readInt32();
-		jumpTo[def]++;
+		//jumpTo[def]++;
 		var count = stream.readInt32();
 		var table = [];
 		for (var i = 0; i < count; i++) {
 			var match = stream.readInt32();
 			var value = start + stream.readInt32();
 			table[match] = value;
-			jumpTo[value]++;
+			//jumpTo[value]++;
 		}
 		
 		return function (context) {
@@ -1433,14 +1433,14 @@ js2me.generateProgram = function (data) {
 			stream.readUint8();
 		}
 		var def = start + stream.readInt32();
-		jumpTo[def]++;
+		//jumpTo[def]++;
 		var low = stream.readInt32();
 		var high = stream.readInt32();
 		var count = high - low + 1;
 		var table = [];
 		for (var i = 0; i < count; i++) {
 			table[low + i] = start + stream.readInt32();
-			jumpTo[table[low + i]]++;
+			//jumpTo[table[low + i]]++;
 		}
 		return function (context) {
 			var index = context.stack.pop();
@@ -1478,17 +1478,17 @@ js2me.generateProgram = function (data) {
 	var positionMapping = new Array(stream.getRemaining());
 	var reversedMapping = [];
 	var require = [];
-	var jumpTo = new Int32Array(stream.getRemaining());
-	var jumpFrom = new Int32Array(stream.getRemaining());
+	//var jumpTo = new Int32Array(stream.getRemaining());
+	//var jumpFrom = new Int32Array(stream.getRemaining());
 	var jumpTarget = [];
 	var isSafe = true;
 	var currentOpIndex = 0;
 	
-	for (var i = 0; i < exceptions.length; i++) {
+	/*for (var i = 0; i < exceptions.length; i++) {
 		jumpTo[exceptions[i].startPc]++;
 		jumpFrom[exceptions[i].endPc]++;
 		jumpTo[exceptions[i].handler]++;
-	}
+	}*/
 	
 	var isSubfunctionSafe;
 	var onlyCode = true;
@@ -1520,21 +1520,24 @@ js2me.generateProgram = function (data) {
 	}
 	
 	for (var i = 0; i < reversedMapping.length; i++) {
+		//if (jumpTo[reversedMapping[i]] > 0) {
 		positionMapping[reversedMapping[i]] = i;
+		//}
 	}
-	for (var i = 1; i < positionMapping.length; i++) {
-		if (positionMapping[i] == null) {
-			positionMapping[i] = positionMapping[i - 1];
-		}
+	
+	for (var i = 0; i < exceptions.length; i++) {
+		exceptions[i].startPc = positionMapping[exceptions[i].startPc];
+		exceptions[i].endPc = positionMapping[exceptions[i].endPc];
+		exceptions[i].handler = positionMapping[exceptions[i].handler];
 	}
 	
 	/*for (var i = 0; i < program.length; i++) {
 		console.log(reversedMapping[i] + ': ' + program[i].toString());
 		console.error('************');
 	}*/
-	stream.reset();
+	delete data.stream;
+	stream = undefined;
 	data.content =  program;
-	data.mapping = positionMapping;
 	data.require = require;
 	data.isSafe = isSafe;
 	data.parent.prototype[data.name].data = data;

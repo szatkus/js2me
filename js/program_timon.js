@@ -1559,6 +1559,10 @@ js2me.generateProgram = function (data) {
 			positionMapping[i] = positionMapping[i - 1];
 		}
 	}
+	for (var i = 0; i < exceptions.length; i++) {
+		exceptions[i].startPc = positionMapping[exceptions[i].startPc];
+		exceptions[i].endPc = positionMapping[exceptions[i].endPc];
+	}
 	// Last effort to merge it all
 	if (isSafe && program.length > 1 && onlyCode && data.exceptions.length === 0) {
 		var body = 'var position = 0;\n';

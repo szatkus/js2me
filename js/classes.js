@@ -91,6 +91,8 @@
 			if (js2me.resources[resourceName]) {
 				js2me.loadResource(resourceName, function (data) {
 					classObj = js2me.convertClass(new js2me.BufferStream(data));
+					// lesser memory usage
+					delete js2me.resources[resourceName];
 					loadDependecies();
 				});
 			} else {
