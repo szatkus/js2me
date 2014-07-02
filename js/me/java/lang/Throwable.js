@@ -1,9 +1,11 @@
 js2me.createClass({	
 	construct: function (message) {
-		try {
-			throw new Error();
-		} catch (e) {
-			this.stack = e.stack;
+		if (!js2me.config.app) {
+			try {
+				throw new Error();
+			} catch (e) {
+				this.stack = e.stack;
+			}
 		}
 		if (message) {
 			this.message = new javaRoot.$java.$lang.$String(message);

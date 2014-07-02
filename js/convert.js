@@ -241,7 +241,9 @@
 							}
 						}
 						methodPath += ')';*/
-						js2me.usedMethods[methodPath] = true;
+						if (!js2me.config.app) {
+							js2me.usedMethods[methodPath] = true;
+						}
 					}
 				}
 				if (tag == TAG_NAME_AND_TYPE) {

@@ -122,6 +122,7 @@
 				}
 				if (classObj.prototype.require instanceof Array) {
 					require = require.concat(classObj.prototype.require);
+					delete classObj.prototype.require;
 				}
 				if (classObj.prototype.superClass) {
 					require.push(classObj.prototype.superClass);
