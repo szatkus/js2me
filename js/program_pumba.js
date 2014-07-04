@@ -1331,8 +1331,6 @@ js2me.generateProgram = function (data) {
 	// new
 	generators[0xbb] = function () {
 		var classInfo = constantPool[stream.readUint16()];
-		// probably useless...
-		require.push(classInfo.className);
 		return generateLoadClass(classInfo.className, function (context, classObj) {
 			var instance = new classObj();
 			context.stack.push(instance);
@@ -1477,7 +1475,6 @@ js2me.generateProgram = function (data) {
 	var calls = [];
 	var positionMapping = new Array(stream.getRemaining());
 	var reversedMapping = [];
-	var require = [];
 	//var jumpTo = new Int32Array(stream.getRemaining());
 	//var jumpFrom = new Int32Array(stream.getRemaining());
 	var jumpTarget = [];
@@ -1538,7 +1535,6 @@ js2me.generateProgram = function (data) {
 	delete data.stream;
 	stream = undefined;
 	data.content =  program;
-	data.require = require;
 	data.isSafe = isSafe;
 	data.parent.prototype[data.name].data = data;
 	
