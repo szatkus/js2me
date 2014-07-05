@@ -601,7 +601,7 @@ js2me.generateProgram = function (data) {
 		var field = constantPool[stream.readUint16()];
 		return generateLoadClass(field.className, function (context, classObj) {
 			var fieldId = classObj.prototype[field.name];
-			context.stack.push(classObj.prototype['$' + fieldId]);
+			context.stack.push(js2me.statics['$' + fieldId]);
 		});
 	};
 	function generateGoto(func) {
@@ -1384,7 +1384,7 @@ js2me.generateProgram = function (data) {
 		return generateLoadClass(field.className, function (context, classObj) {
 			var value = context.stack.pop();
 			var fieldId = classObj.prototype[field.name];
-			classObj.prototype['$' + fieldId] = value;
+			js2me.statics['$' + fieldId] = value;
 		});
 	};
 	// return

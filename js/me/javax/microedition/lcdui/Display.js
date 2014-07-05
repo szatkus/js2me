@@ -11,12 +11,16 @@ js2me.createClass({
 			this.backButton = document.getElementById('back');
 			this.choiceButton.addEventListener('mousedown', function () {
 				var displayable = midlet.display.current;
-				var moreMenuListener = {
-					$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V: function () {
-						var command = displayable.currentCommands[displayable.moreList.$getSelectedIndex$$I()];
+				function getItem(i) {
+					var item = document.createElement('div');
+					item.innerHTML = displayable.currentCommands[i].label.text;
+					item.className = 'item';
+					item.onclick = function () {
+						var command = displayable.currentCommands[i];
 						displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable);
 						displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(command, displayable);
 					}
+					return item;
 				};
 				if (displayable && displayable.commandListener) {
 					displayable.currentCommands = displayable.choiceCommands;
@@ -24,11 +28,9 @@ js2me.createClass({
 						displayable.commandListener.$commandAction$Ljavax_microedition_lcdui_Command_Ljavax_microedition_lcdui_Displayable_$V(displayable.choiceCommands[0], displayable);
 					}
 					if (displayable.choiceCommands.length > 1) {
-						displayable.display.$setCurrent$Ljavax_microedition_lcdui_Displayable_$V(displayable.moreList);
-						displayable.moreList.$setCommandListener$Ljavax_microedition_lcdui_CommandListener_$V(moreMenuListener);
-						displayable.moreList.$deleteAll$$V();
+						element.innerHTML = '';
 						for (var i = 0; i < displayable.currentCommands.length; i++) {
-							displayable.moreList.$append$Ljava_lang_String_Ljavax_microedition_lcdui_Image_$I(displayable.currentCommands[i].label, null);
+							element.appendChild(getItem(i));
 						}
 					}
 				}

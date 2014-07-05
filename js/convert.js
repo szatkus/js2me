@@ -17,7 +17,6 @@
 	js2me.convertClass = function (stream) {
 		var newClass = getNewClass();
 		var constantPool = [];
-		newClass.prototype.pool = constantPool;
 		newClass.prototype.require = [];
 		newClass.prototype.initialized = false;
 		newClass.prototype.initializing = false;
@@ -116,8 +115,11 @@
 			return name;
 		}
 		
+		var regExp = new RegExp('[\\[;/]', 'g')
+		var regExpBrackets = new RegExp('[\\(\\)]', 'g')
+		
 		function escapeType(typeName) {
-			typeName = typeName.replace(new RegExp('[\\[;/]', 'g'), '_').replace(new RegExp('[\\(\\)]', 'g'), '$');
+			typeName = typeName.replace(regExp, '_').replace(regExpBrackets, '$');
 			return typeName;
 		}
 		

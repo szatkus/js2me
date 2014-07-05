@@ -15,7 +15,8 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		position: 0,
 		finish: false,
 		saveResult: false,
-		constantPool: constantPool
+		constantPool: constantPool,
+		parameters: program.parameters
 	};
 	js2me.suspendThread = false;
 	if (restoreInfo) {

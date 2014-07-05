@@ -10,29 +10,35 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		argumentsTypes: argumentsTypes,
 		isStatic: (accessFlags & 8) !== 0
 	};
-	var stub = function () {
+	constantPool = undefined;
+	stream = undefined;
+	var stub = function (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, guard) {
 		var locals = [];
 		if (!data.isStatic) {
 			locals.push(this);
 		}
-		for (var i = 0; i < arguments.length; i++) {
-			locals.push(arguments[i]);
-			if (arguments[i] && (arguments[i].double != null || arguments[i].hi != null)) {
-				locals.push(arguments[i]);
+		if (guard !== undefined) {
+			console.error('Too many arguments');
+		}
+		var args = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7];
+		for (var i = 0; i < argumentsTypes.length; i++) {
+			locals.push(args[i]);
+			if (args[i] && (args[i].double != null || args[i].hi != null)) {
+				locals.push(args[i]);
 			}
 		}
 		var callback = null;
-		if (arguments.length > 0 && typeof arguments[arguments.length - 1] == 'function') {
-			callback = arguments[arguments.length - 1];
+		if (args[argumentsTypes.length] && args[argumentsTypes.length].constructor === Function) {
+			callback = args[argumentsTypes.length];
 		}
 		var result;
 		if (data.content == null || data.regenerate) {
 			js2me.generateProgram(data);
 		}
 		if (data.nativeMethod) {
-			return data.nativeMethod.apply(this, arguments);
+			return data.nativeMethod.apply(this, args);
 		} else {
-			return js2me.execute(data, locals, constantPool, exceptions, null, callback);
+			return js2me.execute(data, locals, data.constantPool, exceptions, null, callback);
 		}
 	};
 	stub.isUnsafe = !localStorage.getItem(js2me.storageName + methodName);

@@ -43,15 +43,10 @@
 			return;
 		}
 		
-		try {
-			var classObj = js2me.findClass(className);
-			try {
-				callback(classObj);
-			} catch (e) {
-				console.error(e);
-				error = e;
-			}
-		} catch (e) {
+		var classObj = js2me.findClass(className);
+		if (classObj) {
+			callback(classObj);
+		} else {
 			console.log('Loading ' + className);
 			classLock[className] = {
 				threadId: threadId,
@@ -86,7 +81,6 @@
 			var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
 			js2me.suspendThread = true;
 			var require = [];
-			var classObj;
 			
 			if (js2me.resources[resourceName]) {
 				js2me.loadResource(resourceName, function (data) {
@@ -174,9 +168,9 @@
 		}
 		var package = this.findPackage(path.substr(0, path.lastIndexOf('.')));
 		var classObj = package[path.substr(path.lastIndexOf('.') + 1)];
-		if (!classObj) {
+		/*if (!classObj) {
 			throw new javaRoot.$java.$lang.$ClassNotFoundException(path);
-		}
+		}*/
 		classCache[path] = classObj;
 		return classObj;
 	};
@@ -296,6 +290,7 @@
 		var standardClasses = [
 			'javaRoot.$java.$lang.$System',
 			'javaRoot.$java.$lang.$String',
+			'javaRoot.$java.$lang.$Class',
 			'javaRoot.$java.$lang.$Thread',
 			'javaRoot.$java.$lang.$ClassNotFoundException',
 			'javaRoot.$java.$lang.$ClassCastException',

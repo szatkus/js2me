@@ -29,7 +29,19 @@ js2me.loadJAR = function (file, callback) {
 js2me.loadScript = function (filename, successCallback, errorCallback) {
 	var element = document.createElement('script');
 	element.src = filename;
-	element.onload = successCallback;
-	element.onerror = errorCallback;
+	element.onload = function () {
+		document.head.removeChild(element);
+		//delete element.onload;
+		//delete element.onerror;
+		//element = undefined;
+		successCallback();
+	};
+	element.onerror = function () {
+		document.head.removeChild(element);
+		//delete element.onload;
+		//delete element.onerror;
+		//element = undefined;
+		errorCallback();
+	};
 	document.head.appendChild(element);
 };

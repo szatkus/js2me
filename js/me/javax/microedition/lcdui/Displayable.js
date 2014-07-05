@@ -7,11 +7,6 @@ js2me.createClass({
 		this.backCommands = [];
 		var displayable = this;
 		displayable.currentCommands = [];
-		if (this.moreList == null && !noMoreLists) {
-			javaRoot.$javax.$microedition.$lcdui.$Displayable.prototype.moreList = {};
-			//var list = new javaRoot.$javax.$microedition.$lcdui.$List(true);
-			//javaRoot.$javax.$microedition.$lcdui.$Displayable.prototype.moreList = list;
-		}
 	},
 	/*
 	 * public void setTitle(String s)

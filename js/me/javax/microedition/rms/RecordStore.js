@@ -195,5 +195,5 @@ js2me.createClass({
 		}
 		return localStorage['freeSpace'] = parseInt(localStorage['freeSpace']) + change;
 	},
-	require: ['javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException']
+	require: ['javaRoot.$javax.$microedition.$rms.$InvalidRecordIDException', 'javaRoot.$javax.$microedition.$rms.$RecordStoreNotFoundException']
 });

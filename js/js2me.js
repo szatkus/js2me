@@ -5,9 +5,10 @@ var js2me = {
 	profile: false,
 	storageName: '',
 	libraryPath: 'js/me',
+	statics: {},
 	config: {
 		app: true,
-		engine: 'pumba',
+		engine: 'zazu',
 		selector: false,
 		workers: false,
 		midlet: 1,

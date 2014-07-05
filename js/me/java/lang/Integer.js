@@ -162,5 +162,6 @@ js2me.createClass({
 	$valueOf$Ljava_lang_String_I$Ljava_lang_Integer_: function (str, radix) {
 		var value = javaRoot.$java.$lang.$Integer.prototype.$parseInt$Ljava_lang_String_I$I(str, radix);
 		return new javaRoot.$java.$lang.$Integer(value);
-	}
+	},
+	require: ['javaRoot.$java.$lang.$NumberFormatException']
 });

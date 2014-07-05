@@ -16,7 +16,7 @@ js2me.createClass({
 	},
 	_clinit$$V: function (callback) {
 		// disable output in app
-		javaRoot.$java.$lang.$System.prototype.$out = new javaRoot.$java.$io.$PrintStream({
+		js2me.statics['$out'] = new javaRoot.$java.$io.$PrintStream({
 			buffer: '',
 			$write$_B$V: function (b) {
 				if (!js2me.config.app) {
