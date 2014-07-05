@@ -5,6 +5,9 @@ js2me.createClass({
 	_init$C$V: function (value) {
 		this.value = value;
 	},
+	$charValue$$C: function () {
+		return this.value;
+	},
 	/*
 	 * public static boolean isDigit(char ch)
 	 */

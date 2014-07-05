@@ -56,8 +56,12 @@ js2me.createClass({
 		if (src == null || dst == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException;
 		}
+		var buffer = [];
 		for (var i = 0; i < length; i++) {
-			dst[dstPosition + i] = src[srcPosition + i];
+			buffer[i] = src[srcPosition + i];
+		}
+		for (var i = 0; i < length; i++) {
+			dst[dstPosition + i] = buffer[i];
 		}
 	},
 	/*
