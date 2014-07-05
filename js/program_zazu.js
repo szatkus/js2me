@@ -650,7 +650,10 @@
 	// i2c
 	executors[0x92] = function (context) {
 		var value = context.stack.pop();
-		context.stack.push(value);
+		while (value < 0) {
+			value += 0x100000000;
+		}
+		context.stack.push(value % 65536);
 	};
 	// i2s
 	executors[0x93] = function (context) {
@@ -957,27 +960,13 @@
 			context.saveResult = (methodInfo.type.returnType != 'V');
 			var result;
 			if (isVirtual) {
-				//try {
 				result = obj[methodInfo.name].apply(obj, args);
-				/*} catch (e) {
-					console.error(e.message);
-					console.error(e.stack);
-					console.error(obj.className + ' ' + methodInfo.name);
-					throw e;
-				}*/
 			} else {
-				//try {
 				if (isStatic) {
 					result = classObj.prototype[methodInfo.name].apply(classObj.prototype, args);
 				} else {
 					result = classObj.prototype[methodInfo.name].apply(obj, args);
 				}
-				/*} catch (e) {
-					console.error(e.message);
-					console.error(e.stack);
-					console.error(classObj.prototype.className + ' ' + methodInfo.name);
-					throw e;
-				}*/
 			}
 			
 			if (context.saveResult && !js2me.suspendThread) {
