@@ -310,6 +310,7 @@
 				if (attributes['ConstantValue']) {
 					newClass.prototype['$' + lastFieldId] = attributes['ConstantValue'];
 				}
+				js2me.statics['$' + lastFieldId] = newClass.prototype['$' + lastFieldId];
 				lastFieldId++;
 			}
 		}
