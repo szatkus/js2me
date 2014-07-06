@@ -18,7 +18,7 @@ js2me.UTF8ToString = function (sourceArray, offset, length) {
 		}
 		array[j] = code;
 	}
-	var result = '';
+	var result = [];
 	while(i < length) {
 		if (array[i] < 0x80) {
 			var code = array[i];
@@ -35,12 +35,12 @@ js2me.UTF8ToString = function (sourceArray, offset, length) {
 		
 		var char = String.fromCharCode(code);
 		if (char != '') {
-			result += char;
+			result.push(char);
 		} else {
 			return null;
 		}
 	}
-	return result;
+	return result.join('');
 };
 js2me.stringToUTF8 = function (text) {
 	var result = [];

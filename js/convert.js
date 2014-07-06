@@ -129,23 +129,23 @@
 			var ARRAY_TYPE = 2;
 			var state = FIELD_TYPE;
 			var argumentsTypes = [];
-			var part = '';
+			var part = [];
 			for (var i = 0; i < args.length; i++) {
-				part += args[i];
+				part.push(args[i]);
 				if (state == FIELD_TYPE || state == ARRAY_TYPE) {
 					if (args[i] == 'L') {
 						state = OBJECT_TYPE;
 					} else if (args[i] == '[') {
 						state = ARRAY_TYPE;
 					} else {
-						argumentsTypes.push(part);
-						part = '';
+						argumentsTypes.push(part.join(''));
+						part = [];
 					}
 				} else if (state == OBJECT_TYPE) {
 					if (args[i] == ';') {
 						state = FIELD_TYPE;
-						argumentsTypes.push(part);
-						part = '';
+						argumentsTypes.push(part.join(''));
+						part = [];
 					}
 				}
 			}
@@ -172,22 +172,22 @@
 						name = name.substring(1, name.length - 1);
 					}
 					var nameElements = name.split('/');
-					var className = '';
+					var className = ['javaRoot.'];
 					for (var i in nameElements) {
 						if (i > 0) {
-							className += '.';
+							className.push('.');
 						}
-						className += '$' + nameElements[i];
+						className.push('$')
+						className.push(nameElements[i]);
 					}
 					
 					
 					if (isClass) {
-						className = 'javaRoot.' + className;
-						newClass.prototype.require.push(className);
+						newClass.prototype.require.push(className.join(''));
 					}
-					className = arrayPrefix + className;
+					className.unshift(arrayPrefix);
 					constantPool[index] = {
-						className: className
+						className: className.join('')
 					};
 				}
 				if (tag == TAG_STRING) {
@@ -202,7 +202,7 @@
 					};
 					if (tag == TAG_METHODREF || tag == TAG_INTERFACEREF) {
 						var constant = constantPool[index];
-						var methodPath = constant.className + '.prototype.' + constant.name;
+						var methodPath = [constant.className, '.prototype.', constant.name].join('');
 						/*var methodPath = constant.className.replace('javaRoot.', '').replace('$', '');
 						if (constant.name.indexOf('_init') === 0) {
 							methodPath += '.<init>';
