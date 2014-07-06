@@ -41,7 +41,9 @@ $indexOf$Ljava_lang_String_I$I: function (str, start) {
 
 There are three types of special methods.
 1. _initXXX (where XXX is type part which is different for different methods), it's just <init> method. For people who never read JVM specification: a constructor.
+
 2. _clinit$$V (<clinit> in JVM terms). This method is called when class is initialized.
+
 3. construct (yes, no dollars in name). It's called during creating new object (<init> is called much later). It's only useful if you want to create instance of your class from JS and don't call <init> method manually. Remember that JVM could call this method without arguments. Sample implementation from String class:
 
 ```javascript
@@ -55,6 +57,8 @@ I deliberately chose this class, because String is the most used class and it's 
 Also there are some special fields.
 1. superclass. Just name of superclass, you have to use my internal dollar convention.
 superClass: 'javaRoot.$javax.$microedition.$lcdui.$Item'
-2. interfaces. Array of names of some interfaces.
+
+2. interfaces. An array of names of some interfaces.
 interfaces: ['javaRoot.$java.$util.$Enumeration']
 
+2. require. An array of names with all classes needed to execute the methods (for example if create SomethingHappenedException in one of the methods you should add its name here). You don't have to add basic classes like javaRoot.$java.$lang.$NullPointerException or javaRoot.$java.$lang.$String.

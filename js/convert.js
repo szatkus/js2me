@@ -19,7 +19,6 @@
 		var constantPool = [];
 		newClass.prototype.require = [];
 		newClass.prototype.initialized = false;
-		newClass.prototype.initializing = false;
 		var TAG_UTF8 = 1;
 		var TAG_INTEGER = 3;
 		var TAG_FLOAT = 4;
@@ -406,6 +405,7 @@
 			newClass.prototype.type = 'interface';
 		}
 		var thisClass = constantPool[stream.readUint16()];
+		//js2me.constantPools.push(constantPool);
 		newClass.prototype.className = thisClass.className;
 		console.log('Loading class ' + thisClass.className);
 		readSuperClass();

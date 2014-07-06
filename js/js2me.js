@@ -6,6 +6,7 @@ var js2me = {
 	storageName: '',
 	libraryPath: 'js/me',
 	statics: {},
+	constantPools: [], //only for memory profiling
 	config: {
 		app: true,
 		engine: 'zazu',

@@ -15,7 +15,8 @@
 			js2me.currentThread = threadId;
 			loadClasses(classes, callback);
 		}, function () {
-			debugger;
+			js2me.currentThread = threadId;
+			loadClasses(classes, callback);
 		})
 	}
 	var classLock = {};
