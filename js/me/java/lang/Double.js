@@ -9,9 +9,9 @@ js2me.createClass({
 		return this.double;
 	},
 	/*
-	 * 
+	 * public static double parseDouble(String s) throws NumberFormatException
 	 */
-	$valueOf$Ljava_lang_String_$Ljava_lang_Double_: function (str) {
+	$parseDouble$Ljava_lang_String_$D: function (str) {
 		if (str == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
@@ -23,6 +23,13 @@ js2me.createClass({
 		if (isNaN(value)) {
 			throw new javaRoot.$java.$lang.$NumberFormatException();
 		}
-		return new javaRoot.$java.$lang.$Double(new js2me.Double(value));
+		return {double: value};
+	},
+	/*
+	 * public static Double valueOf(String s) throws NumberFormatException
+	 */
+	$valueOf$Ljava_lang_String_$Ljava_lang_Double_: function (str) {
+		var double = this.$parseDouble$Ljava_lang_String_$D(str);
+		return new javaRoot.$java.$lang.$Double(double);
 	}
 });

@@ -4,6 +4,7 @@ js2me.createClass({
 		'microedition.encoding': 'UTF-8',
 		'microedition.locale': 'en-US',
 		'microedition.platform': 'js2me/1.1',
+		'file.separator': '/',
 		'fileconn.dir.memorycard': 'file:///sdcard/'
 	},
 	$outLjava_io_PrintStream_: 'out',

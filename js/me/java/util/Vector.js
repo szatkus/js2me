@@ -104,6 +104,18 @@ js2me.createClass({
 		this.array = [];
 	},
 	/*
+	 * public boolean removeElement(Object obj)
+	 */
+	$removeElement$Ljava_lang_Object_$Z: function (obj) {
+		for (var i = 0; i < this.array.length; i++) {
+			if (this.array[i] === obj) {
+				this.$removeElementAt$I$V(i);
+				return 1;
+			}
+		}
+		return 0;
+	},
+	/*
 	 * public void removeElementAt(int index)
 	 */
 	$removeElementAt$I$V: function (index) {
