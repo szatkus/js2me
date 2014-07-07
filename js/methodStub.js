@@ -12,7 +12,7 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 	};
 	constantPool = undefined;
 	stream = undefined;
-	var stub = function (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, guard) {
+	var stub = function (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, guard) {
 		var locals = [];
 		if (!data.isStatic) {
 			locals.push(this);
@@ -20,7 +20,7 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		if (guard !== undefined) {
 			console.error('Too many arguments');
 		}
-		var args = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7];
+		var args = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9];
 		for (var i = 0; i < argumentsTypes.length; i++) {
 			locals.push(args[i]);
 			if (args[i] && (args[i].double != null || args[i].hi != null)) {

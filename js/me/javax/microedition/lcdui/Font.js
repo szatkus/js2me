@@ -16,6 +16,12 @@ js2me.createClass({
 		return this.prototype.$getFont$III$Ljavax_microedition_lcdui_Font_.apply(this, [0, 0, 0]);
 	},
 	/*
+	 * public int getFace()
+	 */
+	$getFace$$I: function () {
+		return this.javaFace;
+	},
+	/*
 	 * public static Font getFont(int fontSpecifier)
 	 */
 	$getFont$III$Ljavax_microedition_lcdui_Font_: function (face, style, size) {
@@ -27,6 +33,9 @@ js2me.createClass({
 		font.face = 'arial';
 		font.height = 16;
 		font.style = '';
+		font.javaFace = face;
+		font.javaStyle = style;
+		font.javaSize = size;
 		if (size & this.$SIZE_SMALLI) {
 			font.height = 12;
 		}
@@ -68,6 +77,18 @@ js2me.createClass({
 	 */
 	$getHeight$$I: function () {
 		return this.height;
+	},
+	/*
+	 * public int getSize()
+	 */
+	$getSize$$I: function () {
+		return this.javaSize;
+	},
+	/*
+	 * public int getStyle()
+	 */
+	$getStyle$$I: function () {
+		return this.javaStyle;
 	},
 	/*
 	 * public int stringWidth(String str)

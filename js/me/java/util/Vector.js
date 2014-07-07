@@ -79,6 +79,17 @@ js2me.createClass({
 		this.array[index] = obj;
 	},
 	/*
+	 * public int indexOf(Object elem)
+	 */
+	$indexOf$Ljava_lang_Object_$I: function (obj) {
+		for (var i = 0; i < this.array.length; i++) {
+			if (this.array[i] === obj) {
+				return i;
+			}
+		}
+		return -1;
+	},
+	/*
 	 * public boolean isEmpty()
 	 */
 	$isEmpty$$Z: function () {
@@ -143,6 +154,7 @@ js2me.createClass({
 	 */
 	$size$$I: function () {
 		return this.array.length;
-	}
+	},
+	require: ['javaRoot.$java.$util.$NoSuchElementException']
 });
 

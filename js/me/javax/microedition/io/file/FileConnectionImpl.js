@@ -163,6 +163,7 @@ js2me.createClass({
 	getStore: function () {
 		return this.db.transaction(['files'], 'readwrite').objectStore('files');
 	},
-	interfaces: ['javaRoot.$javax.$microedition.$io.$file.$FileConnection']
+	interfaces: ['javaRoot.$javax.$microedition.$io.$file.$FileConnection'],
+	require: ['javaRoot.$java.$io.$DynamicOutputStream', 'javaRoot.$javax.$microedition.$io.$file.$FileEnumeration']
 });
 

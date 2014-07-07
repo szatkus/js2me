@@ -187,7 +187,13 @@ js2me.createClass({
 		this.fullscreen = (mode != 0);
 		if (this.active) {
 			js2me.setFullscreen(this.fullscreen);
+			
 		}
+		var canvas = this;
+		js2me.launchThread(function () {
+			canvas.$sizeChanged$II$V(canvas.element.width, canvas.element.height);
+			canvas.$repaint$$V();
+		});
 	},
 	/*
 	 * 
@@ -227,5 +233,6 @@ js2me.createClass({
 		//TODO
 		return new javaRoot.$java.$lang.$String('pomidor');
 	},
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable'
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable',
+	require: ['javaRoot.$javax.$microedition.$lcdui.$Graphics']
 });

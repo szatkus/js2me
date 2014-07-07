@@ -79,6 +79,7 @@ js2me.createClass({
 	$remove$Ljava_lang_Object_$Ljava_lang_Object_: function (key) {
 		delete this.array[key.$hashCode$$I()];
 		this.keys.splice(this.keys.indexOf(key), 1);
-	}
+	},
+	require: ['javaRoot.$java.$util.$ArrayEnumeration']
 });
 

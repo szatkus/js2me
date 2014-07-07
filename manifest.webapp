@@ -12,7 +12,7 @@
             "description" : "Emulate sockets."
         }
     },
-    "launch_path": "/index.html?engine=zazu",
+    "launch_path": "/index.html",
     "orientation": ["portrait"],
     "installs_allowed_from": [
         "*"

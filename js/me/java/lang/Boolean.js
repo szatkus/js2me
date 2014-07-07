@@ -2,10 +2,10 @@ js2me.createClass({
 	$TRUELjava_lang_Boolean_: 1,
 	$FALSELjava_lang_Boolean_: 2,
 	_clinit$$V: function (callback) {
-		this.$1 = new javaRoot.$java.$lang.$Boolean();
-		this.$1.value = 1;
-		this.$2 = new javaRoot.$java.$lang.$Boolean();
-		this.$2.value = 0;
+		js2me.statics.$1 = new javaRoot.$java.$lang.$Boolean();
+		js2me.statics.$1.value = 1;
+		js2me.statics.$2 = new javaRoot.$java.$lang.$Boolean();
+		js2me.statics.$2.value = 0;
 		callback();
 	},
 	/*

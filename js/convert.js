@@ -183,7 +183,7 @@
 					
 					
 					if (isClass) {
-						newClass.prototype.require.push(className.join(''));
+						//newClass.prototype.require.push(className.join(''));
 					}
 					className.unshift(arrayPrefix);
 					constantPool[index] = {

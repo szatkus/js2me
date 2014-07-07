@@ -45,7 +45,8 @@ js2me.createClass({
 			javaRoot.$javax.$microedition.$lcdui.$Screen.prototype.refreshCommands.apply(this, arguments);
 		}
 	},
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Screen'
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Screen',
+	require: ['javaRoot.$javax.$microedition.$lcdui.$Command']
 });
 	
 
