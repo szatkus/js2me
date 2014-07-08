@@ -194,6 +194,13 @@ Ok, but what if there are no exceptions and the app isn't work correctly? Well, 
 
 7. Testing
 ==========
+Beforce you create any tests, create "config" file with following content:
+
+```J2ME_JARS=<path to jar with MIDP>.jar
+HOST=http://localhost:8000/```
+
+You can get MIDP from Microemulator (microemulator.jar) or any J2ME SDK, doesn't matter, it just needed for compilation.
+
 To test something just create a new directory in tests with Test.java file extending [TestMidlet](https://github.com/szatkus/js2me/blob/master/tests/TestMidlet.java). There are few methods to check if evething is correct and finish() method should be called in the end to print a summary. After that run ```$ ./generateTests.sh MyTestName```. Resulting JAR is placed in out directory. It's a good idea to check it first in microemu. There's also runTests.sh script, but it sometimes hangs because of bug in phantom.js.
 
 8. Running on device
