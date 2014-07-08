@@ -195,6 +195,11 @@
 			context.stack.push(ref);
 		}
 	};
+	// d2f
+	executors[0x90] = function (context) {
+		var value = context.stack.pop();
+		context.stack.push(value.double);
+	};
 	// d2i
 	executors[0x8e] = function (context) {
 		var value = context.stack.pop();
