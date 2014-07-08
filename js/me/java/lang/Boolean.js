@@ -1,11 +1,11 @@
 js2me.createClass({
-	$TRUELjava_lang_Boolean_: 1,
-	$FALSELjava_lang_Boolean_: 2,
+	$TRUELjava_lang_Boolean_: 'true',
+	$FALSELjava_lang_Boolean_: 'false',
 	_clinit$$V: function (callback) {
-		js2me.statics.$1 = new javaRoot.$java.$lang.$Boolean();
-		js2me.statics.$1.value = 1;
-		js2me.statics.$2 = new javaRoot.$java.$lang.$Boolean();
-		js2me.statics.$2.value = 0;
+		js2me.statics.$true = new javaRoot.$java.$lang.$Boolean();
+		js2me.statics.$true.value = 1;
+		js2me.statics.$false = new javaRoot.$java.$lang.$Boolean();
+		js2me.statics.$false.value = 0;
 		callback();
 	},
 	/*
