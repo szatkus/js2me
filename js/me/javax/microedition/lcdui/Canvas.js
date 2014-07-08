@@ -89,6 +89,24 @@ js2me.createClass({
 				}
 			}
 		};
+		function mouseHandler(event) {
+			js2me.launchThread(function () {
+				var x = Math.floor((event.layerX / canvas.element.clientWidth) * canvas.element.width);
+				var y = Math.floor((event.layerY / canvas.element.clientHeight) * canvas.element.height);
+				if (event.type === 'mousemove') {
+					canvas.$pointerDragged$II$V(x, y);
+				}
+				if (event.type === 'mouseup') {
+					canvas.$pointerReleased$II$V(x, y);
+				}
+				if (event.type === 'mousedown') {
+					canvas.$pointerPressed$II$V(x, y);
+				}
+			});
+		}
+		this.element.addEventListener('mousedown', mouseHandler);
+		this.element.addEventListener('mouseup', mouseHandler);
+		this.element.addEventListener('mousemove', mouseHandler);
 		this.keysState = [];
 		this.gameState = 0;
 		this.init();
@@ -164,6 +182,12 @@ js2me.createClass({
 		//this.$repaint__V();
 	},
 	/*
+	 * protected void sizeChanged(int w, int h)
+	 */
+	$sizeChanged$II$V: function () {
+		
+	},
+	/*
 	 * protected void showNotify()
 	 */
 	$showNotify$$V: function () {
@@ -174,6 +198,21 @@ js2me.createClass({
 	 */
 	$hideNotify$$V: function () {
 		
+	},
+	/*
+	 * protected void pointerDragged(int x, int y)
+	 */
+	$pointerDragged$II$V: function () {
+	},
+	/*
+	 * protected void pointerPressed(int x, int y)
+	 */
+	$pointerPressed$II$V: function () {
+	},
+	/*
+	 * protected void pointerReleased(int x, int y)
+	 */
+	$pointerReleased$II$V: function () {
 	},
 	/*
 	 * public void setFullScreenMode(boolean mode)
