@@ -31,6 +31,7 @@ js2me.createClass({
 		if (this.waiting == null) {
 			this.waiting = [];
 		}
+		this.releaseOwnership();
 		this.waiting.push(threadId);
 		var waiting = this.waiting;
 		js2me.suspendThread = true;
@@ -120,5 +121,20 @@ js2me.createClass({
 		debugger;
 	}
 		return false;
+	},
+	releaseOwnership: function () {
+		if (this.monitorQueue) {
+			while (this.monitorQueue[0] === js2me.currentThread) {
+				this.monitorQueue.shift();
+			}
+			if (this.monitorQueue.length !== 0) {
+				var threadId = this.monitorQueue[0];
+				if (threadId != null) {
+					setTimeout(function () {
+						js2me.restoreThread(threadId);
+					}, 1);
+				}
+			}
+		}
 	}
 });

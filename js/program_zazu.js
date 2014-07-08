@@ -1296,14 +1296,11 @@
 	// monitoenter
 	executors[0xc2] = function (context) {
 		var obj = context.stack.pop();
-		if (obj.monitorCount == null) {
-			obj.monitorCount = [];
-		}
 		if (obj.monitorQueue == null) {
 			obj.monitorQueue = [];
 		}
-		if (obj.monitorCount.length == 0 || obj.monitorCount[0] == js2me.currentThread) {
-			obj.monitorCount.push(js2me.currentThread)
+		if (obj.monitorQueue.length == 0 || obj.monitorQueue[0] == js2me.currentThread) {
+			obj.monitorQueue.unshift(js2me.currentThread)
 		} else {
 			obj.monitorQueue.push(js2me.currentThread)
 			js2me.suspendThread = true;
@@ -1314,15 +1311,12 @@
 	// monitoexit
 	executors[0xc3] = function (context) {
 		var obj = context.stack.pop();
-		if (obj.monitorCount == null) {
-			obj.monitorCount = [];
-		}
 		if (obj.monitorQueue == null) {
 			obj.monitorQueue = [];
 		}
-		obj.monitorCount.pop();
-		if (obj.monitorCount.length == 0) {
-			var threadId = obj.monitorQueue.pop();
+		obj.monitorQueue.shift();
+		if (obj.monitorQueue.length !== 0 && obj.monitorQueue[0] !== js2me.currentThread) {
+			var threadId = obj.monitorQueue[0];
 			if (threadId != null) {
 				setTimeout(function () {
 					js2me.restoreThread(threadId);
