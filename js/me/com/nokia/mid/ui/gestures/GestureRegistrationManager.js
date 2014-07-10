@@ -20,7 +20,10 @@ js2me.createClass({
 			container.gestureListener = listener;
 			container.element.addEventListener('click', function (event) {
 				if (container.gestureZone.gestures & zone.$GESTURE_TAPI) {
-					var gestureEvent = javaRoot.$com.$nokia.$mid.$ui.$gestures.$GestureEvent();
+					var gestureEvent = new javaRoot.$com.$nokia.$mid.$ui.$gestures.$GestureEvent();
+					gestureEvent.x = Math.floor((event.layerX / container.element.clientWidth) * container.element.width);
+					gestureEvent.y = Math.floor((event.layerY / container.element.clientHeight) * container.element.height);
+					gestureEvent.type = zone.$GESTURE_TAPI;
 					listener.$gestureAction$Ljava_lang_Object_Lcom_nokia_mid_ui_gestures_GestureInteractiveZone_Lcom_nokia_mid_ui_gestures_GestureEvent_$V(container, container.gestureZone, gestureEvent);
 				}
 			});

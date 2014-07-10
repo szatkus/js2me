@@ -17,6 +17,8 @@ js2me.createClass({
 		}
 		this.listener = listener;
 		return 1;
+	},
+	$stop$$V: function () {
 	}
 });
 

@@ -22,5 +22,6 @@ js2me.createClass({
 	$setValue$I$V: function (value) {
 		this.gauge.value = value;
 	},
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Item'
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Item',
+	require: ['javaRoot.$java.$lang.IllegalArgumentException']
 });
