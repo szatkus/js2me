@@ -27,7 +27,7 @@ js2me.createClass({
 	 * public void printStackTrace()
 	 */
 	$printStackTrace$$V: function () {
-		console.log(this);
+		console.log(this.stack);
 	},
 	/*
 	 * public String toString()

@@ -28,12 +28,17 @@ js2me.createClass({
 	 */
 	$wait$J$V: js2me.markUnsafe(function (timeout) {
 		var threadId = js2me.currentThread;
+		this.checkOwnership();
 		if (this.waiting == null) {
 			this.waiting = [];
 		}
 		this.releaseOwnership();
 		this.waiting.push(threadId);
 		var waiting = this.waiting;
+		var callee = this;
+		js2me.restoreStack[threadId] = [function () {
+			js2me.enterMonitor(this);
+		}];
 		js2me.suspendThread = true;
 		if (timeout.lo > 0) {
 			setTimeout(function () {
@@ -68,6 +73,7 @@ js2me.createClass({
 	 * public final void notify()
 	 */
 	$notify$$V: function () {
+		this.checkOwnership();
 		if (this.waiting) {
 			var threadId = this.waiting.pop();
 			setTimeout(function () {
@@ -79,6 +85,7 @@ js2me.createClass({
 	 * public final void notifyAll()
 	 */
 	$notifyAll$$V: function () {
+		this.checkOwnership();
 		if (this.waiting) {
 			var threadId;
 			while (threadId = this.waiting.pop()) {
@@ -122,6 +129,11 @@ js2me.createClass({
 	}
 		return false;
 	},
+	checkOwnership: function () {
+		if (!this.monitorQueue || this.monitorQueue[0] !== js2me.currentThread) {
+			throw new javaRoot.$java.$lang.$IllegalMonitorStateException();
+		}
+	},
 	releaseOwnership: function () {
 		if (this.monitorQueue) {
 			while (this.monitorQueue[0] === js2me.currentThread) {
@@ -136,5 +148,6 @@ js2me.createClass({
 				}
 			}
 		}
-	}
+	},
+	require: ['javaRoot.$java.$lang.$IllegalMonitorStateException']
 });

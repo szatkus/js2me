@@ -583,10 +583,11 @@
 		if (field.constructor === String) {
 			context.stack.push(js2me.statics[field]);
 		} else {
-			js2me.loadClass(field.className, function (classObj) {
+			loadClass(field.className, function (classObj) {
 				var fieldId = '$' + classObj.prototype[field.name];
 				context.parameters[position] = fieldId;
 				context.stack.push(js2me.statics[fieldId]);
+			}, function () {
 			});
 		}
 	};/*
@@ -925,6 +926,22 @@
 			debugger;
 		}
 	};
+	function loadClass(className, callback, afterCallback) {
+		var threadId = js2me.currentThread;
+		var loaded = false;
+		js2me.loadClass(className, function (classObj) {
+			loaded = true;
+			callback(classObj);
+			if (!js2me.restoreStack[threadId]) {
+				js2me.restoreStack[threadId] = [];
+			}
+			js2me.restoreStack[threadId].unshift(afterCallback);
+			js2me.restoreThread(threadId);
+		});
+		if (!loaded) {
+			js2me.suspendThread = true;
+		}
+	}
 	function generateInvocationGenerator(isGarbage) {
 		return function (stream, data) {
 			var methodInfo = data.constantPool[stream.readUint16()];
@@ -982,18 +999,16 @@
 		return function (context) {
 			var parameters = context.parameters[context.position - 1];
 			var methodInfo = parameters.methodInfo;
-			
 			if (parameters.cache) {
 				invoke(context, methodInfo, parameters.cache)
 			} else {
-				context.saveResult = false;
-				js2me.loadClass(methodInfo.className, function (classObj) {
-					js2me.suspendThread = false;
+				loadClass(methodInfo.className, function (classObj) {
 					parameters.cache = classObj;
-					return invoke(context, methodInfo, classObj);
+				}, function () {
+					invoke(context, methodInfo, parameters.cache);
 				});
-			}
-		};
+				}
+			};
 		
 	}
 	// invokeinterface
@@ -1293,36 +1308,15 @@
 		var result = js2me.lshr(value, shift, false);
 		context.stack.push(result);
 	};
-	// monitoenter
+	// monitorenter
 	executors[0xc2] = function (context) {
 		var obj = context.stack.pop();
-		if (obj.monitorQueue == null) {
-			obj.monitorQueue = [];
-		}
-		if (obj.monitorQueue.length == 0 || obj.monitorQueue[0] == js2me.currentThread) {
-			obj.monitorQueue.unshift(js2me.currentThread)
-		} else {
-			obj.monitorQueue.push(js2me.currentThread)
-			js2me.suspendThread = true;
-			context.finish = true;
-			context.saveResult = false;
-		}
+		js2me.enterMonitor(obj, context);
 	};
-	// monitoexit
+	// monitorexit
 	executors[0xc3] = function (context) {
 		var obj = context.stack.pop();
-		if (obj.monitorQueue == null) {
-			obj.monitorQueue = [];
-		}
-		obj.monitorQueue.shift();
-		if (obj.monitorQueue.length !== 0 && obj.monitorQueue[0] !== js2me.currentThread) {
-			var threadId = obj.monitorQueue[0];
-			if (threadId != null) {
-				setTimeout(function () {
-					js2me.restoreThread(threadId);
-				}, 1);
-			}
-		}
+		js2me.exitMonitor(obj);
 	};
 	// multinewarray
 	generators[0xc5] = function (stream, data) {
@@ -1382,10 +1376,11 @@
 			var instance = new className();
 			context.stack.push(instance);
 		} else {
-			js2me.loadClass(className, function (classObj) {
+			loadClass(className, function (classObj) {
 				context.parameters[position] = classObj;
 				var instance = new classObj();
 				context.stack.push(instance);
+			}, function () {
 			});
 		}
 	};
@@ -1447,10 +1442,11 @@
 		if (field.constructor === String) {
 			js2me.statics[field] = value;
 		} else {
-			js2me.loadClass(field.className, function (classObj) {
+			loadClass(field.className, function (classObj) {
 				var fieldId = '$' + classObj.prototype[field.name];
 				js2me.statics[fieldId] = value;
 				context.parameters[position] = fieldId;
+			}, function () {
 			});
 		}
 	};

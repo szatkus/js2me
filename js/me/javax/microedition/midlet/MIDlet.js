@@ -5,7 +5,7 @@ js2me.createClass({
 	$notifyDestroyed$$V: function () {
 		//TODO
 		console.log('EXIT');
-		location.href = 'index.html';
+		location.reload();
 	},
 	/*
 	 * protected MIDlet()

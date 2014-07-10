@@ -44,3 +44,28 @@ js2me.launchThread = function (func) {
 	}, 1);
 };
 js2me.lastThread = 1;
+js2me.enterMonitor = function (obj) {
+	if (obj.monitorQueue == null) {
+		obj.monitorQueue = [];
+	}
+	if (obj.monitorQueue.length == 0 || obj.monitorQueue[0] == js2me.currentThread) {
+		obj.monitorQueue.unshift(js2me.currentThread)
+	} else {
+		obj.monitorQueue.push(js2me.currentThread)
+		js2me.suspendThread = obj;
+	}
+};
+js2me.exitMonitor = function (obj) {
+	if (this.monitorQueue == null) {
+		this.monitorQueue = [];
+	}
+	obj.monitorQueue.shift();
+	if (obj.monitorQueue.length !== 0 && obj.monitorQueue[0] !== js2me.currentThread) {
+		var threadId = obj.monitorQueue[0];
+		if (threadId != null) {
+			setTimeout(function () {
+				js2me.restoreThread(threadId);
+			}, 1);
+		}
+	}
+};

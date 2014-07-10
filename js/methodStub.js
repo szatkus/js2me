@@ -38,25 +38,17 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 			js2me.generateProgram(data);
 		}
 		if (data.isSynchronized) {
-			var lock = js2me.statics[data.methodName];
-			if (lock) {
-				lock.push(js2me.currentThread);
-				var callee = this;
+			var callee = this;
+			js2me.enterMonitor(callee);
+			if (js2me.suspendThread) {
 				js2me.restoreStack[js2me.currentThread] = [function () {
 					return stub.apply(callee, args);
 				}];
-				js2me.suspendThread = true;
 				return;
 			} else {
-				lock = js2me.statics[data.methodName] = [];
 				var oldCallback = callback || function () {};
 				callback = function () {
-					for (var i in lock) {
-						setTimeout(function () {
-							js2me.restoreThread(lock[i]);
-						}, 0);
-					}
-					delete js2me.statics[data.methodName];
+					js2me.exitMonitor(callee);
 					oldCallback();
 				}
 			}

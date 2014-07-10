@@ -27,6 +27,12 @@ js2me.createClass({
 		this.init();
 	},
 	/*
+	 * public String getString()
+	 */
+	$getString$$Ljava_lang_String_: function () {
+		return this.text;
+	},
+	/*
 	 * public void setTimeout(int time)
 	 */
 	$setTimeout$I$V: function (time) {

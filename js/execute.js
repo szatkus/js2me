@@ -30,6 +30,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 			} else {
 				if (context.saveResult) {
 					context.stack.push(result);
+					context.saveResult = false;
 				}
 			}
 		} catch (exception) {
