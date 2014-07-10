@@ -8,11 +8,13 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		name: escapedName,
 		maxLocals: maxLocals,
 		argumentsTypes: argumentsTypes,
-		isStatic: (accessFlags & 8) !== 0
+		isStatic: (accessFlags & 8) !== 0,
+		isSynchronized: (accessFlags & 0x20) !== 0
 	};
 	constantPool = undefined;
 	stream = undefined;
 	var stub = function (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, guard) {
+		
 		var locals = [];
 		if (!data.isStatic) {
 			locals.push(this);
@@ -34,6 +36,30 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		var result;
 		if (data.content == null || data.regenerate) {
 			js2me.generateProgram(data);
+		}
+		if (data.isSynchronized) {
+			var lock = js2me.statics[data.methodName];
+			if (lock) {
+				lock.push(js2me.currentThread);
+				var callee = this;
+				js2me.restoreStack[js2me.currentThread] = [function () {
+					return stub.apply(callee, args);
+				}];
+				js2me.suspendThread = true;
+				return;
+			} else {
+				lock = js2me.statics[data.methodName] = [];
+				var oldCallback = callback || function () {};
+				callback = function () {
+					for (var i in lock) {
+						setTimeout(function () {
+							js2me.restoreThread(lock[i]);
+						}, 0);
+					}
+					delete js2me.statics[data.methodName];
+					oldCallback();
+				}
+			}
 		}
 		if (data.nativeMethod) {
 			return data.nativeMethod.apply(this, args);
