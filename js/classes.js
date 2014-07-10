@@ -18,6 +18,17 @@
 			js2me.currentThread = threadId;
 			loadClasses(classes, callback);
 		})
+		/*var remain = classes.length;
+		function done() {
+			remain--;
+			if (remain === 0) {
+				js2me.currentThread = threadId;
+				callback()
+			}
+		}
+		for (var i = 0; i < classes.length; i++) {
+			js2me.loadClass(classes[i], done, done);
+		}*/
 	}
 	var classLock = {};
 	var blacklist = {};
@@ -55,22 +66,24 @@
 			};
 			
 			function done(classObj, isError) {
-				for (var i in classLock[className].waiting) {
-					var lock = classLock[className].waiting[i];
-					(function (lock) {
-						js2me.restoreStack[lock.threadId].unshift(function () {
-							if (classObj) {
-								lock.successCallback(classObj);
-							} else {
-								lock.errorCallback();
-							}
-						});
-						setTimeout(function () {
-							js2me.restoreThread(lock.threadId);
-						}, 1);
-					})(lock);
+				if (classLock[className]) {
+					for (var i in classLock[className].waiting) {
+						var lock = classLock[className].waiting[i];
+						(function (lock) {
+							js2me.restoreStack[lock.threadId].unshift(function () {
+								if (classObj) {
+									lock.successCallback(classObj);
+								} else {
+									lock.errorCallback();
+								}
+							});
+							setTimeout(function () {
+								js2me.restoreThread(lock.threadId);
+							}, 0);
+						})(lock);
+					}
+					delete classLock[className];
 				}
-				delete classLock[className];
 				if (classObj) {
 					callback(classObj);
 				} else {
@@ -300,9 +313,10 @@
 			'javaRoot.$java.$lang.$ArrayObject',
 			'javaRoot.$java.$lang.$ArithmeticException',
 			'javaRoot.$java.$lang.$ArrayStoreException',
-			'javaRoot.$java.$lang.$NullPointerException',
-			'javaRoot.$java.$lang.$Object'
+			'javaRoot.$java.$lang.$NullPointerException'
 		];
-		loadClasses(standardClasses, callback);
+		js2me.loadClass('javaRoot.$java.$lang.$Object', function () {
+			loadClasses(standardClasses, callback);
+		});
 	};
 })();

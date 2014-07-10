@@ -18,10 +18,7 @@ js2me.loadResources = function (entries, callback) {
 			js2me.resources[entry.filename] = new Uint8Array(content);
 			finish();
 			if (remain > 0) {
-				setTimeout(function () {
-					i++;
-					addResource(entries[i]);
-				}, 1);
+				addResource(entries[i]);
 			}
 		});
 	}
