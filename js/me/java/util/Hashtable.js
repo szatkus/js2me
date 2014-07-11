@@ -32,6 +32,13 @@ js2me.createClass({
 		return value;
 	},
 	/*
+	 * public void clear()
+	 */
+	$clear$$V: function () {
+		this.array = [];
+		this.keys = [];
+	},
+	/*
 	 * public boolean contains(Object value)
 	 */
 	$contains$Ljava_lang_Object_$Z: function (obj) {
@@ -61,10 +68,14 @@ js2me.createClass({
 		return enumeration;
 	},
 	/*
-	 * public void clear()
+	 * public boolean isEmpty()
 	 */
-	$clear$$V: function () {
-		this.array = [];
+	$isEmpty$$Z: function () {
+		if (this.keys === 0) {
+			return 0;
+		} else {
+			return 1;
+		}
 	},
 	/*
 	 * public int size()
