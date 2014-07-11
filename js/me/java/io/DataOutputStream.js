@@ -2,7 +2,7 @@ js2me.createClass({
 	/*
 	 * public DataOutputStream(OutputStream out)
 	 */
-	_init$Ljava_io_OutputStream_$V : function (out) {
+	_init$Ljava_io_OutputStream_$V: function (out) {
 		this.out = out;
 	},
 	/*
