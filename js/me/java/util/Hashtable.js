@@ -67,6 +67,12 @@ js2me.createClass({
 		this.array = [];
 	},
 	/*
+	 * public int size()
+	 */
+	$size$$I: function () {
+		return this.keys.length;
+	},
+	/*
 	 * public Enumeration keys()
 	 */
 	$keys$$Ljava_util_Enumeration_: function () {
