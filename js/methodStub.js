@@ -40,18 +40,17 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		if (data.isSynchronized) {
 			var callee = this;
 			js2me.enterMonitor(callee);
+			var oldCallback = callback || function () {};
+			callback = function () {
+				js2me.exitMonitor(callee);
+				oldCallback();
+			}
 			if (js2me.suspendThread) {
 				js2me.restoreStack[js2me.currentThread] = [function () {
-					return stub.apply(callee, args);
+					return js2me.execute(data, locals, data.constantPool, exceptions, null, callback);
 				}];
 				return;
-			} else {
-				var oldCallback = callback || function () {};
-				callback = function () {
-					js2me.exitMonitor(callee);
-					oldCallback();
-				}
-			}
+			}	
 		}
 		if (data.nativeMethod) {
 			return data.nativeMethod.apply(this, args);
