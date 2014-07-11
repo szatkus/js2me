@@ -126,16 +126,44 @@ js2me.createClass({
 		});	
 	}),
 	/*
+	 * public java.io.DataOutputStream openDataOutputStream() throws java.io.IOException
+	 */
+	$openDataOutputStream$$Ljava_io_DataOutputStream_: function () {
+		var stream = new javaRoot.$java.$io.DataOutputStream();
+		stream._init$Ljava_io_OutputStream_$V(this.$openOutputStream$$Ljava_io_OutputStream_());
+		return stream;
+	},
+	/*
+	 * public java.io.OutputStream openOutputStream() throws java.io.IOException
+	 */
+	$openOutputStream$$Ljava_io_OutputStream_: function () {
+		return this.$openOutputStream$J$Ljava_io_OutputStream_({hi: 0, lo: 0});
+	},
+	/*
 	 * public java.io.OutputStream openOutputStream(long byteOffset) throws java.io.IOException
 	 */
 	$openOutputStream$J$Ljava_io_OutputStream_: function (offset) {
+		//FIXME
 		if (offset < 0) {
 			throw new javaRoot.$java.$lang.$IllegalArgumentException();
 		}
 		if (!this.file || !this.file.data) {
 			throw new javaRoot.$java.$lang.$IOException();
 		}
-		return new javaRoot.$java.$io.$DynamicOutputStream(this.file.data, offset);
+		return new javaRoot.$java.$io.$DynamicOutputStream(this.file.data, offset.lo);
+	},
+	/*
+	 * public void truncate(long byteOffset) throws java.io.IOException
+	 */
+	$truncate$J$V: function (offset) {
+		//FIXME
+		if (offset < 0) {
+			throw new javaRoot.$java.$lang.$IllegalArgumentException();
+		}
+		if (!this.file || !this.file.data) {
+			throw new javaRoot.$java.$lang.$IOException();
+		}
+		this.file.data = this.file.data.slice(offset.lo);
 	},
 	create: function (pattern) {
 		var parentName = '';
@@ -164,6 +192,6 @@ js2me.createClass({
 		return this.db.transaction(['files'], 'readwrite').objectStore('files');
 	},
 	interfaces: ['javaRoot.$javax.$microedition.$io.$file.$FileConnection'],
-	require: ['javaRoot.$java.$io.$DynamicOutputStream', 'javaRoot.$javax.$microedition.$io.$file.$FileEnumeration']
+	require: ['javaRoot.$java.$io.$DynamicOutputStream', 'javaRoot.$javax.$microedition.$io.$file.$FileEnumeration', 'javaRoot.$java.$io.DataOutputStream']
 });
 
