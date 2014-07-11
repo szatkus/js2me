@@ -3,6 +3,12 @@ js2me.createClass({
 		this.double = double;
 	},
 	/*
+	 * public Double(double value)
+	 */
+	_init$D$V: function (double) {
+		this.double = double;
+	},
+	/*
 	 * public double doubleValue()
 	 */
 	$doubleValue$$D: function () {
