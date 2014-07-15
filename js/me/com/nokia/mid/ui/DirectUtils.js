@@ -8,6 +8,7 @@ js2me.createClass({
 		var directGraphics = this.$getDirectGraphics$Ljavax_microedition_lcdui_Graphics_$Lcom_nokia_mid_ui_DirectGraphics_(graphics);
 		directGraphics.$setARGBColor$I$V(color);
 		graphics.$fillRect$IIII$V(0, 0, width, height);
+		return image;
 	},
 	/*
 	 * public static DirectGraphics getDirectGraphics(javax.microedition.lcdui.Graphics g)
