@@ -13,7 +13,7 @@ js2me.createClass({
 	 * public static Font getDefaultFont()
 	 */
 	$getDefaultFont$$Ljavax_microedition_lcdui_Font_: function () {
-		return this.prototype.$getFont$III$Ljavax_microedition_lcdui_Font_.apply(this, [0, 0, 0]);
+		return this.$getFont$III$Ljavax_microedition_lcdui_Font_.apply(this, [0, 0, 0]);
 	},
 	/*
 	 * public int getFace()

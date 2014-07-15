@@ -3,7 +3,7 @@ js2me.createClass({
 	 * public Gauge(String label, boolean interactive, int maxValue, int initialValue)
 	 */
 	_init$Ljava_lang_String_ZII$V: function (label, interactive, maxValue, initialValue) {
-		if (maxValue < 0) {
+		if (maxValue < 0 && maxValue != -1) {
 			throw new javaRoot.$java.$lang.IllegalArgumentException();
 		}
 		this.gauge = document.createElement('input');
