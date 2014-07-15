@@ -24,6 +24,11 @@ js2me.launchJAR = function (blob) {
 		js2me.loadScript(js2me.engine, function () {
 			js2me.loadJAR(blob, function () {
 				js2me.launchMidlet(js2me.config.midlet);
+				if (js2me.manifest['nokia-midlet-bg-server']) {
+					setTimeout(function () {
+						js2me.launchMidlet(js2me.manifest['nokia-midlet-bg-server']);
+					}, 0);
+				}
 			});
 		});
 	}
