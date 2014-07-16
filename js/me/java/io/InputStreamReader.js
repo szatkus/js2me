@@ -24,8 +24,11 @@ js2me.createClass({
 	 */
 	$read$_C$I: function (output) {
 		var buffer = new Array(this.stream.$available$$I());
-		this.stream.$read$_BII$I(buffer, 0, buffer.length);
-		var str = js2me.UTF8ToString(buffer, 0, buffer.length);
+		var length = this.stream.$read$_BII$I(buffer, 0, buffer.length);
+		if (length === -1) {
+			return -1;
+		}
+		var str = js2me.UTF8ToString(buffer, 0, length);
 		for (var i = 0; i < str.length; i++) {
 			output[i] = str.charCodeAt(i);
 		}

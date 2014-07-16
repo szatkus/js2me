@@ -25,11 +25,22 @@ js2me.createClass({
 	$getForegroundColor$$I: function () {
 		return this.fgColor;
 	},
+	$getHeight$$I: function () {
+		return this.height;
+	},
 	$getLineMarginHeight$$I: function () {
 		return 10;
 	},
 	$getVisibleContentPosition$$I: function () {
 		return 0;
+	},
+	$getMaxSize$$I: function () {
+		return this.maxSize;
+	},
+	$getWidth$$I: function () {
+		return this.width;
+	},
+	$insert$Ljava_lang_String_I$V: function () {
 	},
 	$isMultiline$$Z: function () {
 		return this.isMultiline;
@@ -41,11 +52,16 @@ js2me.createClass({
 		this.fgColor = color;
 		//TODO
 	},
+	$setContent$Ljava_lang_String_$V: function () {
+	},
 	$setFocus$Z$V: function (value) {
 		this.isFocused = value;
 	},
 	$setForegroundColor$I$V: function () {
 		//TODO
+	},
+	$setMaxSize$I$I: function (maxSize) {
+		this.maxSize = maxSize;
 	},
 	$setMultiline$Z$V: function (value) {
 		this.isMultiline = value;
@@ -60,7 +76,9 @@ js2me.createClass({
 	$setPosition$II$V: function () {
 		//TODO
 	},
-	$setSize$II$V: function () {
+	$setSize$II$V: function (width, height) {
+		this.width = width;
+		this.height = height;
 		//TODO
 	},
 	$setTextEditorListener$Lcom_nokia_mid_ui_TextEditorListener_$V: function (listener) {

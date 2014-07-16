@@ -29,6 +29,11 @@ js2me.createClass({
 			});
 		}
 	},
+	$unregister$Ljava_lang_Object_Lcom_nokia_mid_ui_gestures_GestureInteractiveZone_$V: function (container, zone) {
+		if (container.gestureZone === zone) {
+			delete container.gestureZone;
+		}
+	},
 	require: ['javaRoot.$com.$nokia.$mid.$ui.$gestures.$GestureInteractiveZone', 'javaRoot.$com.$nokia.$mid.$ui.$gestures.$GestureEvent']
 });
 

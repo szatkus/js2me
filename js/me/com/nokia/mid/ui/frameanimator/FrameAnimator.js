@@ -19,6 +19,9 @@ js2me.createClass({
 		return 1;
 	},
 	$stop$$V: function () {
-	}
+	},
+	$unregister$$V: function () {
+	},
+	require: ['javaRoot.$java.$lang.$IllegalStateException']
 });
 

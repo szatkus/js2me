@@ -16,6 +16,9 @@ js2me.createClass({
 	 * public void mark(int readlimit)
 	 */
 	$read$_BII$I: function (buffer, offset, length) {
+		if (this.$available$$I() === 0) {
+			return -1;
+		}
 		for (var i = 0; i < length; i++) {
 			var value = this.$read$$I();
 			if (value != -1) {
