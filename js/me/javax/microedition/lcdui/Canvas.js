@@ -91,8 +91,8 @@ js2me.createClass({
 		};
 		function mouseHandler(event) {
 			js2me.launchThread(function () {
-				var x = Math.floor((event.layerX / canvas.element.clientWidth) * canvas.element.width);
-				var y = Math.floor((event.layerY / canvas.element.clientHeight) * canvas.element.height);
+				var x = canvas.translateX(event.layerX);
+				var y = canvas.translateY(event.layerY);
 				if (event.type === 'mousemove') {
 					canvas.$pointerDragged$II$V(x, y);
 				}
@@ -271,6 +271,16 @@ js2me.createClass({
 	$getKeyName$I$Ljava_lang_String_: function () {
 		//TODO
 		return new javaRoot.$java.$lang.$String('pomidor');
+	},
+	getScale: function () {
+		return this.element.clientWidth / this.element.width;
+	},
+	translateX: function (x) {
+		return Math.floor(x / this.getScale());
+				
+	},
+	translateY: function (y) {
+		return Math.floor(y / this.getScale());
 	},
 	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Displayable',
 	require: ['javaRoot.$javax.$microedition.$lcdui.$Graphics']

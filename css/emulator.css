@@ -190,3 +190,9 @@ html, body {
     left: 0;
     opacity: 0.4;
 }
+
+.TextEditor {
+	position: absolute;
+	display: none;
+	border: none;
+}
