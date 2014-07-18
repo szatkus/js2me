@@ -2,7 +2,7 @@ js2me.createClass({
 	construct: function (store) {
 		this.store = store;
 		this.result = [];
-		for (var i = 0; i < this.store.$getNumRecords$$I(); i++) {
+		for (var i = 1; i <= this.store.$getNumRecords$$I(); i++) {
 			try {
 				this.result.push({
 					id: i,

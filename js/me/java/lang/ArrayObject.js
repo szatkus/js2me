@@ -2,10 +2,10 @@ js2me.createClass({
 	construct: function (array) {
 		this.className = '[' + array.className;
 		this.monitorQueue = array.monitorQueue;
-		if (!array.waiting) {
-			array.waiting = [];
+		if (!array.waitingThreads) {
+			array.waitingThreads = [];
 		}
-		this.waiting = array.waiting;
+		this.waitingThreads = array.waitingThreads;
 		this.array = array;
 		if (this.className == null) {
 			throw new Error('unknown array');

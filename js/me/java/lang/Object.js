@@ -29,23 +29,31 @@ js2me.createClass({
 	$wait$J$V: js2me.markUnsafe(function (timeout) {
 		var threadId = js2me.currentThread;
 		this.checkOwnership();
-		if (this.waiting == null) {
-			this.waiting = [];
+		if (this.waitingThreads == null) {
+			this.waitingThreads = [];
 		}
 		this.releaseOwnership();
-		this.waiting.push(threadId);
-		var waiting = this.waiting;
+		var data = {
+			threadId: threadId,
+			timeoutId: 0
+		};
+		this.waitingThreads.push(data);
+		var waitingThreads = this.waitingThreads;
 		var callee = this;
 		js2me.restoreStack[threadId] = [function () {
-			js2me.enterMonitor(this);
+			js2me.enterMonitor(callee);
 		}];
 		js2me.suspendThread = true;
 		if (timeout.lo > 0) {
-			setTimeout(function () {
-				var i = waiting.indexOf(threadId);
-				waiting[i] = waiting[waiting.length - 1];
-				waiting.pop();
-				js2me.restoreThread(threadId);
+			data.timeoutId = setTimeout(function () {
+				var i = waitingThreads.indexOf(data);
+				if (i !== -1) {
+					waitingThreads[i] = waitingThreads[waitingThreads.length - 1];
+					waitingThreads.pop();
+					js2me.restoreThread(threadId);
+				} else {
+					console.error('This should not happen!');
+				}
 			}, timeout.lo);
 		}
 	}),
@@ -74,11 +82,14 @@ js2me.createClass({
 	 */
 	$notify$$V: function () {
 		this.checkOwnership();
-		if (this.waiting) {
-			var threadId = this.waiting.pop();
-			setTimeout(function () {
-				js2me.restoreThread(threadId);
-			}, 1);
+		if (this.waitingThreads) {
+			var data = this.waitingThreads.pop();
+			if (data) {
+				clearTimeout(data.timeoutId);
+				setTimeout(function () {
+					js2me.restoreThread(data.threadId);
+				}, 1);
+			}
 		}
 	},
 	/*
@@ -86,14 +97,15 @@ js2me.createClass({
 	 */
 	$notifyAll$$V: function () {
 		this.checkOwnership();
-		if (this.waiting) {
+		if (this.waitingThreads) {
 			var threadId;
-			while (threadId = this.waiting.pop()) {
-				(function (threadId) {
+			while (data = this.waitingThreads.pop()) {
+				clearTimeout(data.timeoutId);
+				(function (data) {
 					setTimeout(function () {
-						js2me.restoreThread(threadId);
+						js2me.restoreThread(data.threadId);
 					}, 1);
-				})(threadId);
+				})(data);
 			}
 		}
 	},
