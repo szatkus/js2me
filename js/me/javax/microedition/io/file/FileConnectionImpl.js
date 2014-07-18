@@ -1,7 +1,7 @@
 js2me.createClass({
 	construct: function (filename) {
 		this.filename = filename.replace(/\/+/g, '/').replace(/\/$|^\//g, '');
-		var request = indexedDB.open('js2me', 9);
+		var request = indexedDB.open('js2me', 11);
 		var connection = this;
 		request.onsuccess = function () {
 			connection.db = request.result;
@@ -167,6 +167,7 @@ js2me.createClass({
 	},
 	create: function (pattern) {
 		var parentName = '';
+		console.debug('Create ' + this.filename);
 		if (this.filename.lastIndexOf('/') !== -1) {
 			parentName = this.filename.substring(0, this.filename.lastIndexOf('/'));
 		}
@@ -176,6 +177,7 @@ js2me.createClass({
 		js2me.suspendThread = true;
 		var threadId = js2me.currentThread;
 		request.onsuccess = function () {
+			console.debug('Created ' + connection.filename);
 			connection.file = pattern;
 			var filename = connection.filename;
 			if (connection.file.isDirectory) {

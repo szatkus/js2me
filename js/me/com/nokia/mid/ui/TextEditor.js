@@ -39,7 +39,7 @@ js2me.createClass({
 	 * public int getContentHeight()
 	 */
 	$getContentHeight$$I: function () {
-		return 10;
+		return 50;
 	},
 	/*
 	 * public boolean hasFocus()
@@ -73,7 +73,11 @@ js2me.createClass({
 	 * public int getLineMarginHeight()
 	 */
 	$getLineMarginHeight$$I: function () {
-		return 0;
+		if (this.height) {
+			return this.height;
+		} else {
+			return 0;
+		}
 	},
 	/*
 	 * public int getVisibleContentPosition()
@@ -200,6 +204,12 @@ js2me.createClass({
 	$setVisible$Z$V: function (value) {
 		this.isVisible = value;
 		this.refreshState();
+	},
+	/*
+	 * public int size()
+	 */
+	$size$$I: function () {
+		return this.element.value.length;
 	},
 	refreshState: function () {
 		if (this.parent) {
