@@ -1,7 +1,7 @@
 js2me.createClass({
 	construct: function (filename) {
 		this.filename = filename.replace(/\/+/g, '/').replace(/\/$|^\//g, '');
-		var request = indexedDB.open('js2me', 11);
+		var request = indexedDB.open('js2me', 12);
 		var connection = this;
 		request.onsuccess = function () {
 			connection.db = request.result;

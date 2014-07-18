@@ -81,6 +81,10 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	while (context.position < length && !context.finish) {
 		try {
 			var func = program.content[context.position];
+			if (program.methodName === 'javaRoot.$cw.prototype._init$$V') {
+				console.error(js2me.suspendThread);
+				console.error('p' + context.position);
+			}
 			context.position++;
 			func(context);
 		} catch (exception) {

@@ -25,6 +25,7 @@ js2me.createClass({
 		var runnable = this.runnable || thread;
 		thread.id = js2me.threads.length;
 		js2me.threads.push(thread);
+		js2me.restoreStack[thread.id] = [];
 		setTimeout(function () {
 			js2me.currentThread = thread.id;
 			runnable.$run$$V();

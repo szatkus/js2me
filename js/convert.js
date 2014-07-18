@@ -407,7 +407,7 @@
 		var thisClass = constantPool[stream.readUint16()];
 		//js2me.constantPools.push(constantPool);
 		newClass.prototype.className = thisClass.className;
-		console.log('Loading class ' + thisClass.className);
+		console.log('Converting class ' + thisClass.className);
 		readSuperClass();
 		readInterfaces();
 		readFields();
