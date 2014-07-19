@@ -50,7 +50,7 @@ js2me.createClass({
 			js2me.restoreThread(threadId);
 		});
 		if (async) {
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			var threadId = js2me.currentThread;
 			js2me.restoreStack[threadId] = [function () {
 				if (data == null) {
@@ -132,7 +132,7 @@ js2me.createClass({
 		});
 		var url = js2me.bytesToDataURI(data, offset, length, mime);
 		imageElement.setAttribute('src', url);
-		js2me.suspendThread = true;
+		js2me.isThreadSuspended = true;
 		var threadId = js2me.currentThread;
 		js2me.restoreStack[threadId] = [function () {
 			if (isError) {

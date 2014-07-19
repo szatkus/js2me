@@ -35,7 +35,7 @@ js2me.createClass({
 	 * 
 	 */
 	$sleep$J$V: js2me.markUnsafe(function (miliseconds) {
-		js2me.suspendThread = true;
+		js2me.isThreadSuspended = true;
 		var threadId = js2me.currentThread;
 		setTimeout(function () {
 			js2me.restoreThread(threadId);
@@ -49,7 +49,7 @@ js2me.createClass({
 	 * public static void yield()
 	 */
 	$yield$$V: js2me.markUnsafe(function () {
-		js2me.suspendThread = true;
+		js2me.isThreadSuspended = true;
 		var threadId = js2me.currentThread;
 		setTimeout(function () {
 			js2me.restoreThread(threadId);

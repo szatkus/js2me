@@ -16,7 +16,7 @@ js2me.createClass({
 			js2me.restoreStack[threadId] = [function () {
 				return result;
 			}];
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			setTimeout(function () {
 				js2me.restoreThread(threadId);
 			}, 1);
@@ -24,13 +24,13 @@ js2me.createClass({
 			js2me.restoreStack[threadId].unshift(function () {
 				throw new javaRoot.$java.$lang.$ClassNotFoundException();
 			});
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			setTimeout(function () {
 				js2me.restoreThread(threadId);
 			}, 1);
 		});
 		if (async) {
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 		} else {
 			return result;
 		}
@@ -55,7 +55,7 @@ js2me.createClass({
 			js2me.restoreThread(threadId);
 		});
 		if (async) {
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			var threadId = js2me.currentThread;
 			js2me.restoreStack[threadId] = [function () {
 				return stream;

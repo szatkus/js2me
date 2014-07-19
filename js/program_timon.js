@@ -626,7 +626,7 @@ js2me.generateProgram = function (data) {
 			js2me.lastStop = now;
 			context.saveResult = false;
 			var threadID = js2me.currentThread;
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			setTimeout(function () {
 				js2me.restoreThread(threadID);
 			}, 1);
@@ -869,13 +869,13 @@ js2me.generateProgram = function (data) {
 					body += 'context.stack.push(result);\n';
 				}
 				if (js2me.profile) {
-					body +=	'if (js2me.suspendThread) {\n' +
+					body +=	'if (js2me.isThreadSuspended) {\n' +
 						'	throw new Error("Safe method ' + methodInfo.className + '->' + methodInfo.name + ' just suspended the thread!");\n' + 
 						'}\n';
 				}
 				isSubfunctionSafe = true;
 			} else {
-				body += 'if (context.saveResult && !js2me.suspendThread) {\n' +
+				body += 'if (context.saveResult && !js2me.isThreadSuspended) {\n' +
 					'	context.stack.push(result);\n' +
 					'	context.saveResult = false;\n' +
 					'}\n';
@@ -1137,7 +1137,7 @@ js2me.generateProgram = function (data) {
 				obj.monitorCount.push(js2me.currentThread)
 			} else {
 				obj.monitorQueue.push(js2me.currentThread)
-				js2me.suspendThread = true;
+				js2me.isThreadSuspended = true;
 				context.finish = true;
 				context.saveResult = false;
 			}
@@ -1228,13 +1228,13 @@ js2me.generateProgram = function (data) {
 			var threadId = js2me.currentThread;
 			js2me.loadClass(className, function (classObj) {
 				loaded = true;
-				js2me.suspendThread = false;
+				js2me.isThreadSuspended = false;
 				classCache = classObj;
 				callback(context, classObj);
 			});
 			if (!loaded) {
 				async = true;
-				js2me.suspendThread = true;
+				js2me.isThreadSuspended = true;
 				js2me.restoreStack[threadId] = [];
 			}
 		};

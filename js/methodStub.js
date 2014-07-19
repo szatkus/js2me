@@ -22,6 +22,9 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 		if (guard !== undefined) {
 			console.error('Too many arguments');
 		}
+		if (js2me.currentThread === -10) {
+			console.debug(data.methodName);
+		}
 		var args = [arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9];
 		for (var i = 0; i < argumentsTypes.length; i++) {
 			locals.push(args[i]);
@@ -38,17 +41,19 @@ js2me.generateMethodStub = function(newClass, stream, methodName, constantPool, 
 			js2me.generateProgram(data);
 		}
 		if (data.isSynchronized) {
+			var l = this.monitorQueue ? this.monitorQueue.length : 0;
 			var callee = this;
+			
 			js2me.enterMonitor(callee);
 			var oldCallback = callback || function () {};
 			callback = function () {
 				js2me.exitMonitor(callee);
 				oldCallback();
 			}
-			if (js2me.suspendThread) {
-				js2me.restoreStack[js2me.currentThread] = [function () {
+			if (js2me.isThreadSuspended) {
+				js2me.suspendThread(function () {
 					return js2me.execute(data, locals, data.constantPool, exceptions, null, callback);
-				}];
+				});
 				return;
 			}	
 		}

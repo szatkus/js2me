@@ -18,14 +18,14 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 		constantPool: constantPool,
 		parameters: program.parameters
 	};
-	js2me.suspendThread = false;
+	js2me.isThreadSuspended = false;
 	if (restoreInfo) {
 		context = restoreInfo.context;
 		context.finish = false;
 		callback = restoreInfo.callback;
 		try {
 			var result = js2me.restoreThread(js2me.currentThread);
-			if (js2me.suspendThread) {
+			if (js2me.isThreadSuspended) {
 				suspendCall();
 			} else {
 				if (context.saveResult) {
@@ -73,6 +73,9 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 			context.stack.push(exception);
 			context.position = handler;
 		} else {
+			if (callback != null) {
+				callback(exception);
+			}
 			throw exception;
 		}
 	}
@@ -87,7 +90,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 			tryCatchException(exception);
 		}
 		
-		if (js2me.suspendThread) {
+		if (js2me.isThreadSuspended) {
 			suspendCall();
 		}
 		
@@ -95,7 +98,7 @@ js2me.execute = function (program, locals, constantPool, exceptions, restoreInfo
 	if (context.regenerate) {
 		program.regenerate = true;
 	}
-	if (callback != null && !js2me.suspendThread) {
+	if (callback != null && !js2me.isThreadSuspended) {
 		callback(context.result);
 	}
 	

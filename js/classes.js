@@ -46,7 +46,7 @@
 		var threadId = js2me.currentThread;
 		
 		if (classLock[className] && threadId !== classLock[className].threadId) {
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			classLock[className].waiting.push({
 				threadId: threadId,
 				successCallback: callback,
@@ -93,7 +93,7 @@
 			
 			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
 			var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			var require = [];
 			
 			if (js2me.resources[resourceName]) {

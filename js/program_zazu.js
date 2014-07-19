@@ -944,7 +944,7 @@
 			js2me.restoreThread(threadId);
 		});
 		if (!loaded) {
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 		}
 	}
 	function generateInvocationGenerator(isGarbage) {
@@ -996,7 +996,7 @@
 				}
 			}
 			
-			if (context.saveResult && !js2me.suspendThread) {
+			if (context.saveResult && !js2me.isThreadSuspended) {
 				context.stack.push(result);
 				context.saveResult = false;
 			}

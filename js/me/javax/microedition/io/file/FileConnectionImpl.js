@@ -1,7 +1,7 @@
 js2me.createClass({
 	construct: function (filename) {
 		this.filename = filename.replace(/\/+/g, '/').replace(/\/$|^\//g, '');
-		var request = indexedDB.open('js2me', 12);
+		var request = indexedDB.open('js2me', 13);
 		var connection = this;
 		request.onsuccess = function () {
 			connection.db = request.result;
@@ -45,7 +45,7 @@ js2me.createClass({
 				isDirectory: true
 			}, '');
 		};
-		js2me.suspendThread = true;
+		js2me.isThreadSuspended = true;
 		var threadId = js2me.currentThread;
 		js2me.restoreStack[threadId] = [function () {
 			return connection;
@@ -54,7 +54,7 @@ js2me.createClass({
 	$close$$V: function () {
 		var store = this.getStore();
 		var request = store.put(this.file, this.filename);
-		js2me.suspendThread = true;
+		js2me.isThreadSuspended = true;
 		var threadId = js2me.currentThread;
 		request.onsuccess = function () {
 			js2me.restoreThread(threadId);
@@ -174,7 +174,7 @@ js2me.createClass({
 		var connection = this;
 		var store = connection.getStore();
 		var request = store.get(parentName);
-		js2me.suspendThread = true;
+		js2me.isThreadSuspended = true;
 		var threadId = js2me.currentThread;
 		request.onsuccess = function () {
 			console.debug('Created ' + connection.filename);

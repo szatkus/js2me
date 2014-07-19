@@ -200,6 +200,7 @@ js2me.createClass({
 	 * public void drawString(String str, int x, int y, int anchor)
 	 */
 	$drawString$Ljava_lang_String_III$V: function (str, x, y, anchor) {
+		console.debug(js2me.currentThread);
 		//this.context.save();
 		if (this.font) {
 			this.context.font = this.font.getCSS();

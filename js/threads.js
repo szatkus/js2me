@@ -10,7 +10,7 @@ js2me.restoreThread = function (threadId) {
 	if (js2me.restoreStack[threadId] == undefined) {
 		return;
 	}
-	js2me.suspendThread = false;
+	js2me.isThreadSuspended = false;
 	var restoreStack = js2me.restoreStack[threadId].pop();
 	if (restoreStack) {
 		//console.error(threadId);
@@ -35,10 +35,10 @@ js2me.launchThread = function (func) {
 	setZeroTimeout(function () {
 		//console.error(threadId);
 		try {
-			js2me.suspendThread = false;
+			js2me.isThreadSuspended = false;
 			js2me.currentThread = threadId;
 			func();
-			js2me.suspendThread = false;
+			js2me.isThreadSuspended = false;
 		} catch (e) {
 			console.error(e.stack);
 			js2me.showError(e.message);
@@ -47,6 +47,10 @@ js2me.launchThread = function (func) {
 };
 js2me.lastThread = 1;
 js2me.enterMonitor = function (obj) {
+	if (obj.className == 'javaRoot.$agt') {
+		//console.debug('='+js2me.currentThread);
+		//console.debug(obj.monitorQueue);
+	}
 	if (obj.monitorQueue == null) {
 		obj.monitorQueue = [];
 	}
@@ -54,7 +58,7 @@ js2me.enterMonitor = function (obj) {
 		obj.monitorQueue.unshift(js2me.currentThread)
 	} else {
 		obj.monitorQueue.push(js2me.currentThread)
-		js2me.suspendThread = obj;
+		js2me.isThreadSuspended = true;
 	}
 };
 js2me.exitMonitor = function (obj) {
@@ -70,4 +74,14 @@ js2me.exitMonitor = function (obj) {
 			}, 1);
 		}
 	}
+};
+js2me.suspendThread = function (func) {
+	js2me.isThreadSuspended = true;
+	if (func) {
+		if (js2me.restoreStack[js2me.currentThread].length > 0) {
+			console.error('Trying to overwrite a thread!');
+		}
+		js2me.restoreStack[js2me.currentThread] = [func];
+	}
+	return js2me.currentThread;
 };

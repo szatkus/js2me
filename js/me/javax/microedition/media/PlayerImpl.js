@@ -22,7 +22,7 @@ js2me.createClass({
 			});
 			this.element.src = js2me.bytesToDataURI(data, 0, data.length, mime);
 			//console.log(dataURI);
-			js2me.suspendThread = true;
+			js2me.isThreadSuspended = true;
 			var threadId = js2me.currentThread;
 			
 			js2me.restoreStack[threadId] = [function () {

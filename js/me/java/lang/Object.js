@@ -43,7 +43,7 @@ js2me.createClass({
 		js2me.restoreStack[threadId] = [function () {
 			js2me.enterMonitor(callee);
 		}];
-		js2me.suspendThread = true;
+		js2me.isThreadSuspended = true;
 		if (timeout.lo > 0) {
 			data.timeoutId = setTimeout(function () {
 				var i = waitingThreads.indexOf(data);
