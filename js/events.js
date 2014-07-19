@@ -4,9 +4,11 @@ js2me.listeners = {
 };
 js2me.sendEvent = function (eventName, data) {
 	for (var i = 0; i < this.listeners[eventName].length; i++) {
-		js2me.launchThread(function () {
-			this.listeners[eventName][i](data);
-		});
+		(function (listener) {
+			js2me.launchThread(function () {
+				listener(data);
+			});
+		})(js2me.listeners[eventName][i]);
 	}
 };
 js2me.addEventListener = function (eventName, listener) {

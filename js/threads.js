@@ -13,6 +13,7 @@ js2me.restoreThread = function (threadId) {
 	js2me.suspendThread = false;
 	var restoreStack = js2me.restoreStack[threadId].pop();
 	if (restoreStack) {
+		//console.error(threadId);
 		js2me.currentThread = threadId;
 		if (typeof restoreStack == 'function') {
 			return restoreStack();
@@ -32,6 +33,7 @@ js2me.launchThread = function (func) {
 		js2me.restoreStack[threadId] = [];
 	}
 	setTimeout(function () {
+		//console.error(threadId);
 		try {
 			js2me.suspendThread = false;
 			js2me.currentThread = threadId;

@@ -7,6 +7,7 @@ js2me.createClass({
 		this.$setClip$IIII$V(0, 0, this.element.width, this.element.height);
 		this.translateX = 0;
 		this.translateY = 0;
+		this.alpha = 255;
 	},
 	$HCENTERI: 1,
 	$VCENTERI: 2,
@@ -387,6 +388,7 @@ js2me.createClass({
 	$translate$II$V: function (x, y) {
 		this.translateX += x;
 		this.translateY += y;
+		this.context.translate(x, y);
 	},
 	/*
 	 * public void setStrokeStyle(int style)

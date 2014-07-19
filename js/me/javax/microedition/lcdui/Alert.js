@@ -33,6 +33,13 @@ js2me.createClass({
 		return this.text;
 	},
 	/*
+	 * public void setString(String str)
+	 */
+	$setString$Ljava_lang_String_$V: function (text) {
+		this.text = text;
+		this.element.innerHTML = text.text;
+	},
+	/*
 	 * public void setTimeout(int time)
 	 */
 	$setTimeout$I$V: function (time) {

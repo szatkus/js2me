@@ -6,17 +6,17 @@ js2me.createClass({
 	 * int getAlphaComponent()
 	 */
 	$getAlphaComponent$$I: function () {
-		return this.alpha;
+		return this.graphics.alpha;
 	},
 	/*
 	 * void setARGBColor(int argbColor)
 	 */
 	$setARGBColor$I$V: function (color) {
 		if (color < 0) {
-			color += 0x80000000;
+			color += 0x100000000;
 		}
-		this.alpha = Math.round(color / Math.pow(2, 24));
-		var alpha = Math.floor(this.alpha / 25.6) / 10;
+		this.graphics.alpha = Math.floor(color / Math.pow(2, 24));
+		var alpha = Math.floor(this.graphics.alpha / 255 * 255) / 100;
 		var red = (color & 0xff0000) >> 16;
 		var green = (color & 0x00ff00) >> 8;
 		var blue = (color & 0x0000ff);
