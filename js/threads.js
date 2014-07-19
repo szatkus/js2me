@@ -32,7 +32,7 @@ js2me.launchThread = function (func) {
 	if (!js2me.restoreStack[threadId]) {
 		js2me.restoreStack[threadId] = [];
 	}
-	setTimeout(function () {
+	setZeroTimeout(function () {
 		//console.error(threadId);
 		try {
 			js2me.suspendThread = false;

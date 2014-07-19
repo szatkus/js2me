@@ -564,14 +564,19 @@
 		return data.constantPool[stream.readUint16()];
 	};
 	executors[0xb4] = function (context) {
-		var field = context.parameters[context.position - 1];
-		var classObj = js2me.findClass(field.className);
-		var fieldId = classObj.prototype[field.name];
 		var obj = context.stack.pop();
 		if (obj == null) {
 			throw new javaRoot.$java.$lang.$NullPointerException();
 		}
-		context.stack.push(obj['$' + fieldId]);
+		var field = context.parameters[context.position - 1];
+		if (field.constructor === String) {
+			context.stack.push(obj[field]);
+		} else {
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			context.stack.push(obj['$' + fieldId]);
+			context.parameters[context.position - 1] = '$' + fieldId;
+		}
 	};
 	// getstatic
 	generators[0xb2] = function (stream, data) {
@@ -1418,17 +1423,20 @@
 	};
 	// putfield
 	generators[0xb5] = function (stream, data) {
-		return {
-			field: data.constantPool[stream.readUint16()]
-		};
+		return data.constantPool[stream.readUint16()];
 	};
 	executors[0xb5] = function (context) {
-		var field = context.parameters[context.position - 1].field;
-		var classObj = js2me.findClass(field.className);
-		var fieldId = classObj.prototype[field.name];
+		var field = context.parameters[context.position - 1];
 		var value = context.stack.pop();
 		var obj = context.stack.pop();
-		obj['$' + fieldId] = value;
+		if (field.constructor === String) {
+			obj[field] = value;
+		} else {
+			var classObj = js2me.findClass(field.className);
+			var fieldId = classObj.prototype[field.name];
+			obj['$' + fieldId] = value;
+			context.parameters[context.position - 1] = '$' + fieldId;
+		}
 	};
 	js2me.statics = {};
 	// putstatic
