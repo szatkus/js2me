@@ -5,7 +5,6 @@ var js2me = {
 	profile: false,
 	storageName: '',
 	libraryPath: 'js/me',
-	statics: {},
 	constantPools: [], //only for memory profiling
 	config: {
 		app: true,

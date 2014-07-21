@@ -13,8 +13,7 @@ js2me.restoreThread = function (threadId) {
 	js2me.isThreadSuspended = false;
 	var restoreStack = js2me.restoreStack[threadId].pop();
 	if (restoreStack) {
-		//console.error(threadId);
-		js2me.currentThread = threadId;
+		js2me.switchVM(threadId);
 		if (typeof restoreStack == 'function') {
 			return restoreStack();
 		} else {
@@ -28,12 +27,13 @@ js2me.restoreThread = function (threadId) {
  */
 js2me.launchThread = function (func) {
 	var threadId = -js2me.lastThread;
+	js2me.VMMapping[threadId] = js2me.currentVM;
 	js2me.lastThread++;
 	if (!js2me.restoreStack[threadId]) {
 		js2me.restoreStack[threadId] = [];
 	}
 	setZeroTimeout(function () {
-		//console.error(threadId);
+		js2me.switchVM(threadId);
 		try {
 			js2me.isThreadSuspended = false;
 			js2me.currentThread = threadId;
@@ -47,10 +47,6 @@ js2me.launchThread = function (func) {
 };
 js2me.lastThread = 1;
 js2me.enterMonitor = function (obj) {
-	if (obj.className == 'javaRoot.$agt') {
-		//console.debug('='+js2me.currentThread);
-		//console.debug(obj.monitorQueue);
-	}
 	if (obj.monitorQueue == null) {
 		obj.monitorQueue = [];
 	}
@@ -85,3 +81,10 @@ js2me.suspendThread = function (func) {
 	}
 	return js2me.currentThread;
 };
+js2me.switchVM = function (threadId) {
+	js2me.currentThread = threadId;
+	js2me.currentVM = js2me.VMMapping[threadId];
+	js2me.statics = js2me['statics' + js2me.currentVM];
+};
+js2me.currentVM;
+js2me.VMMapping = {};

@@ -26,8 +26,9 @@ js2me.createClass({
 		thread.id = js2me.threads.length;
 		js2me.threads.push(thread);
 		js2me.restoreStack[thread.id] = [];
+		js2me.VMMapping[thread.id] = js2me.currentVM;
 		setTimeout(function () {
-			js2me.currentThread = thread.id;
+			js2me.switchVM(thread.id);
 			runnable.$run$$V();
 		}, 1);
 	},

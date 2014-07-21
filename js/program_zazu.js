@@ -582,7 +582,7 @@
 		} else {
 			loadClass(field.className, function (classObj) {
 				var fieldId = '$' + classObj.prototype[field.name];
-				context.parameters[position] = fieldId;
+				//context.parameters[position] = fieldId;
 				context.stack.push(js2me.statics[fieldId]);
 			}, function () {
 			});
@@ -945,10 +945,10 @@
 			if (isGarbage) {
 				stream.readUint16();
 			}
-			var cache = js2me.findClass(methodInfo.className);
+			var cache;/* = js2me.findClass(methodInfo.className);
 			if (cache && !cache.prototype.initialized) {
 				cache = undefined;
-			}
+			}*/
 			if (methodInfo.className === data.parent.prototype.className) {
 				cache = data.parent;
 			}
@@ -999,10 +999,12 @@
 			if (parameters.cache) {
 				invoke(context, methodInfo, parameters.cache)
 			} else {
+				var cache;
 				loadClass(methodInfo.className, function (classObj) {
-					parameters.cache = classObj;
+					//parameters.cache = classObj;
+					cache = classObj;
 				}, function () {
-					invoke(context, methodInfo, parameters.cache);
+					invoke(context, methodInfo, cache);
 				});
 				}
 			};
@@ -1374,7 +1376,7 @@
 			context.stack.push(instance);
 		} else {
 			loadClass(className, function (classObj) {
-				context.parameters[position] = classObj;
+				//context.parameters[position] = classObj;
 				var instance = new classObj();
 				context.stack.push(instance);
 			}, function () {
@@ -1445,7 +1447,7 @@
 			loadClass(field.className, function (classObj) {
 				var fieldId = '$' + classObj.prototype[field.name];
 				js2me.statics[fieldId] = value;
-				context.parameters[position] = fieldId;
+				//context.parameters[position] = fieldId;
 			}, function () {
 			});
 		}

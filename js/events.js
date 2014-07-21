@@ -5,6 +5,7 @@ js2me.listeners = {
 js2me.sendEvent = function (eventName, data) {
 	for (var i = 0; i < this.listeners[eventName].length; i++) {
 		(function (listener) {
+			js2me.currentVM = 1;
 			js2me.launchThread(function () {
 				listener(data);
 			});

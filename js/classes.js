@@ -56,7 +56,7 @@
 		}
 		
 		var classObj = js2me.findClass(className);
-		if (classObj) {
+		if (classObj && (!js2me.statics || js2me.statics[className])) {
 			callback(classObj);
 		} else {
 			console.log('Loading ' + className);
@@ -71,11 +71,7 @@
 						var lock = classLock[className].waiting[i];
 						(function (lock) {
 							js2me.restoreStack[lock.threadId].unshift(function () {
-								if (classObj) {
-									lock.successCallback(classObj);
-								} else {
-									lock.errorCallback();
-								}
+								js2me.loadClass(className, lock.successCallback, lock.errorCallback);
 							});
 							setTimeout(function () {
 								js2me.restoreThread(lock.threadId);
@@ -84,42 +80,12 @@
 					}
 					delete classLock[className];
 				}
+				js2me.switchVM(threadId);
 				if (classObj) {
 					callback(classObj);
 				} else {
 					errorCallback();
 				}
-			}
-			
-			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
-			var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
-			js2me.isThreadSuspended = true;
-			var require = [];
-			
-			if (js2me.resources[resourceName]) {
-				js2me.loadResource(resourceName, function (data) {
-					classObj = js2me.convertClass(new js2me.BufferStream(data));
-					// lesser memory usage
-					delete js2me.resources[resourceName];
-					loadDependecies();
-				});
-			} else {
-				var classPath = className.replace('javaRoot', js2me.libraryPath).replace(/\$/g, '').replace(/\./g, '/') + '.js';
-				js2me.loadScript(classPath, function () {
-					if (js2me.classBucket == null) {
-						throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
-					}
-					var proto = js2me.classBucket.prototype;
-					proto.className = className;
-					classObj = js2me.classBucket;
-					
-					js2me.classBucket = null;
-					loadDependecies();
-				}, function () {
-					console.error('Error loading ' + className + ' class.');
-					blacklist[className] = true;
-					done();
-				});
 			}
 			
 			function loadDependecies() {
@@ -130,7 +96,7 @@
 				}
 				if (classObj.prototype.require instanceof Array) {
 					require = require.concat(classObj.prototype.require);
-					delete classObj.prototype.require;
+					//delete classObj.prototype.require;
 				}
 				if (classObj.prototype.superClass) {
 					require.push(classObj.prototype.superClass);
@@ -142,6 +108,47 @@
 					js2me.restoreThread(threadId);
 				});
 			}
+			
+			var resourceName = className.replace('javaRoot.$', '').replace(/\.\$/g, '/') + '.class';
+			var package = js2me.findPackage(className.substr(0, className.lastIndexOf('.')));
+			js2me.isThreadSuspended = true;
+			var require = [];
+			if (!classObj) {
+				if (js2me.resources[resourceName]) {
+					js2me.loadResource(resourceName, function (data) {
+						classObj = js2me.convertClass(new js2me.BufferStream(data));
+						// lesser memory usage
+						delete js2me.resources[resourceName];
+						loadDependecies();
+					});
+				} else {
+					var classPath = className.replace('javaRoot', js2me.libraryPath).replace(/\$/g, '').replace(/\./g, '/') + '.js';
+					js2me.loadScript(classPath, function () {
+						if (js2me.classBucket == null) {
+							throw new javaRoot.$java.$lang.$ClassNotFoundException(className + ' not found');
+						}
+						var proto = js2me.classBucket.prototype;
+						proto.className = className;
+						classObj = js2me.classBucket;
+						
+						js2me.classBucket = null;
+						loadDependecies();
+					}, function () {
+						console.error('Error loading ' + className + ' class.');
+						blacklist[className] = true;
+						done();
+					});
+				}
+			} else {
+				if (!js2me.statics[classObj.prototype.className]) {
+					js2me.statics[classObj.prototype.className] = 1;
+					loadDependecies();
+				} else {
+					done();
+				}
+			}
+			
+			
 		}
 		if (error) {
 			throw error;
@@ -247,8 +254,23 @@
 	function initializeClass(classObj, callback) {
 		console.log('Initializing ' + classObj.prototype.className);
 		
-		if (classObj === javaRoot.$java.$lang.$Object || classObj.prototype.initialized) {
+		function markAsInitialized() {
 			classObj.prototype.initialized = true;
+			if (js2me.statics) {
+				js2me.statics[classObj.prototype.className] = 2;
+			}
+		}
+		
+		if (classObj.prototype._clinit$$V && classObj.prototype.initialized && js2me.statics[classObj.prototype.className] !== 2) {
+			classObj.prototype._clinit$$V(function () {
+				markAsInitialized()
+				callback(classObj);
+			});
+			return;
+		}
+		
+		if (classObj === javaRoot.$java.$lang.$Object || classObj.prototype.initialized) {
+			markAsInitialized()
 			callback(classObj);
 			return;
 		}
@@ -265,12 +287,12 @@
 		}
 		
 		if (classObj.prototype._clinit$$V) {
+			markAsInitialized()
 			classObj.prototype._clinit$$V(function () {
-				classObj.prototype.initialized = true;
 				callback(classObj);
 			});
 		} else {
-			classObj.prototype.initialized = true;
+			markAsInitialized()
 			callback(classObj);
 		}
 	};
@@ -302,7 +324,6 @@
 		js2me.usedByteCodes = {};
 		javaRoot = {};
 		var standardClasses = [
-			'javaRoot.$java.$lang.$System',
 			'javaRoot.$java.$lang.$String',
 			'javaRoot.$java.$lang.$Class',
 			'javaRoot.$java.$lang.$Thread',

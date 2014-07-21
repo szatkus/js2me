@@ -9,7 +9,7 @@ function make_test {
 	i=$1
 	cd $i
 	mkdir tmp
-	javac -cp $J2ME_JARS:. -d tmp -source 1.3 -target 1.3  -encoding UTF-8  -sourcepath .:.. Test.java
+	javac -cp $J2ME_JARS:. -d tmp -source 1.3 -target 1.3  -encoding UTF-8  -sourcepath .:.. *.java
 	cp *.* tmp
 	name=`echo $i | tr -d /`
 	cd tmp

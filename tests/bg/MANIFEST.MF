@@ -7,3 +7,4 @@ MIDlet-2: TestBG, picross.png, TestBG
 MIDlet-Name: Test
 nokia-midlet-bg-server: 2
 MicroEdition-Profile: MIDP-2.0
+

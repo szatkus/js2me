@@ -4,7 +4,9 @@
  */
 js2me.launchMidlet = function (id) {
 	var mainMidlet = js2me.manifest['midlet-' + id];
+	js2me['statics' + id] = {};
 	var mainClassName = 'javaRoot.$' + mainMidlet.split(',')[2].trim().replace(/\./g, '.$');
+	js2me.currentVM = id;
 	var mainThread = new javaRoot.$java.$lang.$Thread(function () {
 		js2me.loadClass(mainClassName, function (mainClass) {
 			var midlet = new mainClass();
@@ -14,6 +16,7 @@ js2me.launchMidlet = function (id) {
 		});
 	});
 	setTimeout(function () {
+		js2me.currentVM = id;
 		mainThread.$start$$V();
 	}, 100);
 };
