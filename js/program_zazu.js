@@ -290,13 +290,9 @@
 		};
 	}
 	// dcmpg
-	executors[0x98] = function (context) {
-		return generateCompareFloats(true, 1);
-	};
+	executors[0x98] = generateCompareFloats(true, 1);
 	// dcmpl
-	executors[0x97] = function (context) {
-		return generateCompareFloats(true, -1);
-	};
+	executors[0x97] = generateCompareFloats(true, -1);
 	// dconst_0
 	executors[0x0e] = function (context) {
 		context.stack.push(js2me.dconst0);
@@ -479,13 +475,9 @@
 	// fastore
 	executors[0x51] = generateArrayStore();
 	// fcmpg
-	executors[0x96] = function (context) {
-		return generateCompareFloats(false, 1);
-	};
+	executors[0x96] = generateCompareFloats(false, 1);
 	// fcmpl
-	executors[0x95] = function (context) {
-		return generateCompareFloats(false, -1);
-	};
+	executors[0x95] = generateCompareFloats(false, -1);
 	// fconst_0
 	executors[0x0b] = function (context) {
 		context.stack.push(0);
