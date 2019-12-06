@@ -26,6 +26,18 @@ js2me.createClass({
 	$available$$I: function () {
 		return this.stream.getRemaining();
 	},
+	/*
+	 * public void mark(int readlimit)
+	 */
+	$mark$I$V: function () {
+		this.$markI = this.stream.index;
+	},
+	/*
+	 * public void reset()
+	 */
+	$reset$$V: function () {
+		this.stream.seek = this.$markI;
+	},
 	superClass: 'javaRoot.$java.$io.$InputStream'
 });
 

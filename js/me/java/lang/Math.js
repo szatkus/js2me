@@ -5,6 +5,9 @@ js2me.createClass({
 	$abs$D$D: function (value) {
 		return {double: Math.abs(value.double)};
 	},
+	$abs$F$F: function (value) {
+		return Math.abs(value);
+	},
 	/*
 	 * public static int abs(int a)
 	 */
@@ -24,6 +27,9 @@ js2me.createClass({
 		} else {
 			return js2me.lneg(value);
 		}
+	},
+	$cos$D$D: function (value) {
+		return {double: Math.cos(value.double)};
 	},
 	$min$II$I: Math.min,
 	$max$II$I: Math.max,

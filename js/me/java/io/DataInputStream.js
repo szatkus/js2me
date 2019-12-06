@@ -202,6 +202,7 @@ js2me.createClass({
 		return this.$skip$J$J({hi: 0, lo: n}).lo;
 	},
 	superClass: 'javaRoot.$java.$io.$InputStream',
-	interfaces: ['javaRoot.$java.$io.$DataInput']
+	interfaces: ['javaRoot.$java.$io.$DataInput'],
+	require: ['javaRoot.$java.$io.$EOFException']
 });
 
