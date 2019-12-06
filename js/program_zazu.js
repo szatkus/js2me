@@ -504,11 +504,11 @@
 		context.stack.push(context.locals[context.parameters[context.position - 1]]);
 	};
 	// fload_0
-	generators[0x22] = generateLoad(0);
+	executors[0x22] = generateLoad(0);
 	// fload_1
-	generators[0x23] = generateLoad(1);
+	executors[0x23] = generateLoad(1)
 	// fload_2
-	generators[0x24] = generateLoad(2);
+	executors[0x24] = generateLoad(2)
 	// fload_3
 	executors[0x25] = generateLoad(3);
 	// fmul
