@@ -69,5 +69,6 @@ js2me.createClass({
 		}
 		this.items.pop();
 	},
-	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Screen'
+	superClass: 'javaRoot.$javax.$microedition.$lcdui.$Screen',
+	require: ['javaRoot.$javax.$microedition.$lcdui.$StringItem']
 });
