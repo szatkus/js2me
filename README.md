@@ -76,12 +76,17 @@ Milestone 1.0
  
 Milestone 1.1
  * Run Opera Mini
+ * Run [Snake III, Tower Bloxx, Music Guess](https://github.com/szatkus/js2me/issues/8) and other classic games
  * Release X edition
 
 Somewhere in future...
 
+ * Work as [KaiOS app](https://github.com/szatkus/js2me/issues/7)
+ * Work as [Electron app](https://github.com/szatkus/js2me/issues/16)
+ * Work as [Cordova app](https://github.com/szatkus/js2me/issues/15)
  * MIDI support
  * M3G
+ * Some missing audio APIs as commented [here](https://github.com/szatkus/js2me/issues/8#issuecomment-562875983)
  * JavaWorker
  * pass Microemu unit tests
 
