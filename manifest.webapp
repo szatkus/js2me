@@ -2,6 +2,7 @@
     "version": "1.0",
     "name": "JayME",
     "description": "Java Mobile Edition emulator for Firefox OS.",
+    "ime_default_softkey_bar": true,
     "type": "privileged",
     "permissions": {
         "device-storage:sdcard":{ 
