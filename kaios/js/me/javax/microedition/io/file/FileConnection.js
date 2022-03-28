@@ -1,0 +1,2 @@
+js2me.createInterface({});
+

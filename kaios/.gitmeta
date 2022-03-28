@@ -1,0 +1,8 @@
+chown -h 1000:1000 './.gitmeta'
+chmod 0777 './.gitmeta'
+/usr/bin/touch -hcmd "2022-03-27 22:48:57.2236332000 -0300" './.gitmeta'
+/usr/bin/touch -hcad "2022-03-27 22:46:28.4286709000 -0300" './.gitmeta'
+chown -h 1000:1000 './Tasks.txt'
+chmod 0777 './Tasks.txt'
+/usr/bin/touch -hcmd "2022-03-27 22:48:08.7972348000 -0300" './Tasks.txt'
+/usr/bin/touch -hcad "2022-03-27 22:48:56.8660989000 -0300" './Tasks.txt'

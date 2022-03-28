@@ -1,0 +1,198 @@
+html, body {
+	margin: 0px;
+	overflow: hidden;
+	height: 100%;
+	font-family: Miso;
+	-moz-user-select:none;
+	background: #f4f5f5;
+	overflow: hidden;
+}
+
+.topbutton {
+	width: 10mm;
+	height: 10mm;
+	vertical-align: middle;
+	font-size: 10mm;
+	line-height: 10mm;
+	cursor: pointer;
+	padding: 0;
+	margin: 0;
+}
+#title {
+	text-align: center;
+	height: 10mm;
+	background-color: #aaa;
+	line-height: 10mm;
+	font-size: 10mm;
+	width: calc(100% - 10mm * 2 - 1px);
+	display: inline-block;
+	vertical-align: middle;
+}
+#keypad {
+	text-align: center;
+	position: relative;
+}
+.key, .softkey, #joypad {
+	font-size: 6mm;
+	cursor: pointer;
+	margin: 1px;
+	height: 10mm;
+	line-height: 10mm;
+	width: 30%;
+}
+
+.num {
+	width: 30%;
+	padding-top: 1px;
+}
+
+#frame {
+	display: inline-block;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
+#screen {
+	border: 1px solid black;
+	display: inline-block;
+	background-color: #fff;
+	font-size: 10mm;
+	width: calc(100% - 10mm * 2);
+	height: calc(100% - (10mm) * 5 - 30px);
+	margin: 0 10mm;
+	overflow: auto;
+}
+
+#screen > canvas {
+	height: 100%;
+	max-width: 100%;
+	margin: auto;
+	display: block;
+}
+
+.item {
+	text-align: left;
+	border: 1px black solid;
+	white-space: nowrap;
+}
+
+#top {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+}
+
+#show {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+#settings-button {
+	position: absolute;
+	top: 10mm;
+	left: 0px;
+	padding: 0;
+}
+
+
+#blanket-main {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	overflow: scroll;
+}
+
+#blanket-main .good {
+	background: green;
+}
+
+#blanket-main .bad {
+	background: red;
+}
+
+#alert {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+#alert .message {
+	width: 50%;
+	background: #fffdf9;
+	padding: 10mm;
+	font-size: 1em;
+	text-align: center;
+	word-wrap: break-word;
+	margin: 100px auto;
+}
+
+#settings {
+	position: absolute;
+	top: 100%;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	transition: top 200ms;
+}
+
+.dialog {
+	background: #fffdf9;
+	width: calc(90% - 20mm);
+	height: calc(100% - 40mm);
+	padding: 10mm;
+	font-size: 6mm;
+	word-wrap: break-word;
+	margin: 10mm auto;
+	border: 0.1rem solid #a6a6a6;
+	border-radius: 0.2rem;
+}
+
+#settings button {
+	font-size: 6mm;
+}
+
+#settings .options {
+	height: calc(100% - 20mm);
+	overflow: auto;
+}
+
+#settings .option {
+	margin: 1mm 0mm;
+}
+
+#settings select {
+	font-size: 6mm;
+}
+
+#settings progress {
+	width: 100%;
+}
+
+#settings aside {
+	color: #333;
+	font-size: 4mm;
+}
+
+#keypad #joypad {
+	position: absolute;
+    width: 100%;
+    height: 32mm;
+    top: -35mm;
+    left: 0;
+    opacity: 0.4;
+}
+
+.TextEditor {
+	position: absolute;
+	display: none;
+	border: none;
+}

@@ -1,0 +1,1 @@
+four things to detect: OS (KaiOS, etc), browser (Chrome, Firefox, etc), protocol, app framework (Electron, Cordova)

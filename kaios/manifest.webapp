@@ -1,0 +1,28 @@
+{
+    "version": "1.0",
+    "name": "JS2ME",
+    "description": "Java Mobile Edition emulator for KaiOS and Firefox OS.",
+    "ime_default_softkey_bar": true,
+    "type": "privileged",
+    "permissions": {
+        "device-storage:sdcard":{ 
+	    "access": "readonly",
+	    "description": "JARs"
+	},
+        "tcp-socket" : {
+            "description" : "Emulate sockets."
+        }
+    },
+    "launch_path": "/index.html",
+    "orientation": ["portrait"],
+    "installs_allowed_from": [
+        "*"
+    ],
+    "icons": {
+        "128": "/img/icon128.png"
+    },
+    "developer": {
+	"name": "Tomasz Szatkowski",
+	"url": "http://www.szatkus.pl"
+    }
+}
