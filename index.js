@@ -45,8 +45,10 @@ if(OSName == 'KaiOS'){
 //        environmenttext.appendChild(text);
 //}
 
-if (OSName !== 'Firefox OS'){
-        if (OSName !== 'KaiOS'){
+if (OSName !== 'KaiOS'){
+        requirejs(["platform-not-kaios.js"],function(util){});
+        requirejs(["platform-not-kaios-custom.js"],function(util){});
+        if (OSName !== 'Firefox OS'){
                 document.querySelector("#splashloader").innerHTML = ``;
                 console.log(envlogtxt +"Not Firefox OS and not KaiOS.");
                 var environmenttext = document.getElementById('environment');
